@@ -51,11 +51,11 @@ fun MainScreen() {
     Scaffold(
         bottomBar = { navBar(navController) }
     ) {
-        navBarConfiguration(navController)
+        navigationConfiguration(navController)
     }
 }
 @Composable
-private fun navBarConfiguration(navController: NavHostController) {
+private fun navigationConfiguration(navController: NavHostController) {
     NavHost(navController = navController, startDestination = NavBarItem.Scanner.route) {
         composable(NavBarItem.Trips.route) {
             TripsScreen()

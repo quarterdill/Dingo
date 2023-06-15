@@ -10,19 +10,27 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.dingo.ui.theme.DingoTheme
 
 class MainActivity : ComponentActivity() {
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContent {
+            val navController = rememberNavController()
             DingoTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    MainScreen()
+                    navigationConfiguration(navController)
                 }
             }
         }
@@ -40,7 +48,24 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
+
     DingoTheme {
         Greeting("Android")
+    }
+}
+
+@Composable
+private fun navigationConfiguration(navController: NavHostController) {
+    val modeSelectionScreenRoute = "mode_selection_screen"
+    NavHost(navController = navController, startDestination = modeSelectionScreenRoute) {
+        composable(ModeSelectionButton.Standard.route) {
+            MainScreen()
+        }
+        composable(ModeSelectionButton.Eduction.route) {
+            MainScreen()
+        }
+        composable(modeSelectionScreenRoute) {
+            ModeSelectionScreen(navController)
+        }
     }
 }
