@@ -5,4 +5,5 @@ class DingoDexCollectionItem (
     val name: String = "",
     val pictureURL: String = "",
     val numEncounters: Int = 0,
+    val isFauna: Boolean = true,
 )

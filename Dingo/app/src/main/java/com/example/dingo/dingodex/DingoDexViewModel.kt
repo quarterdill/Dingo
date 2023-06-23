@@ -52,16 +52,17 @@ constructor(
                                 println("11111111111111111")
                                 println("${item.keys.first()}")
                                 val dingoDexItem = dingoDexStorageService.getDingoDexItem(item.keys.first(), isFauna)
-                                    println("$dingoDexItem")
-                                    if (dingoDexItem != null) {
-                                        dingoDexItems.add(
-                                            DingoDexCollectionItem(
-                                                id = dingoDexItem.id,
-                                                name = dingoDexItem.name,
-                                                numEncounters = item[dingoDexItem.id]!!
-                                            )
+                                println("$dingoDexItem")
+                                if (dingoDexItem != null) {
+                                    dingoDexItems.add(
+                                        DingoDexCollectionItem(
+                                            id = dingoDexItem.id,
+                                            name = dingoDexItem.name,
+                                            isFauna = isFauna,
+                                            numEncounters = item[dingoDexItem.id]!!
                                         )
-                                    }
+                                    )
+                                }
                                 println("2222222222222222222")
                             } catch (e: java.lang.Exception) {
                                 // Do nothing
@@ -77,6 +78,7 @@ constructor(
                                         DingoDexCollectionItem(
                                             id = dingoDexItem.id,
                                             name = dingoDexItem.name,
+                                            isFauna = isFauna,
                                             numEncounters = 0
                                         )
                                     )
