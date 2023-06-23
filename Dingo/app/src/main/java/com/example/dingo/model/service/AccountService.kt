@@ -8,7 +8,7 @@ interface AccountService {
     val currentUserId: String
     val hasUser: Boolean
 
-    val currentUser: Flow<User>
+    //val currentUser: Flow<User>
 
     suspend fun authenticate(email: String, password: String)
     suspend fun sendRecoveryEmail(email: String)

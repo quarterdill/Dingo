@@ -1,10 +1,9 @@
 package com.example.dingo.model.service
 
 import com.example.dingo.model.Entry
-import com.example.dingo.model.DingoDex
+import com.example.dingo.model.DingoDexCollection
 import com.example.dingo.model.Post
 import kotlinx.coroutines.flow.Flow
-import com.example.dingo.model.Trip
 
 interface StorageService {
     val entries: Flow<List<Entry>>
@@ -13,11 +12,11 @@ interface StorageService {
     suspend fun updateEntry(entry: Entry)
     suspend fun deleteEntry(entryId: String)
 
-    val dingoDexes: Flow<List<DingoDex>>
-    suspend fun getDingoDex(dingoDexId: String): DingoDex?
-    suspend fun saveDingoDex(dingoDex: DingoDex): String
-    suspend fun updateDingoDex(dingoDex: DingoDex)
-    suspend fun deleteDingoDex(dingoDex: DingoDex)
+    val dingoDexesEntries: Flow<List<DingoDexCollection>>
+    suspend fun getDingoDex(dingoDexId: String): DingoDexCollection?
+    suspend fun saveDingoDex(dingoDexCollection: DingoDexCollection): String
+    suspend fun updateDingoDex(dingoDexCollection: DingoDexCollection)
+    suspend fun deleteDingoDex(dingoDexCollection: DingoDexCollection)
 
     val posts: Flow<List<Post>>
     suspend fun getPost(postId: String): Post?

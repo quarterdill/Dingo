@@ -20,15 +20,15 @@ class AccountServiceImpl @Inject constructor(private val auth: FirebaseAuth) : A
     override val hasUser: Boolean
         get() = auth.currentUser != null
 
-    override val currentUser: Flow<User>
-        get() = callbackFlow {
-            val listener =
-                FirebaseAuth.AuthStateListener { auth ->
-                    this.trySend(auth.currentUser?.let { User(it.uid, it.isAnonymous) } ?: User())
-                }
-            auth.addAuthStateListener(listener)
-            awaitClose { auth.removeAuthStateListener(listener) }
-        }
+//    override val currentUser: Flow<User>
+//        get() = callbackFlow {
+//            val listener =
+//                FirebaseAuth.AuthStateListener { auth ->
+//                    this.trySend(auth.currentUser?.let { User(it.uid, it.isAnonymous) } ?: User())
+//                }
+//            auth.addAuthStateListener(listener)
+//            awaitClose { auth.removeAuthStateListener(listener) }
+//        }
 
     override suspend fun authenticate(email: String, password: String) {
         auth.signInWithEmailAndPassword(email, password).await()
