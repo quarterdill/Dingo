@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 interface ClassroomService {
     suspend fun getClassroom(classroomId: String): Flow<Classroom?>
     suspend fun addNewClassroom(newClassroom: Classroom)
-    suspend fun addUser(classroomId: String, teacherId: String, userType: UserType)
+    suspend fun addUser(classroomId: String, userId: String, userType: UserType)
     suspend fun addPost(classroomId: String, post: Post)
     suspend fun deletePost(postId: String)
     suspend fun getPostFeed(classroomId: String): List<Post>

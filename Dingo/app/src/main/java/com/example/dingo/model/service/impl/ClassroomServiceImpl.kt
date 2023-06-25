@@ -15,15 +15,15 @@ import javax.inject.Inject
 class ClassroomServiceImpl
 @Inject
 constructor(private val firestore: FirebaseFirestore, private val auth: AccountService) :
-ClassroomService {
+    ClassroomService {
 
     override suspend fun getClassroom(classroomId: String): Flow<Classroom?> {
         return callbackFlow {
             val entries = firestore.collection(CLASSROOM_COLLECTIONS).document(classroomId)
-            val subscription = entries.addSnapshotListener { snapshot, e ->
+            val subscription = entries.addSnapshotListener { snapshot, _ ->
                 if (snapshot == null) {
                     trySend(null)
-                } else if (snapshot!!.exists()) {
+                } else if (snapshot.exists()) {
                     trySend(snapshot.toObject(Classroom::class.java))
                 }
             }
