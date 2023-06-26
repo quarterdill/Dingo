@@ -2,13 +2,11 @@ package com.example.dingo.dingodex
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -36,13 +34,38 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.example.dingo.MainScreen
 import com.example.dingo.R
+import com.example.dingo.dingodex.description.DingoDexDescriptionScreen
+
+sealed class NavItem(
+    val name: String,
+    val route: String,
+) {
+    object DescriptionScreen : NavItem(
+        name = "DescriptionScreen",
+        route = "DingoDexDescriptionScreen",
+    )
+    object MainScreen : NavItem(
+        name = "MainScreen",
+        route = "mainscreen",
+    )
+    object DingoDex : NavItem(
+        name = "DingoDexScreen",
+        route = "dingodex"
+    )
+}
 
 // Todo: Make heights and stuff into consts
 @Composable
 fun DingoDexScreen(
     viewModel: DingoDexViewModel = hiltViewModel()
 ) {
+    val navController = rememberNavController()
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -72,16 +95,15 @@ fun DingoDexScreen(
                 columns = GridCells.Fixed(3)
             ) {
                 items(temp.size) {
-                    DingoDexItem(temp[it])
+                    DingoDexItem(temp[it]) { navController.navigate(NavItem.DescriptionScreen.route) }
                 }
             }
-
         }
-        Row (
+        Row(
             modifier = Modifier.padding(16.dp),
-            horizontalArrangement  = Arrangement.spacedBy(10.dp),
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
             verticalAlignment = Alignment.CenterVertically
-        ){
+        ) {
             Button(
                 onClick = { showFaunaDingoDex = true },
             ) {
@@ -100,46 +122,65 @@ fun DingoDexScreen(
             }
         }
     }
+    navigationConfiguration(navController)
 }
 
 @Composable
 private fun DingoDexItem(
-    item: DingoDexCollectionItem
+    item: DingoDexCollectionItem,
+    onNavigateToDescription: () -> Unit
 ) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Box() {
-            if (item.pictureURL == "") {
-                Image(
-                    painter = if (item.isFauna) {
-                        painterResource(R.drawable.fauna_placeholder)
-                    } else {
-                        painterResource(R.drawable.flore_placeholder)
-                    },
-                    contentDescription = if (item.isFauna) "Fauna" else "Flora",
-                    contentScale = ContentScale.Inside,
-                    modifier = Modifier
-                        .size(64.dp)
-                        .clip(CircleShape)                       // clip to the circle shape
-                        .border(2.dp, Color.Gray, CircleShape)
-                )
+    Button(onClick = onNavigateToDescription) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Box() {
+                if (item.pictureURL == "") {
+                    Image(
+                        painter = if (item.isFauna) {
+                            painterResource(R.drawable.fauna_placeholder)
+                        } else {
+                            painterResource(R.drawable.flore_placeholder)
+                        },
+                        contentDescription = if (item.isFauna) "Fauna" else "Flora",
+                        contentScale = ContentScale.Inside,
+                        modifier = Modifier
+                            .size(64.dp)
+                            .clip(CircleShape)                       // clip to the circle shape
+                            .border(2.dp, Color.Gray, CircleShape)
+                    )
+                }
+                // TODO: Actual images
+                Box(
+                    contentAlignment = Alignment.Center
+                ) {
+                    Canvas(modifier = Modifier.size(25.dp), onDraw = {
+                        drawCircle(color = Color.LightGray)
+                    })
+                    Text(text = "${item.numEncounters}", color = Color.White)
+                }
             }
-            // TODO: Actual images
-            Box (
-                contentAlignment = Alignment.Center
-            ) {
-                Canvas(modifier = Modifier.size(25.dp), onDraw = {
-                    drawCircle(color = Color.LightGray)
-                })
-                Text(text = "${item.numEncounters}", color = Color.White)
-            }
+            Text(
+                modifier = Modifier.width(72.dp),
+                text = "${item.name}",
+                textAlign = TextAlign.Center
+            )
+            println("hello made item!")
         }
-        Text(
-            modifier = Modifier.width(72.dp),
-            text = "${item.name}",
-            textAlign = TextAlign.Center
-        )
+    }
+}
+
+@Composable
+private fun navigationConfiguration(navController: NavHostController) {
+    NavHost(navController = navController, startDestination = NavItem.MainScreen.route) {
+
+        composable(NavItem.MainScreen.route) {
+            MainScreen()
+        }
+        composable(NavItem.DescriptionScreen.route) {
+            println("homie asking for the route")
+            DingoDexDescriptionScreen() { navController.navigate(NavItem.MainScreen.route) }
+        }
     }
 }

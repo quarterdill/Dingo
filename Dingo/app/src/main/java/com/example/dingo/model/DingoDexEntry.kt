@@ -6,5 +6,6 @@ data class DingoDexEntry (
     @DocumentId val id: String = "",
     var location: String,
     var picture: List<String>,
-    // Not too sure about obtained default showon
+    // Not too sure about obtained default shown
+    // include image
 )
