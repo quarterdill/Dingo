@@ -140,7 +140,7 @@ private fun navBar(navController: NavHostController) {
                 },
                 onClick = {
                     if (!isSelected)
-                        navController.navigate(it.route)
+                            navController.navigate(it.route)
                 },
                 selected = isSelected
             )
