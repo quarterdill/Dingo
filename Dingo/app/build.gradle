@@ -11,6 +11,10 @@ android {
     namespace 'com.example.dingo'
     compileSdk 33
 
+    aaptOptions {
+        noCompress "tflite"
+    }
+
     defaultConfig {
         applicationId "com.example.dingo"
         minSdk 24
@@ -54,6 +58,7 @@ dependencies {
 
     implementation 'androidx.core:core-ktx:1.10.1'
     implementation platform('org.jetbrains.kotlin:kotlin-bom:1.8.0')
+    implementation 'androidx.lifecycle:lifecycle-runtime-compose:2.6.1'
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.3.1'
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.4.0'
     implementation 'androidx.activity:activity-compose:1.5.1'
@@ -80,6 +85,22 @@ dependencies {
     implementation("com.google.dagger:hilt-android:2.44")
     kapt("com.google.dagger:hilt-compiler:2.44")
     androidTestImplementation("com.google.dagger:hilt-android-testing:2.43.2")
+    // CameraX dependencies
+    implementation "androidx.camera:camera-camera2:1.0.1"
+    implementation "androidx.camera:camera-lifecycle:1.0.1"
+    implementation "androidx.camera:camera-view:1.0.0-alpha28"
+    implementation "androidx.camera:camera-extensions:1.0.0-alpha28"
+
+    // TensorFlow Lite dependencies
+    implementation 'org.tensorflow:tensorflow-lite:2.4.0'
+    implementation 'org.tensorflow:tensorflow-lite-gpu:2.4.0'
+    implementation 'org.tensorflow:tensorflow-lite-support:0.1.0'
+
+    // Kotlin Coroutines
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.1'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.1'
+
+    implementation "com.google.accompanist:accompanist-permissions:0.31.2-alpha"
 }
 
 kapt {

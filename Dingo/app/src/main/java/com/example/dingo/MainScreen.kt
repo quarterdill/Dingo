@@ -34,6 +34,11 @@ import androidx.navigation.compose.rememberNavController
 import com.example.dingo.dingodex.DingoDexScreen
 import com.example.dingo.social.SocialScreen
 import kotlinx.coroutines.launch
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.PermissionState
+import com.google.accompanist.permissions.rememberPermissionState
+import com.google.accompanist.permissions.isGranted
+
 
 sealed class NavBarItem(
     val name: String,
@@ -60,9 +65,13 @@ sealed class NavBarItem(
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter") // Suppresses error for not using it: Padding Values
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
 fun MainScreen() {
+
+    val cameraPermissionState: PermissionState = rememberPermissionState(android.Manifest.permission.CAMERA)
+
+
     val navController = rememberNavController()
     val scaffoldState = rememberBottomSheetScaffoldState(
         bottomSheetState =  SheetState(
@@ -109,18 +118,25 @@ fun MainScreen() {
         Scaffold(
             bottomBar = { navBar(navController) }
         ) {
-            navigationConfiguration(navController)
+            navigationConfiguration(navController,
+                hasPermission = cameraPermissionState.status.isGranted,
+                onRequestPermission = cameraPermissionState::launchPermissionRequest
+            )
         }
     }
 }
 @Composable
-private fun navigationConfiguration(navController: NavHostController) {
+private fun navigationConfiguration(navController: NavHostController, hasPermission: Boolean, onRequestPermission: () -> Unit) {
     NavHost(navController = navController, startDestination = NavBarItem.Scanner.route) {
         composable(NavBarItem.Trips.route) {
             TripsScreen()
         }
         composable(NavBarItem.Scanner.route) {
-            ScannerScreen()
+            if (hasPermission) {
+                ScannerScreen()
+            } else {
+                NoPermission(onRequestPermission)
+            }
         }
         composable(NavBarItem.Social.route) {
             SocialScreen()
