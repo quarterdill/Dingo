@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.rounded.AddCircle
 import androidx.compose.material.icons.rounded.Person
@@ -32,6 +33,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.dingo.dingodex.DingoDexScreen
+import com.example.dingo.social.ClassroomScreen
 import com.example.dingo.social.SocialScreen
 import kotlinx.coroutines.launch
 
@@ -54,6 +56,11 @@ sealed class NavBarItem(
         name = "Social",
         route = "social",
         icon = Icons.Rounded.Person,
+    )
+    object Classroom : NavBarItem(
+        name = "Classroom",
+        route = "classroom",
+        icon = Icons.Filled.Face,
     )
 }
 
@@ -122,6 +129,9 @@ private fun navigationConfiguration(navController: NavHostController) {
         composable(NavBarItem.Scanner.route) {
             ScannerScreen()
         }
+        composable(NavBarItem.Classroom.route) {
+            ClassroomScreen()
+        }
         composable(NavBarItem.Social.route) {
             SocialScreen()
         }
@@ -129,7 +139,7 @@ private fun navigationConfiguration(navController: NavHostController) {
 }
 @Composable
 private fun navBar(navController: NavHostController) {
-    val navItems = listOf(NavBarItem.Trips, NavBarItem.Scanner, NavBarItem.Social)
+    val navItems = listOf(NavBarItem.Trips, NavBarItem.Scanner, NavBarItem.Social, NavBarItem.Classroom)
     NavigationBar() {
         val currentRoute = getCurrentRoute(navController = navController)
         navItems.forEach{
