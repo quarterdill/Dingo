@@ -37,6 +37,7 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+        coreLibraryDesugaringEnabled true
     }
     kotlinOptions {
         jvmTarget = '1.8'
@@ -85,6 +86,7 @@ dependencies {
     implementation("com.google.dagger:hilt-android:2.44")
     kapt("com.google.dagger:hilt-compiler:2.44")
     androidTestImplementation("com.google.dagger:hilt-android-testing:2.43.2")
+
     // CameraX dependencies
     implementation "androidx.camera:camera-camera2:1.0.1"
     implementation "androidx.camera:camera-lifecycle:1.0.1"
@@ -101,6 +103,9 @@ dependencies {
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.1'
 
     implementation "com.google.accompanist:accompanist-permissions:0.31.2-alpha"
+
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.5'
+
 }
 
 kapt {

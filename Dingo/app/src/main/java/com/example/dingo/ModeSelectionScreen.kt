@@ -27,9 +27,9 @@ sealed class ModeSelectionButton(
         name = "Standard",
         route = "standard",
     )
-    object Eduction : ModeSelectionButton(
-        name = "Eduction",
-        route = "eduction",
+    object Education : ModeSelectionButton(
+        name = "Education",
+        route = "education",
     )
 }
 
@@ -48,7 +48,7 @@ fun ModeSelectionScreen(navController: NavHostController) {
 
 @Composable
 private fun modeSelectionButtons(navController: NavHostController) {
-    val selectionButtons = listOf(ModeSelectionButton.Standard, ModeSelectionButton.Eduction)
+    val selectionButtons = listOf(ModeSelectionButton.Standard, ModeSelectionButton.Education)
     Row {
         selectionButtons.forEach {
             Button(

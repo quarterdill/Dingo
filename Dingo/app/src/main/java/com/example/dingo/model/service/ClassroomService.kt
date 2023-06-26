@@ -11,6 +11,5 @@ interface ClassroomService {
     suspend fun addNewClassroom(newClassroom: Classroom)
     suspend fun addUser(classroomId: String, userId: String, userType: UserType)
     suspend fun addPost(classroomId: String, post: Post)
-    suspend fun deletePost(postId: String)
-    suspend fun getPostFeed(classroomId: String): List<Post>
+    suspend fun getPostFeed(classroomId: String, limit: Int): Flow<MutableList<Post>?>
 }
