@@ -72,8 +72,9 @@ private fun navigationConfiguration(navController: NavHostController) {
         composable(ModeSelectionButton.Standard.route) {
             LoginScreen(loginViewModel,navController)
         }
-        composable(ModeSelectionButton.Eduction.route) {
-            LoginScreen(loginViewModel,navController)
+
+        composable(ModeSelectionButton.Education.route) {
+            MainScreen()
         }
         composable(modeSelectionScreenRoute) {
             ModeSelectionScreen(navController)
