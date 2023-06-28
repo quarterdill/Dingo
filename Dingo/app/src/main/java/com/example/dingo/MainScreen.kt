@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.rounded.AddCircle
 import androidx.compose.material.icons.rounded.Person
@@ -32,8 +33,14 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.dingo.dingodex.DingoDexScreen
+import com.example.dingo.social.ClassroomScreen
 import com.example.dingo.social.SocialScreen
 import kotlinx.coroutines.launch
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.PermissionState
+import com.google.accompanist.permissions.rememberPermissionState
+import com.google.accompanist.permissions.isGranted
+
 
 sealed class NavBarItem(
     val name: String,
@@ -55,14 +62,23 @@ sealed class NavBarItem(
         route = "social",
         icon = Icons.Rounded.Person,
     )
+    object Classroom : NavBarItem(
+        name = "Classroom",
+        route = "classroom",
+        icon = Icons.Filled.Face,
+    )
 }
 
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter") // Suppresses error for not using it: Padding Values
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
 fun MainScreen() {
+
+    val cameraPermissionState: PermissionState = rememberPermissionState(android.Manifest.permission.CAMERA)
+
+
     val navController = rememberNavController()
     val scaffoldState = rememberBottomSheetScaffoldState(
         bottomSheetState =  SheetState(
@@ -109,18 +125,28 @@ fun MainScreen() {
         Scaffold(
             bottomBar = { navBar(navController) }
         ) {
-            navigationConfiguration(navController)
+            navigationConfiguration(navController,
+                hasPermission = cameraPermissionState.status.isGranted,
+                onRequestPermission = cameraPermissionState::launchPermissionRequest
+            )
         }
     }
 }
 @Composable
-private fun navigationConfiguration(navController: NavHostController) {
+private fun navigationConfiguration(navController: NavHostController, hasPermission: Boolean, onRequestPermission: () -> Unit) {
     NavHost(navController = navController, startDestination = NavBarItem.Scanner.route) {
         composable(NavBarItem.Trips.route) {
             TripsScreen()
         }
         composable(NavBarItem.Scanner.route) {
-            ScannerScreen()
+            if (hasPermission) {
+                ScannerScreen()
+            } else {
+                NoPermission(onRequestPermission)
+            }
+        }
+        composable(NavBarItem.Classroom.route) {
+            ClassroomScreen()
         }
         composable(NavBarItem.Social.route) {
             SocialScreen()
@@ -129,7 +155,7 @@ private fun navigationConfiguration(navController: NavHostController) {
 }
 @Composable
 private fun navBar(navController: NavHostController) {
-    val navItems = listOf(NavBarItem.Trips, NavBarItem.Scanner, NavBarItem.Social)
+    val navItems = listOf(NavBarItem.Trips, NavBarItem.Scanner, NavBarItem.Social, NavBarItem.Classroom)
     NavigationBar() {
         val currentRoute = getCurrentRoute(navController = navController)
         navItems.forEach{
@@ -140,7 +166,7 @@ private fun navBar(navController: NavHostController) {
                 },
                 onClick = {
                     if (!isSelected)
-                        navController.navigate(it.route)
+                            navController.navigate(it.route)
                 },
                 selected = isSelected
             )

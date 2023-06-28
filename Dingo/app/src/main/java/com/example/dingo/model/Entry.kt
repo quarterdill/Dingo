@@ -1,5 +1,6 @@
 package com.example.dingo.model
 
+import com.google.firebase.firestore.DocumentId
 import java.time.LocalDateTime
 
 enum class EntryStatus {
@@ -7,8 +8,9 @@ enum class EntryStatus {
 }
 
 data class Entry (
+    @DocumentId val id: String = "",
     var location: Location,
-    var defaultPictureUrl: String,
-    var takenPictureUrl: String,
+    var defaultPictureUrl: String = "",
+    var takenPictureUrl: String = "",
     var entryStatus: EntryStatus = EntryStatus.NOT_OBTAINED,
 )

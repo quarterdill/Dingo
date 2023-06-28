@@ -1,10 +1,14 @@
 package com.example.dingo.model
+
+import com.google.firebase.firestore.DocumentId
+
 enum class UserType {
     STUDENT, TEACHER
 }
 
-class Classroom (
-    var teachers: List<String>,
-    var students: List<String>,
-    var posts: List<String>,
+data class Classroom (
+    @DocumentId val id: String = "",
+    var teachers: List<String> = emptyList(),
+    var students: List<String> = emptyList(),
+    var posts: List<String> = emptyList(),
 )
