@@ -1,5 +1,6 @@
 package com.example.dingo
 
+import android.Manifest
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import android.annotation.SuppressLint
@@ -45,22 +46,34 @@ import android.graphics.BitmapFactory
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.dp
 import android.graphics.Matrix
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.PermissionState
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
 
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun ScannerScreen(
     viewModel: ScannerViewModel = viewModel() ){
+    val cameraPermissionState: PermissionState = rememberPermissionState(Manifest.permission.CAMERA)
 
-    val scannerState: ScannerState by viewModel.state.collectAsStateWithLifecycle()
+    // Checks if the app has camera permissions
+    if (cameraPermissionState.status.isGranted) {
+        val scannerState: ScannerState by viewModel.state.collectAsStateWithLifecycle()
 
-    ScannerPreview(
-        onPhotoCaptured = viewModel::onPhotoCaptured
-    )
-    scannerState.capturedImage?.let { capturedImage:Bitmap->
-        CapturedImageBitmapDialog(
-            capturedImage = capturedImage,
-            onDismissRequest = viewModel::onCapturedPhotoConsumed
+        ScannerPreview(
+            onPhotoCaptured = viewModel::onPhotoCaptured
         )
+        scannerState.capturedImage?.let { capturedImage:Bitmap->
+            CapturedImageBitmapDialog(
+                capturedImage = capturedImage,
+                onDismissRequest = viewModel::onCapturedPhotoConsumed
+            )
+        }
+    } else {
+        NoPermission(cameraPermissionState::launchPermissionRequest)
     }
+
 }
 
 @Composable

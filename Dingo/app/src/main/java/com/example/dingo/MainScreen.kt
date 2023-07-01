@@ -72,13 +72,9 @@ sealed class NavBarItem(
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter") // Suppresses error for not using it: Padding Values
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen() {
-
-    val cameraPermissionState: PermissionState = rememberPermissionState(android.Manifest.permission.CAMERA)
-
-
     val navController = rememberNavController()
     val scaffoldState = rememberBottomSheetScaffoldState(
         bottomSheetState =  SheetState(
@@ -126,24 +122,18 @@ fun MainScreen() {
             bottomBar = { navBar(navController) }
         ) {
             navigationConfiguration(navController,
-                hasPermission = cameraPermissionState.status.isGranted,
-                onRequestPermission = cameraPermissionState::launchPermissionRequest
             )
         }
     }
 }
 @Composable
-private fun navigationConfiguration(navController: NavHostController, hasPermission: Boolean, onRequestPermission: () -> Unit) {
+private fun navigationConfiguration(navController: NavHostController) {
     NavHost(navController = navController, startDestination = NavBarItem.Scanner.route) {
         composable(NavBarItem.Trips.route) {
             TripsScreen()
         }
         composable(NavBarItem.Scanner.route) {
-            if (hasPermission) {
-                ScannerScreen()
-            } else {
-                NoPermission(onRequestPermission)
-            }
+            ScannerScreen()
         }
         composable(NavBarItem.Classroom.route) {
             ClassroomScreen()
