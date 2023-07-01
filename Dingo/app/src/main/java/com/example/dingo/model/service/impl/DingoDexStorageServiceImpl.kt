@@ -1,7 +1,6 @@
 package com.example.dingo.model.service.impl
 
 import com.example.dingo.model.DingoDex
-import com.example.dingo.model.DingoDexCollection
 import com.example.dingo.model.service.AccountService
 import com.example.dingo.model.service.DingoDexStorageService
 import com.google.firebase.firestore.DocumentSnapshot
