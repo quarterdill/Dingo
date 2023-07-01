@@ -17,4 +17,6 @@ data class User (
     var classroomIds: List<String> = emptyList(),
     var posts: List<String> = emptyList(),
     var trips: List<String> = emptyList(),
+    var uncollectedFauna : List<String> = emptyList(),
+    var uncollectedFlora : List<String> = emptyList(),
 )
