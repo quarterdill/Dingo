@@ -13,6 +13,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
@@ -38,6 +39,33 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
     }
 
     override suspend fun getUserFlow(userId: String): Flow<User?> {
+        if (userId == "") {
+            // TODO: Uncomment once auth is implemented
+//            return auth.currentUser.flatMapLatest { user ->
+//                callbackFlow {
+//                    val entries = firestore.collection(USER_COLLECTIONS).document(user.id)
+//                    val subscription = entries.addSnapshotListener { snapshot, _ ->
+//                        if (snapshot == null) {
+//                            trySend(null)
+//                        } else if (snapshot.exists()) {
+//                            trySend(snapshot.toObject(User::class.java))
+//                        }
+//                    }
+//                    awaitClose { subscription.remove() }
+//                }
+//            }
+            return callbackFlow {
+                    val entries = firestore.collection(USER_COLLECTIONS).document("temp")
+                    val subscription = entries.addSnapshotListener { snapshot, _ ->
+                        if (snapshot == null) {
+                            trySend(null)
+                        } else if (snapshot.exists()) {
+                            trySend(snapshot.toObject(User::class.java))
+                        }
+                    }
+                    awaitClose { subscription.remove() }
+                }
+        }
         return callbackFlow {
             val entries = firestore.collection(USER_COLLECTIONS).document(userId)
             val subscription = entries.addSnapshotListener { snapshot, _ ->

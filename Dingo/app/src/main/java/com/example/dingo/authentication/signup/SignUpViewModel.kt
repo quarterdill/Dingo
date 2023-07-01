@@ -3,8 +3,6 @@ package com.example.dingo.authentication.signup
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.example.dingo.model.service.AccountService
-import com.example.dingo.model.service.DingoDexCollectionStorageService
-import com.example.dingo.model.service.DingoDexStorageService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 

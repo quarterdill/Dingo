@@ -1,9 +1,5 @@
 package com.example.dingo.model.service
 
-import com.example.dingo.model.AccountType
-import com.example.dingo.model.Entry
-import com.example.dingo.model.User
-import com.example.dingo.model.DingoDexCollection
 import com.example.dingo.model.Post
 import kotlinx.coroutines.flow.Flow
 

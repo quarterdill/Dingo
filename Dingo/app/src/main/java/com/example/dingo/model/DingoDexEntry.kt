@@ -4,7 +4,12 @@ import com.google.firebase.firestore.DocumentId
 
 data class DingoDexEntry (
     @DocumentId val id: String = "",
-    var location: String,
-    var picture: List<String>,
-    // Not too sure about obtained default showon
+    val userId: String = "",
+    val dingodDexId: String = "",
+    var name: String = "",
+    var isFauna: Boolean = true,
+    var numEncounters: Int = 0,
+    var location: String = "",
+    var pictures: List<String> = emptyList(),
+    var displayPicture: String = "",
 )

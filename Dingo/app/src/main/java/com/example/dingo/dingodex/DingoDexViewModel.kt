@@ -6,10 +6,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
-import com.example.dingo.model.DingoDex
-import com.example.dingo.model.DingoDexCollection
-import com.example.dingo.model.service.DingoDexCollectionStorageService
+import com.example.dingo.model.service.DingoDexEntryService
 import com.example.dingo.model.service.DingoDexStorageService
+import com.example.dingo.model.service.UserService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.ChannelResult
@@ -21,54 +20,32 @@ import javax.inject.Inject
 class DingoDexViewModel
 @Inject
 constructor(
-    private val dingoDexCollectionStorageService: DingoDexCollectionStorageService,
+    private val userService: UserService,
+    private val dingoDexEntryService: DingoDexEntryService,
     private val dingoDexStorageService: DingoDexStorageService,
 ) : ViewModel() {
 
-    val fetchDingoDexFaunaCollection = getDingoDexItems(true)
-    val fetchDingoDexFloraCollection = getDingoDexItems(false)
 
-    private fun getDingoDexItems(
+    val uncollectedDingoDexFauna = getDingoDexUncollectedItems(true)
+    val uncollectedDingoDexFlora = getDingoDexUncollectedItems(false)
+    val collectedDingoDexFauna = getDingoDexCollectedItems(true)
+    val collectedDingoDexFlora = getDingoDexCollectedItems(false)
+
+    private fun getDingoDexUncollectedItems(
         isFauna: Boolean
-    ): LiveData<MutableList<DingoDexCollectionItem>?> {
+    ): LiveData<MutableList<DingoDexCollectionItem>> {
         return liveData(Dispatchers.IO) {
+            val dingoDexItems = mutableListOf<DingoDexCollectionItem>()
             try {
-                dingoDexCollectionStorageService.getDingoDexCollection().collect {
+                userService.getUserFlow().collect {
                     if (it != null) {
-                        val dingoDexItems = mutableListOf<DingoDexCollectionItem>()
-                        val collectedDingoDex = if (isFauna) {
-                            it.collectedFauna
-                        } else {
-                            it.collectedFlora
-                        }
+
                         val uncollectedDingoDex = if (isFauna) {
                             it.uncollectedFauna
                         } else {
                             it.uncollectedFlora
                         }
-                        println("$collectedDingoDex")
-                        for (item in collectedDingoDex) {
-                            try {
-                                println("11111111111111111")
-                                println("${item.keys.first()}")
-                                val dingoDexItem = dingoDexStorageService.getDingoDexItem(item.keys.first(), isFauna)
-                                println("$dingoDexItem")
-                                if (dingoDexItem != null) {
-                                    dingoDexItems.add(
-                                        DingoDexCollectionItem(
-                                            id = dingoDexItem.id,
-                                            name = dingoDexItem.name,
-                                            isFauna = isFauna,
-                                            numEncounters = item[dingoDexItem.id]!!
-                                        )
-                                    )
-                                }
-                                println("2222222222222222222")
-                            } catch (e: java.lang.Exception) {
-                                // Do nothing
-                                println("$e")
-                            }
-                        }
+
                         for (item in uncollectedDingoDex) {
                             try {
                                 dingoDexStorageService.getDingoDexItem(item, isFauna)
@@ -78,6 +55,7 @@ constructor(
                                         DingoDexCollectionItem(
                                             id = dingoDexItem.id,
                                             name = dingoDexItem.name,
+                                            pictureURL = dingoDexItem.defaultPicture,
                                             isFauna = isFauna,
                                             numEncounters = 0
                                         )
@@ -87,13 +65,43 @@ constructor(
                                 // Do nothing
                             }
                         }
-                        emit(dingoDexItems)
-                    } else {
-                        emit(null)
+
+                    }
+                    emit(dingoDexItems)
+                }
+            } catch (e: Exception) {
+                emit(dingoDexItems)
+            }
+        }
+    }
+
+    private fun getDingoDexCollectedItems(
+        isFauna: Boolean
+    ): LiveData<MutableList<DingoDexCollectionItem>> {
+        return liveData(Dispatchers.IO) {
+            val dingoDexItems = mutableListOf<DingoDexCollectionItem>()
+            try {
+                val collectedDingoDex = if (isFauna) {
+                    dingoDexEntryService.dingoDexFaunaEntries
+                } else {
+                    dingoDexEntryService.dingoDexFloraEntries
+                }
+                collectedDingoDex.collect {
+
+                    for (item in it) {
+                        dingoDexItems.add(
+                            DingoDexCollectionItem(
+                                id = item.id,
+                                name = item.name,
+                                pictureURL = item.displayPicture,
+                                isFauna = isFauna,
+                                numEncounters = 0
+                            )
+                        )
                     }
                 }
             } catch (e: Exception) {
-                emit(null)
+                emit(dingoDexItems)
             }
         }
     }
@@ -122,13 +130,8 @@ constructor(
                     }
                 }
             }
-            val newDingoDexCollection = DingoDexCollection(
-                collectedFauna = collectedDingoDex[0],
-                collectedFlora = collectedDingoDex[1],
-                uncollectedFauna = uncollectedDingoDex[0],
-                uncollectedFlora = uncollectedDingoDex[1]
-            )
-            dingoDexCollectionStorageService.addNewUser(newDingoDexCollection)
+
+//            dingoDexCollectionStorageService.addNewUser(newDingoDexCollection)
         }
     }
 }

@@ -53,29 +53,32 @@ fun DingoDexScreen(
             text = "DingoDex",
         )
         var showFaunaDingoDex by remember { mutableStateOf(true) }
-        val faunaDingoDex = viewModel.fetchDingoDexFaunaCollection.observeAsState()
-        val floraDingoDex = viewModel.fetchDingoDexFloraCollection.observeAsState()
+        val collectedFaunaDingoDex = viewModel.collectedDingoDexFauna.observeAsState()
+        val uncollectedFaunaDingoDex = viewModel.uncollectedDingoDexFauna.observeAsState()
+        val collectedFloraDingoDex = viewModel.collectedDingoDexFlora.observeAsState()
+        val uncollectedFloraDingoDex = viewModel.uncollectedDingoDexFlora.observeAsState()
 
         println("$showFaunaDingoDex")
-        val temp = if (showFaunaDingoDex && faunaDingoDex != null) {
-            println("true")
-            faunaDingoDex.value
-        } else if (floraDingoDex != null) {
-            println("false")
-            floraDingoDex.value
+        val isEmpty = if (showFaunaDingoDex) {
+            collectedFaunaDingoDex.value.isNullOrEmpty() || uncollectedFaunaDingoDex.value.isNullOrEmpty()
         } else {
-            null
+            collectedFloraDingoDex.value.isNullOrEmpty() || uncollectedFloraDingoDex.value.isNullOrEmpty()
         }
-        println("wrwerawreawrawef $temp")
-        if (temp != null) {
+        if (!isEmpty) {
+            val items: List<DingoDexCollectionItem> = if (showFaunaDingoDex) {
+                collectedFaunaDingoDex.value!! + uncollectedFaunaDingoDex.value!!
+            } else {
+                collectedFloraDingoDex.value!! + uncollectedFloraDingoDex.value!!
+            }
             LazyVerticalGrid(
                 columns = GridCells.Fixed(3)
             ) {
-                items(temp.size) {
-                    DingoDexItem(temp[it])
+                items(items.size) {
+                    DingoDexItem(items[it])
                 }
             }
-
+        } else {
+            Text("Loading")
         }
         Row (
             modifier = Modifier.padding(16.dp),
