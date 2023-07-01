@@ -33,6 +33,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import android.graphics.BitmapFactory
 import androidx.compose.ui.unit.dp
 import android.graphics.Matrix
+import androidx.compose.material3.FabPosition
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.isGranted
@@ -125,11 +126,11 @@ private fun ScannerPreview(
 
 
     Scaffold(modifier = Modifier.fillMaxSize(),
-//        floatingActionButtonPosition =  FabPosition.,
+        floatingActionButtonPosition =  FabPosition.Center,
         floatingActionButton = {
             FloatingActionButton (
                 modifier = Modifier
-                    .padding(all = 128.dp),
+                    .padding(bottom = 96.dp),
                 onClick = {
                     val mainExecutor = ContextCompat.getMainExecutor(context)
                     cameraController.takePicture(mainExecutor, object : ImageCapture.OnImageCapturedCallback() {
