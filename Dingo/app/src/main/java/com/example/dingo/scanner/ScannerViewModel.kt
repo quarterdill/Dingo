@@ -1,7 +1,4 @@
-package com.example.dingo
-
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+package com.example.dingo.scanner
 
 import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel

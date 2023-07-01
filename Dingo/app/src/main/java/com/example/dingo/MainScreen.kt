@@ -33,6 +33,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.dingo.dingodex.DingoDexScreen
+import com.example.dingo.scanner.ScannerScreen
 import com.example.dingo.social.ClassroomScreen
 import com.example.dingo.social.SocialScreen
 import kotlinx.coroutines.launch

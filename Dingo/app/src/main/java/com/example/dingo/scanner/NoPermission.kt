@@ -1,4 +1,4 @@
-package com.example.dingo
+package com.example.dingo.scanner
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Button
