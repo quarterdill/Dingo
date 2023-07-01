@@ -55,6 +55,6 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
     companion object {
         private const val DINGO_DEX_ENTRIES = "dingoDexEntries"
         private const val USER_ID_FIELD = "userId"
-        private const val IS_FAUNA_FIELD = "isFauna"
+        private const val IS_FAUNA_FIELD = "fauna"
     }
 }

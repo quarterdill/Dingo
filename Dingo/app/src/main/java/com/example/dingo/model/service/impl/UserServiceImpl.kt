@@ -107,8 +107,24 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
         TODO("Not yet implemented")
     }
 
+    override suspend fun updateDingoDex(
+        userId: String,
+        uncollected: List<String>,
+        isFauna: Boolean
+    ) {
+        val field = if (isFauna) {
+            UNCOLLECTED_FAUNA
+        } else {
+            UNCOLLECTED_FLORA
+        }
+
+        firestore.collection(USER_COLLECTIONS).document(userId).update(field, uncollected)
+    }
+
 
     companion object {
         private const val USER_COLLECTIONS = "userCollections"
+        private const val UNCOLLECTED_FAUNA = "uncollectedFauna"
+        private const val UNCOLLECTED_FLORA = "uncollectedFlora"
     }
 }

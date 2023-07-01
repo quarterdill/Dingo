@@ -59,19 +59,20 @@ fun DingoDexScreen(
         val uncollectedFloraDingoDex = viewModel.uncollectedDingoDexFlora.observeAsState()
 
         println("$showFaunaDingoDex")
-        val isEmpty = if (showFaunaDingoDex) {
-            collectedFaunaDingoDex.value.isNullOrEmpty() || uncollectedFaunaDingoDex.value.isNullOrEmpty()
+        val isNull = if (showFaunaDingoDex) {
+            collectedFaunaDingoDex.value == null || uncollectedFaunaDingoDex.value == null
         } else {
-            collectedFloraDingoDex.value.isNullOrEmpty() || uncollectedFloraDingoDex.value.isNullOrEmpty()
+            collectedFloraDingoDex.value == null || uncollectedFloraDingoDex.value == null
         }
-        if (!isEmpty) {
+        if (!isNull) {
             val items: List<DingoDexCollectionItem> = if (showFaunaDingoDex) {
                 collectedFaunaDingoDex.value!! + uncollectedFaunaDingoDex.value!!
             } else {
                 collectedFloraDingoDex.value!! + uncollectedFloraDingoDex.value!!
             }
             LazyVerticalGrid(
-                columns = GridCells.Fixed(3)
+                modifier = Modifier.weight(1.0f),
+                columns = GridCells.Fixed(3),
             ) {
                 items(items.size) {
                     DingoDexItem(items[it])

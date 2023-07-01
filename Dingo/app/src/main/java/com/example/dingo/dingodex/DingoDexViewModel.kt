@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
+import com.example.dingo.model.DingoDexEntry
 import com.example.dingo.model.service.DingoDexEntryService
 import com.example.dingo.model.service.DingoDexStorageService
 import com.example.dingo.model.service.UserService
@@ -15,6 +16,7 @@ import kotlinx.coroutines.channels.ChannelResult
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.random.Random
 
 @HiltViewModel
 class DingoDexViewModel
@@ -87,7 +89,6 @@ constructor(
                     dingoDexEntryService.dingoDexFloraEntries
                 }
                 collectedDingoDex.collect {
-
                     for (item in it) {
                         dingoDexItems.add(
                             DingoDexCollectionItem(
@@ -95,10 +96,11 @@ constructor(
                                 name = item.name,
                                 pictureURL = item.displayPicture,
                                 isFauna = isFauna,
-                                numEncounters = 0
+                                numEncounters = item.numEncounters
                             )
                         )
                     }
+                    emit(dingoDexItems)
                 }
             } catch (e: Exception) {
                 emit(dingoDexItems)
@@ -113,25 +115,31 @@ constructor(
         }
     }
 
-    fun addNewUser(userId: String) {
+    fun addNewUser() {
         viewModelScope.launch {
             // Todo: This implementation is only for demo, need to change for real one where the collectedDingoDexes
             //    would be empty
             val dingoDexes = listOf(dingoDexStorageService.getDingoDex(true), dingoDexStorageService.getDingoDex(false))
 
-            var collectedDingoDex = listOf(mutableListOf<Map<String, Int>>(), mutableListOf<Map<String, Int>>())
             var uncollectedDingoDex = listOf(mutableListOf<String>(), mutableListOf<String>())
             for (i in dingoDexes.indices) {
                 for (j in 0 until dingoDexes[i].size) {
                     if (j % 2 == 0) {
-                        collectedDingoDex[i].add(mapOf(Pair(dingoDexes[i][j].id, (0..100).random())))
+                        val temp = DingoDexEntry(
+                            name = "Dummy Data",
+                            numEncounters = Random.nextInt(0, 100),
+                            userId = "temp",
+                            isFauna = i == 0
+                        )
+                        dingoDexEntryService.addNewEntry(temp)
                     } else {
                         uncollectedDingoDex[i].add(dingoDexes[i][j].id)
                     }
                 }
+                userService.updateDingoDex("temp", uncollectedDingoDex[i], i == 0)
             }
 
-//            dingoDexCollectionStorageService.addNewUser(newDingoDexCollection)
+
         }
     }
 }

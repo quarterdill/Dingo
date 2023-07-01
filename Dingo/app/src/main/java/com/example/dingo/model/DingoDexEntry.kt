@@ -5,7 +5,7 @@ import com.google.firebase.firestore.DocumentId
 data class DingoDexEntry (
     @DocumentId val id: String = "",
     val userId: String = "",
-    val dingodDexId: String = "",
+    val dingoDexId: String = "",
     var name: String = "",
     var isFauna: Boolean = true,
     var numEncounters: Int = 0,
