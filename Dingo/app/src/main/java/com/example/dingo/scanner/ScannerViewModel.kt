@@ -2,10 +2,27 @@ package com.example.dingo.scanner
 
 import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.dingo.model.DingoDexEntry
+import com.example.dingo.model.service.AccountService
+import com.example.dingo.model.service.DingoDexEntryService
+import com.example.dingo.model.service.DingoDexStorageService
+import com.example.dingo.model.service.UserService
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class ScannerViewModel : ViewModel() {
+@HiltViewModel
+class ScannerViewModel
+@Inject
+constructor(
+    private val accService: AccountService,
+    private val userService: UserService,
+    private val dingoDexEntryService: DingoDexEntryService,
+    private val dingoDexStorageService: DingoDexStorageService,
+) : ViewModel() {
 
     private val _state = MutableStateFlow(ScannerState())
     val state = _state.asStateFlow()
@@ -18,6 +35,27 @@ class ScannerViewModel : ViewModel() {
 
     fun onCapturedPhotoConsumed() {
         updateCapturedPhotoState(null)
+    }
+
+    fun addEntry(entryName: String) {
+        viewModelScope.launch {
+            val entries = dingoDexEntryService.getEntry(entryName)
+            if (entries.isEmpty()) {
+                val dingoDex = dingoDexStorageService.findDingoDexItem(entryName)
+                if (dingoDex != null) {
+                    userService.updateDingoDex(dingoDex.id, dingoDex.isFauna)
+
+                    dingoDexEntryService.addNewEntry(dingoDex)
+                }
+            } else {
+                // Should only have 1 entry for each animal/plant
+                var entry = entries[0]
+                entry.numEncounters++
+                // TODO: update location
+                entry.location = ""
+                dingoDexEntryService.updateEntry(entry)
+            }
+        }
     }
 
     private fun updateCapturedPhotoState(updatedPhoto: Bitmap?) {

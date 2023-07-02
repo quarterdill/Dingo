@@ -1,5 +1,6 @@
 package com.example.dingo.model.service.impl
 
+import com.example.dingo.model.DingoDex
 import com.example.dingo.model.DingoDexEntry
 import com.example.dingo.model.service.AccountService
 import com.example.dingo.model.service.DingoDexEntryService
@@ -40,8 +41,26 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
             .whereEqualTo(IS_FAUNA_FIELD, false)
             .dataObjects()
 
-    override suspend fun addNewEntry(newDingoDexEntry: DingoDexEntry) {
-        firestore.collection(DINGO_DEX_ENTRIES).add(newDingoDexEntry)
+    override suspend fun getEntry(entryName: String) : List<DingoDexEntry> {
+        // TODO: Change temp to user when auth is done
+        return firestore.collection(DINGO_DEX_ENTRIES)
+            .whereEqualTo(USER_ID_FIELD, "temp")
+            .whereEqualTo(ENTRY_NAME, entryName).get().await().toObjects(DingoDexEntry::class.java)
+    }
+
+    override suspend fun addNewEntry(newDingoDexEntry: DingoDex) {
+        // todo: change temp auth yes
+        val newEntry = DingoDexEntry(
+            userId = "temp",
+            dingoDexId = newDingoDexEntry.id,
+            name = newDingoDexEntry.name,
+            isFauna = newDingoDexEntry.isFauna,
+            numEncounters = 1,
+            location = "",
+            pictures = emptyList(),
+            displayPicture = newDingoDexEntry.defaultPicture,
+        )
+        firestore.collection(DINGO_DEX_ENTRIES).add(newEntry)
     }
 
     override suspend fun updateEntry(entry: DingoDexEntry) {
@@ -56,5 +75,7 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
         private const val DINGO_DEX_ENTRIES = "dingoDexEntries"
         private const val USER_ID_FIELD = "userId"
         private const val IS_FAUNA_FIELD = "fauna"
+        private const val ENTRY_NAME = "name"
+
     }
 }

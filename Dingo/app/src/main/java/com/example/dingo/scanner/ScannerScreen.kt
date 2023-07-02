@@ -34,6 +34,7 @@ import android.graphics.BitmapFactory
 import androidx.compose.ui.unit.dp
 import android.graphics.Matrix
 import androidx.compose.material3.FabPosition
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.isGranted
@@ -42,7 +43,8 @@ import com.google.accompanist.permissions.rememberPermissionState
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun ScannerScreen(
-    viewModel: ScannerViewModel = viewModel() ){
+    viewModel: ScannerViewModel = hiltViewModel()
+) {
     val cameraPermissionState: PermissionState = rememberPermissionState(Manifest.permission.CAMERA)
 
     // Checks if the app has camera permissions
@@ -118,6 +120,7 @@ fun Bitmap.rotateBitmap(rotationDegrees: Int): Bitmap {
 
 @Composable
 private fun ScannerPreview(
+    viewModel: ScannerViewModel = hiltViewModel(),
     onPhotoCaptured: (Bitmap) -> Unit
 ) {
     val context = LocalContext.current
@@ -142,6 +145,7 @@ private fun ScannerPreview(
                             image.close()
                         }
                     })
+                    viewModel.addEntry("Dummy Fauna")
                 }
             ) {
                 Icon(
