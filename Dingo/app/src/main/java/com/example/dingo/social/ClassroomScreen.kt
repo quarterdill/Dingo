@@ -10,8 +10,13 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
@@ -27,6 +32,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.dingo.model.Post
 import com.example.dingo.model.User
 import com.example.dingo.model.UserType
+import com.google.firebase.Timestamp
 import java.time.Duration
 import java.time.LocalDateTime
 
@@ -35,7 +41,9 @@ fun ClassroomScreen(
     viewModel: ClassroomViewModel = hiltViewModel()
 ) {
     val dummyClassroomId = "cE1sLWEWj31aFO1CxwZB"
-    val feedItems = viewModel.getClassroomFeed(dummyClassroomId).observeAsState()
+    val feedItems = viewModel
+        .getClassroomFeed(dummyClassroomId)
+        .observeAsState()
     val fetchTeachers = viewModel
         .getUsersOfType(dummyClassroomId, UserType.TEACHER)
         .observeAsState()
@@ -44,6 +52,7 @@ fun ClassroomScreen(
         .observeAsState()
 
     var showFeed by remember { mutableStateOf(true) }
+    var makingPost by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -75,7 +84,7 @@ fun ClassroomScreen(
         // COMMENT THIS OUT
 //        Button(
 //            onClick = {
-//                viewModel.addDummyUsersToClassroom()
+//                viewModel.makeDummyPosts()
 //            }
 //        ) {
 //            Text(text = "add dummy user data")
@@ -83,7 +92,12 @@ fun ClassroomScreen(
         // SEE ABOVE
 
         if (showFeed) {
-            Feed()
+            CreatePostButton()
+            if (makingPost) {
+
+            } else {
+                Feed(feedItems.value)
+            }
         } else {
             MemberList(fetchTeachers.value, UserType.TEACHER)
             Divider(
@@ -100,12 +114,22 @@ fun ClassroomScreen(
 
 
 @Composable
-private fun Feed() {
-    Text("this is where the feed should be")
+private fun Feed(
+    posts: MutableList<Post>?,
+) {
+    LazyColumn(
+
+    ) {
+        if (posts != null) {
+            items(posts.size) {
+                ClassroomPost(posts[it])
+            }
+        }
+    }
 }
 
-private fun getTimeDiffMessage(timestamp: LocalDateTime): String {
-    val timeDiff = Duration.between(timestamp, LocalDateTime.now()).toMinutes()
+private fun getTimeDiffMessage(timestamp: Timestamp): String {
+    val timeDiff = (Timestamp.now().seconds - timestamp.seconds) / 60
     if (timeDiff < 1) {
         return "a minute"
     } else if (timeDiff < 60) {
@@ -138,11 +162,9 @@ private fun ClassroomPost(post: Post) {
         horizontalArrangement = Arrangement.spacedBy(10.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-//        if (post.timestamp != null) {
-//            var timeDiffMsg = getTimeDiffMessage(post.timestamp!!)
-//        }
-//
-//        Text("${post.username} posted $timeDiffMsg ago")
+        var timeDiffMsg = getTimeDiffMessage(post.timestamp)
+
+        Text("${post.username} posted $timeDiffMsg ago")
         Text("${post.textContent}")
     }
 }
@@ -191,6 +213,21 @@ private fun ClassroomMemberItem(
                 .height(30.dp)
                 .width(1.dp),
             color = Color.Gray,
+        )
+    }
+}
+
+@Composable
+private fun CreatePostButton() {
+    FloatingActionButton(onClick = {
+        println("yummy in my tummy")
+    },
+        shape = CircleShape
+    ) {
+        Icon(
+            imageVector = Icons.Rounded.Add,
+            contentDescription = "Add Classroom Post",
+            tint = Color.White,
         )
     }
 }

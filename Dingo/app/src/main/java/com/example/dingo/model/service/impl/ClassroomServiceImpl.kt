@@ -66,24 +66,7 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
 
     }
 
-    override suspend fun addPost(classroomId: String, post: Post) {
-        var postId = ""
-        firestore.collection(POST_COLLECTIONS)
-            .add(post)
-            .addOnSuccessListener {postRef ->
-                println("Post DocumentSnapshot written with ID ${postRef.id}")
-                postId = postRef.id
-            }
-            .addOnFailureListener {e ->
-                println("Error adding Post document: $e")
-            }
-            .await()
-
-
-        if (postId.isEmpty()) {
-            println("empty post id for post; early exiting")
-            return
-        }
+    override suspend fun addPost(classroomId: String, postId: String) {
         firestore.collection(CLASSROOM_COLLECTIONS)
             .document(classroomId)
             .update("posts", FieldValue.arrayUnion(postId))
@@ -97,9 +80,6 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
 
     override suspend fun getPostFeed(classroomId: String, limit: Int): Flow<MutableList<Post>?> {
         // TODO("get (limit) most recent posts for feed")
-//        val postComparator = Comparator { post1: Post, post2: Post ->
-//            post2.timestamp.compareTo(post1.timestamp)
-//        }
 
         return callbackFlow {
             val classroomCollection = firestore.collection(CLASSROOM_COLLECTIONS)
@@ -130,6 +110,8 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
 
                             if (post != null) {
                                 ret.add(post!!)
+                            } else {
+                                println("post $postId not found!?")
                             }
                         }
                     }
@@ -143,7 +125,7 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
 
     companion object {
         private const val CLASSROOM_COLLECTIONS = "classroomCollections"
-        private const val POST_COLLECTIONS = "classroomPostCollections"
+        private const val POST_COLLECTIONS = "postCollections"
         private const val USER_COLLECTIONS = "userCollections"
         private val SAMPLE_CLASSROOM = Classroom(
             teachers = listOf("vf6w8xMVABol0Ex383YG"),
