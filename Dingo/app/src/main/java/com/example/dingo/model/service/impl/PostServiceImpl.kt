@@ -95,3 +95,30 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
         private const val POST_COLLECTIONS = "postCollections"
     }
 }
+
+fun getTimeDiffMessage(timestamp: Timestamp): String {
+    val timeDiff = (Timestamp.now().seconds - timestamp.seconds) / 60
+    if (timeDiff < 1) {
+        return "a minute"
+    } else if (timeDiff < 60) {
+        return "$timeDiff minutes"
+    } else if (timeDiff < 60 * 2) {
+        return "an hour"
+    } else if (timeDiff < 60 * 24) {
+        return "${timeDiff / 60} hours"
+    } else if (timeDiff < 60 * 24 * 2) {
+        return "a day"
+    } else if (timeDiff < 60 * 24 * 7) {
+        return "${timeDiff / (60 * 24)} days"
+    } else if (timeDiff < 60 * 24 * 7 * 2) {
+        return "a week"
+    } else if (timeDiff < 60 * 24 * 7 * 4) {
+        return "${timeDiff / (60 * 24 * 7)} weeks"
+    } else if (timeDiff < 60 * 24 * 7 * 4 * 2) {
+        return "a month"
+    } else if (timeDiff < 60 * 24 * 7 * 4 * 12) {
+        return "${timeDiff / (60 * 24 * 7 * 4)} months"
+    } else {
+        return "${timeDiff / (60 * 24 * 4 * 12)} years"
+    }
+}
