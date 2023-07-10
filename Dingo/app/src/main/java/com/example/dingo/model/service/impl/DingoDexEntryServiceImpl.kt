@@ -1,15 +1,20 @@
 package com.example.dingo.model.service.impl
 
+import android.graphics.Bitmap
 import com.example.dingo.model.DingoDex
 import com.example.dingo.model.DingoDexEntry
 import com.example.dingo.model.service.AccountService
 import com.example.dingo.model.service.DingoDexEntryService
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.dataObjects
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.ktx.storage
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
+import java.io.ByteArrayOutputStream
 import javax.inject.Inject
 
 class DingoDexEntryServiceImpl
@@ -69,6 +74,26 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
 
     override suspend fun deleteEntry(entryId: String) {
         firestore.collection(DINGO_DEX_ENTRIES).document(entryId).delete().await()
+    }
+
+    override suspend fun addPicture(entryName: String, image: Bitmap, setDefault: Boolean) {
+        // Create a storage reference from our app
+        val storageRef = Firebase.storage.reference
+
+        // Create a reference to "mountains.jpg"
+        val mountainsRef = storageRef.child("mountains.jpg")
+        val baos = ByteArrayOutputStream()
+        image.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+        val data = baos.toByteArray()
+
+        var uploadTask = mountainsRef.putBytes(data)
+        uploadTask.addOnFailureListener {
+            // Handle unsuccessful uploads
+        }.addOnSuccessListener { taskSnapshot ->
+            // taskSnapshot.metadata contains file metadata such as size, content-type, etc.
+            // ...
+            // todo: update entry
+        }
     }
 
     companion object {

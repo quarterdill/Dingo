@@ -58,6 +58,12 @@ constructor(
         }
     }
 
+    fun savePicture(entryName: String, image: Bitmap, setDefault: Boolean) {
+        viewModelScope.launch {
+            dingoDexEntryService.addPicture(entryName, image, setDefault)
+        }
+    }
+
     private fun updateCapturedPhotoState(updatedPhoto: Bitmap?) {
         _state.value.capturedImage?.recycle()
         _state.value = _state.value.copy(capturedImage = updatedPhoto)
