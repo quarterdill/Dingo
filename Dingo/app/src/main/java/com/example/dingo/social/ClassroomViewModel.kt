@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
 import com.example.dingo.model.AccountType
-import com.example.dingo.model.Classroom
 import com.example.dingo.model.Post
 import com.example.dingo.model.User
 import com.example.dingo.model.UserType
@@ -15,6 +14,8 @@ import com.example.dingo.model.service.UserService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -81,6 +82,31 @@ constructor(
                     println("Successfully added user $userId to classroom $dummyClassroomId")
                 }
             }
+        }
+    }
+
+    fun makePost(
+        classroomId: String,
+        userId: String,
+        username: String,
+        textContent: String,
+        entryIds: List<String>,
+        tripId: String?
+    ) {
+        runBlocking{
+            var postId = withContext(Dispatchers.Default) {
+                postService.createPost(
+                    userId,
+                    username,
+                    entryIds,
+                    tripId,
+                    textContent,
+                    classroomId,
+                )
+            }
+
+            classroomService.addPost(classroomId, postId)
+            userService.addClassroomPost(userId, postId)
         }
     }
 
