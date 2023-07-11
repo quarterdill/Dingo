@@ -12,7 +12,7 @@ import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 
 @Composable
-fun TripsScreen() {
+fun TripScreen() {
 
     ComposeDemoApp()
 }
