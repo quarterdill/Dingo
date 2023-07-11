@@ -1,12 +1,9 @@
-package com.example.dingo
+package com.example.dingo.trips
 
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
-import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.rememberCameraPositionState
-import com.google.maps.android.compose.rememberMarkerState
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.maps.android.compose.GoogleMap
 import androidx.compose.ui.Modifier
@@ -16,6 +13,7 @@ import com.google.maps.android.compose.MarkerState
 
 @Composable
 fun TripsScreen() {
+
     ComposeDemoApp()
 }
 

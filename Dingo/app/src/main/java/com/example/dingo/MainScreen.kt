@@ -35,6 +35,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.dingo.dingodex.DingoDexScreen
 import com.example.dingo.social.ClassroomScreen
 import com.example.dingo.social.SocialScreen
+import com.example.dingo.trips.TripsScreen
 import kotlinx.coroutines.launch
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
