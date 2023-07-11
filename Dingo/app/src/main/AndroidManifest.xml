@@ -17,6 +17,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Dingo"
         tools:targetApi="31">
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyDYLklNTARaADkReJ1mAsxcnsh4CKW7Fpw" />
         <activity
             android:name=".MainActivity"
             android:exported="true"
