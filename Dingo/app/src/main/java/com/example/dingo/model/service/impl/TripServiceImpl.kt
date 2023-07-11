@@ -2,12 +2,13 @@ package com.example.dingo.model.service.impl
 
 import com.example.dingo.model.AccountType
 import com.example.dingo.model.Classroom
-import com.example.dingo.model.Post
+import com.example.dingo.model.Location
+import com.example.dingo.model.Trip
 import com.example.dingo.model.User
 import com.example.dingo.model.UserType
 import com.example.dingo.model.service.AccountService
 import com.example.dingo.model.service.ClassroomService
-import com.example.dingo.model.service.PostService
+import com.example.dingo.model.service.TripService
 import com.example.dingo.model.service.UserService
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FieldValue
@@ -22,76 +23,58 @@ import javax.inject.Inject
 
 class TripServiceImpl
 @Inject
-constructor(private val firestore: FirebaseFirestore, private val auth: AccountService) : PostService {
+constructor(private val firestore: FirebaseFirestore, private val auth: AccountService) : TripService {
 
-    override suspend fun createPost(
+    override suspend fun createTrip(
         userId: String,
         username: String,
-        entryIds: List<String>,
-        tripId: String?,
-        textContent: String,
-        classroomId: String?,
+        locations: List<Location>,
+        discoveredEntries: List<String>
+
     ): String {
-        var post: Post = Post()
-        post.userId = userId
-        post.username = username
-        post.entryIds = entryIds
-        post.tripId = tripId
-        post.textContent = textContent
-        post.timestamp = Timestamp.now()
-        post.classroomId = classroomId
+        var trip: Trip = Trip()
+        trip.userId = userId
+        trip.username = username
 
-        var postId = ""
+//        Default to empty lists for now
+//        TODO("Fetch locations using Android API and discoveredEntries from Scanner Service")
+//        trip.locations = locations
+//        trip.discoveredEntries = discoveredEntries
+        var tripId = ""
 
-        firestore.collection(POST_COLLECTIONS)
-            .add(post)
+        firestore.collection(TRIP_COLLECTIONS)
+            .add(trip)
             .addOnSuccessListener {
-                postId = it.id
+                tripId = it.id
             }
             .addOnFailureListener {e ->
-                println("Error adding Post document: $e")
+                println("Error adding Trip document: $e")
             }
             .await()
 
-        if (postId.isEmpty()) {
-            println("empty post id for post; early exiting")
+        if (tripId.isEmpty()) {
+            println("empty trip id for trip; early exiting")
         }
 
-        return postId
+        return tripId
     }
 
-    override suspend fun getPost(postId: String): Post? {
-        return firestore.collection(POST_COLLECTIONS)
-            .document(postId)
+    override suspend fun getTrip(tripId: String): Trip? {
+        return firestore.collection(TRIP_COLLECTIONS)
+            .document(tripId)
             .get()
             .await()
-            .toObject(Post::class.java)
+            .toObject(Trip::class.java)
     }
 
-    override suspend fun getPostFlow(postId: String): Flow<Post?> {
+    override suspend fun deleteTrip(tripId: String) {
         TODO("Not yet implemented")
     }
 
-    override suspend fun deletePost(postId: String) {
-        TODO("Not yet implemented")
-    }
 
-    override suspend fun setPostPrev(postId: String, prevPostId: String) {
-        firestore.collection(POST_COLLECTIONS)
-            .document(postId)
-            .update("prevPost", prevPostId)
-            .await()
-    }
-
-    override suspend fun setPostNext(postId: String, nextPostId: String) {
-        firestore.collection(POST_COLLECTIONS)
-            .document(postId)
-            .update("nextPost", nextPostId)
-            .await()
-    }
 
 
     companion object {
-        private const val POST_COLLECTIONS = "postCollections"
+        private const val TRIP_COLLECTIONS = "tripCollections"
     }
 }

@@ -1,25 +1,19 @@
 package com.example.dingo.model.service
 
-import com.example.dingo.model.Post
+import com.example.dingo.model.Location
+import com.example.dingo.model.Trip
 import kotlinx.coroutines.flow.Flow
-
 interface TripService {
     // returns post id
-    suspend fun createPost(
+    suspend fun createTrip(
         userId: String,
         username: String,
-        entryIds: List<String>,
-        tripId: String?,
-        textContent: String,
-        classroomId: String? = null,
+        locations: List<Location>,
+        discoveredEntries: List<String>,
     ): String
 
-    suspend fun getPost(postId: String): Post?
+    suspend fun getTrip(tripId: String): Trip?
 
-    suspend fun getPostFlow(postId: String): Flow<Post?>
+    suspend fun deleteTrip(postId: String)
 
-    suspend fun deletePost(postId: String)
-
-    suspend fun setPostPrev(postId: String, prevPostId: String)
-    suspend fun setPostNext(postId: String, nextPostId: String)
 }
