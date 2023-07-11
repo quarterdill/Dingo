@@ -184,7 +184,7 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
 
         if (receiver.friends.contains(senderId)) {
             return "Error: friendship is not mutual. This should not happen"
-        } else if (!sender.incomingFriendRequests.contains(receiverId)) {
+        } else if (!receiver.incomingFriendRequests.contains(senderId)) {
             return "No active friend request between users"
         }
 

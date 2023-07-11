@@ -81,10 +81,10 @@ sealed class SocialNavigationItem(
 fun SocialScreen(
     viewModel: SocialViewModel = hiltViewModel()
 ) {
-//    val dummyUserId = "Q0vMYa9VSh7tyFdLTPgX" // eric shang
-//    val dummyUsername = "Eric Shang"
-    val dummyUserId = "U47K9DYLoJLJlXHZrU7l"
-    val dummyUsername = "Dylan Xiao"
+    val dummyUserId = "Q0vMYa9VSh7tyFdLTPgX" // eric shang
+    val dummyUsername = "Eric Shang"
+//    val dummyUserId = "U47K9DYLoJLJlXHZrU7l"
+//    val dummyUsername = "Dylan Xiao"
 
     val feedItems = viewModel
         .getFeedForUser(dummyUserId)
@@ -214,9 +214,19 @@ fun SocialScreen(
                             Text("Pending Friend Requests")
                         }
                     }
-                }
 
-                FriendList(friendItems.value)
+                    Text("My Friends")
+                    LazyColumn(
+                        modifier = Modifier.weight(1.0f, true)
+                    ) {
+                        val friends = friendItems.value
+                        if (friends != null) {
+                            items(friends.size) {
+                                FriendListItem(friends[it])
+                            }
+                        }
+                    }
+                }
             }
             composable(SocialNavigationItem.SendFriendReqs.route) {
                 SendFriendReqModal(dummyUserId, viewModel, navController)
@@ -225,26 +235,7 @@ fun SocialScreen(
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-//                    Row(
-//                        modifier = Modifier.padding(16.dp),
-//                        horizontalArrangement = Arrangement.spacedBy(10.dp),
-//                        verticalAlignment = Alignment.CenterVertically
-//                    ) {
-//                        Button(
-//                            onClick = {
-//                                navController.navigate(SocialNavigationItem.CreatePost.route)
-//                            },
-//                        ) {
-//                            Text("Create Post")
-//                        }
-//                        Button(
-//                            onClick = {
-//                                navController.navigate(SocialNavigationItem.FriendList.route)
-//                            },
-//                        ) {
-//                            Text("My Friends")
-//                        }
-//                    }
+                    Text("Pending Friend Requests")
                     LazyColumn(
                         modifier = Modifier.weight(1.0f, true)
                     ) {
@@ -324,25 +315,6 @@ private fun SocialPost(post: Post) {
     }
 }
 
-@Composable
-private fun FriendList(
-    friends: MutableList<User>?,
-) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text("My Friends")
-        LazyColumn(
-
-        ) {
-            if (friends != null) {
-                items(friends.size) {
-                    FriendListItem(friends[it])
-                }
-            }
-        }
-    }
-}
 
 @Composable
 private fun FriendListItem(
@@ -370,6 +342,7 @@ private fun PendingFriendReqItem(
     userId: String,
     pendingUser: User,
 ) {
+    val currentContext = LocalContext.current
     Row(
         modifier = Modifier.padding(16.dp),
         horizontalArrangement  = Arrangement.spacedBy(10.dp),
@@ -384,14 +357,27 @@ private fun PendingFriendReqItem(
         )
         Button(
             onClick = {
-                viewModel.acceptFriendReq(userId, pendingUser.id)
+                println("tryna accept friend req")
+                val msg = viewModel.acceptFriendReq(pendingUser.id, userId)
+                Toast.makeText(
+                    currentContext,
+                    msg,
+                    Toast.LENGTH_SHORT,
+                ).show()
+
             }
         ) {
             Text("Accept")
         }
         Button(
             onClick = {
-                viewModel.declineFriendReq(userId, pendingUser.id)
+                println("tryna decline friend req")
+                val msg = viewModel.declineFriendReq(pendingUser.id, userId)
+                Toast.makeText(
+                    currentContext,
+                    msg,
+                    Toast.LENGTH_SHORT,
+                ).show()
             }
         ) {
             Text("Decline")
@@ -488,7 +474,6 @@ fun SendFriendReqModal(
         }
         Button(
             onClick = {
-                println("trying ot ")
                 navController.navigate(SocialNavigationItem.FriendList.route)
             }
         ) {
