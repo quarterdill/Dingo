@@ -81,10 +81,12 @@ sealed class SocialNavigationItem(
 fun SocialScreen(
     viewModel: SocialViewModel = hiltViewModel()
 ) {
-    val dummyUserId = "Q0vMYa9VSh7tyFdLTPgX" // eric shang
-    val dummyUsername = "Eric Shang"
-//    val dummyUserId = "U47K9DYLoJLJlXHZrU7l"
-//    val dummyUsername = "Dylan Xiao"
+//    val dummyUserId = "Q0vMYa9VSh7tyFdLTPgX" // eric shang
+//    val dummyUsername = "Eric Shang"
+    val dummyUserId = "U47K9DYLoJLJlXHZrU7l"
+    val dummyUsername = "Dylan Xiao"
+//    val dummyUserId = "XQIfyBwIwQKyAfiIDKggy"
+//    val dummyUsername = "Simhon Chourasia"
 
     val feedItems = viewModel
         .getFeedForUser(dummyUserId)

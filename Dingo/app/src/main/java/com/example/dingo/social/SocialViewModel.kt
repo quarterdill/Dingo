@@ -37,20 +37,18 @@ constructor(
         entryIds: List<String>,
         tripId: String?
     ) {
-        runBlocking{
-            var postId = withContext(Dispatchers.Default) {
-                postService.createPost(
-                    userId,
-                    username,
-                    entryIds,
-                    tripId,
-                    textContent,
-                )
-            }
+        viewModelScope.launch {
+            var postId = postService.createPost(
+                userId,
+                username,
+                entryIds,
+                tripId,
+                textContent,
+            )
 
-            var user = withContext(Dispatchers.Default) {
-                userService.getUser(userId)
-            }
+            var user = userService.getUser(userId)
+
+            println("making post with post id $postId for user: $user")
 
             if (user != null) {
                 val currPostHead = user.postHead

@@ -77,6 +77,7 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
     }
 
     override suspend fun setPostPrev(postId: String, prevPostId: String) {
+        println("setting post prev for post id $postId")
         firestore.collection(POST_COLLECTIONS)
             .document(postId)
             .update("prevPost", prevPostId)
