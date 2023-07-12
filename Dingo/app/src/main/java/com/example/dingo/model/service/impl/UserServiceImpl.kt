@@ -115,25 +115,55 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
         return ret
     }
 
-    override suspend fun sendFriendReq(senderId: String, receiverId: String): String? {
-        var msg: String? = null
+    override suspend fun getUserByUsername(username: String): User? {
+        var ret: User? = null
+        val querySnapshot = firestore.collection(USER_COLLECTIONS)
+            .whereEqualTo("username", username)
+            .get()
+            .await()
+
+        if (!querySnapshot.isEmpty) {
+            val documentSnapshot = querySnapshot.documents[0]
+            ret = documentSnapshot.toObject(User::class.java)
+        }
+
+        println("got user: $ret")
+        return ret
+    }
+
+    override suspend fun sendFriendReq(senderId: String, receiverId: String): Boolean {
+        var ok = true
 
         firestore.collection(USER_COLLECTIONS)
             .document(senderId)
             .update("outgoingFriendRequests", FieldValue.arrayUnion(receiverId))
             .addOnSuccessListener {
                 println("Successfully sent friend request from $senderId to $receiverId")
-                msg = "Successfully send friend request"
             }
             .addOnFailureListener {e ->
                 println("Error in sending friend request: $e")
-                msg = "Error in sending friend request"
-            }
+                ok = false
+            }.await()
 
-        return msg;
+        if (!ok) {
+            return ok
+        }
+
+        firestore.collection(USER_COLLECTIONS)
+            .document(receiverId)
+            .update("incomingFriendRequests", FieldValue.arrayUnion(senderId))
+            .addOnSuccessListener {
+                println("Successfully got friend request for $receiverId from $senderId")
+            }
+            .addOnFailureListener {e ->
+                println("Error in sending friend request: $e")
+                ok = false
+            }.await()
+
+        return ok;
     }
 
-    override suspend fun acceptFriendReq(senderId: String, receiverId: String): String? {
+    override suspend fun acceptFriendReq(senderId: String, receiverId: String): String {
         var sender = firestore.collection(USER_COLLECTIONS)
             .document(senderId)
             .get()
@@ -154,7 +184,7 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
 
         if (receiver.friends.contains(senderId)) {
             return "Error: friendship is not mutual. This should not happen"
-        } else if (!sender.incomingFriendRequests.contains(receiverId)) {
+        } else if (!receiver.incomingFriendRequests.contains(senderId)) {
             return "No active friend request between users"
         }
 
@@ -190,11 +220,11 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
             }
             .await()
 
-        return null
+        return "Accepted!"
     }
 
-    override suspend fun declineFriendReq(senderId: String, receiverId: String): String? {
-        var msg: String? = null
+    override suspend fun declineFriendReq(senderId: String, receiverId: String): String {
+        var msg: String = "Declined..."
 
         firestore.collection(USER_COLLECTIONS)
             .document(senderId)
@@ -245,6 +275,51 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
             .await()
     }
 
+    override suspend fun getUsersPosts(userId: String): Flow<MutableList<Post>?> {
+        var user = firestore.collection(USER_COLLECTIONS)
+            .document(userId)
+            .get()
+            .await()
+            .toObject(User::class.java)
+
+        return callbackFlow {
+            val userCollection = firestore.collection(USER_COLLECTIONS)
+                .document(userId)
+            val subscription = userCollection.addSnapshotListener { snapshot, e ->
+                if (snapshot == null) {
+                    trySend(null)
+                } else if (snapshot!!.exists()) {
+                    var user = snapshot.toObject(User::class.java)
+                    var ret = mutableListOf<Post>()
+                    if (user != null) {
+                        var currPostId = user.postHead
+                        while (currPostId != "") {
+                            var post: Post? = null
+                            runBlocking {
+                                post = firestore.collection(POST_COLLECTIONS)
+                                    .document(currPostId)
+                                    .get()
+                                    .await()
+                                    .toObject(Post::class.java)
+                            }
+
+                            if (post != null) {
+                                ret.add(post!!)
+                                currPostId = post!!.prevPost
+                            } else {
+                                println("post $currPostId not found when getting posts for $userId")
+                                break
+                            }
+
+                        }
+                    }
+                    trySend(ret)
+                }
+            }
+            awaitClose { subscription.remove() }
+        }
+    }
+
     override suspend fun getFriends(userId: String, limit: Int): Flow<MutableList<User>?> {
         return callbackFlow {
             val userCollection = firestore.collection(USER_COLLECTIONS).document(userId)
@@ -283,9 +358,43 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
         }
     }
 
+    override suspend fun getPendingFriendReqs(userId: String): Flow<MutableList<User>?> {
+        return callbackFlow {
+            val userCollection = firestore.collection(USER_COLLECTIONS).document(userId)
+
+            val subscription = userCollection.addSnapshotListener { snapshot, e ->
+                if (snapshot == null) {
+                    trySend(null)
+                } else if (snapshot!!.exists()) {
+                    var currUser = snapshot.toObject(User::class.java)
+                    var ret: MutableList<User> = mutableListOf<User>()
+
+                    if (currUser != null) {
+                        // TODO: maybe change the schema to make this more efficient
+                        for (i in 0 until currUser.incomingFriendRequests.size) {
+                            runBlocking {
+                                val incoming = firestore.collection(USER_COLLECTIONS)
+                                    .document(currUser.incomingFriendRequests[i])
+                                    .get()
+                                    .await()
+                                    .toObject(User::class.java)
+                                if (incoming != null) {
+                                    ret.add(incoming)
+                                }
+                            }
+                        }
+                    }
+                    trySend(ret)
+                }
+            }
+            awaitClose { subscription.remove() }
+        }
+    }
+
 
     companion object {
         private const val USER_COLLECTIONS = "userCollections"
+        private const val POST_COLLECTIONS = "postCollections"
         private const val UNCOLLECTED_FAUNA = "uncollectedFauna"
         private const val UNCOLLECTED_FLORA = "uncollectedFlora"
     }

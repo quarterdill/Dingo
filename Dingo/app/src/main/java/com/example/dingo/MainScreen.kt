@@ -2,6 +2,8 @@ package com.example.dingo
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Face
@@ -125,10 +127,12 @@ fun MainScreen() {
         Scaffold(
             bottomBar = { navBar(navController) }
         ) {
-            navigationConfiguration(navController,
-                hasPermission = cameraPermissionState.status.isGranted,
-                onRequestPermission = cameraPermissionState::launchPermissionRequest
-            )
+            Box(modifier = Modifier.padding(it)) {
+                navigationConfiguration(navController,
+                    hasPermission = cameraPermissionState.status.isGranted,
+                    onRequestPermission = cameraPermissionState::launchPermissionRequest
+                )
+            }
         }
     }
 }

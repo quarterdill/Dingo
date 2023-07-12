@@ -92,13 +92,15 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
                     var limiter = 0
                     var ret: MutableList<Post> = mutableListOf<Post>()
                     if (classroom != null) {
-                        for (postId in classroom.posts) {
+                        for (postId in classroom.posts.reversed()) {
                             if (limiter > limit) {
                                 break
                             }
                             limiter++
 
                             var post: Post? = null
+
+                            println("got post with id $postId")
 
                             runBlocking {
                                 post = firestore.collection(POST_COLLECTIONS)
