@@ -3,6 +3,7 @@ package com.example.dingo.model.service.impl
 import com.example.dingo.model.AccountType
 import com.example.dingo.model.Classroom
 import com.example.dingo.model.Location
+import com.example.dingo.model.Post
 import com.example.dingo.model.Trip
 import com.example.dingo.model.User
 import com.example.dingo.model.UserType
@@ -69,6 +70,51 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
 
     override suspend fun deleteTrip(tripId: String) {
         TODO("Not yet implemented")
+    }
+
+    override suspend fun getTripFeed(userId: String, limit: Int): Flow<MutableList<Trip>?> {
+        // TODO("get (limit) most recent posts for feed")
+
+        return callbackFlow {
+            // get the Trip collection belonging to userId
+            val tripCollection = firestore.collection(TripServiceImpl.TRIP_COLLECTIONS)
+                .document(userId)
+            val subscription = tripCollection.addSnapshotListener { snapshot, e ->
+                if (snapshot == null) {
+                    trySend(null)
+                } else if (snapshot!!.exists()) {
+                    var trips = snapshot.toObject(Classroom::class.java)
+                    var limiter = 0
+                    var ret: MutableList<Trip> = mutableListOf<Trip>()
+                    if (trips != null) {
+                        for (tripId in trips.posts) {
+                            if (limiter > limit) {
+                                break
+                            }
+                            limiter++
+
+                            var trip: Trip? = null
+
+                            runBlocking {
+                                trip = firestore.collection(TripServiceImpl.TRIP_COLLECTIONS)
+                                    .document(tripId)
+                                    .get()
+                                    .await()
+                                    .toObject(Trip::class.java)
+                            }
+
+                            if (trip != null) {
+                                ret.add(trip!!)
+                            } else {
+                                println("Trip $tripId not found!?")
+                            }
+                        }
+                    }
+                    trySend(ret)
+                }
+            }
+            awaitClose { subscription.remove() }
+        }
     }
 
 
