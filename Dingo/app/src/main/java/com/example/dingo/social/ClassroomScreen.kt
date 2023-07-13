@@ -42,7 +42,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.dingo.NavBarItem
 import com.example.dingo.NoPermission
 import com.example.dingo.ScannerScreen
-import com.example.dingo.TripsScreen
+import com.example.dingo.trips.TripScreen
 import com.example.dingo.model.Post
 import com.example.dingo.model.User
 import com.example.dingo.model.UserType
