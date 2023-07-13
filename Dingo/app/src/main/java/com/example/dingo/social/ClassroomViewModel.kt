@@ -93,22 +93,22 @@ constructor(
         entryIds: List<String>,
         tripId: String?
     ) {
-        runBlocking{
-            var postId = withContext(Dispatchers.Default) {
-                postService.createPost(
-                    userId,
-                    username,
-                    entryIds,
-                    tripId,
-                    textContent,
-                    classroomId,
-                )
-            }
-
+        viewModelScope.launch {
+            val postId = postService.createPost(
+                userId,
+                username,
+                entryIds,
+                tripId,
+                textContent,
+                classroomId,
+            )
+            println("in viewmodel scope, postid is $postId")
             classroomService.addPost(classroomId, postId)
             userService.addClassroomPost(userId, postId)
         }
+
     }
+
 
     fun makeDummyPosts() {
         val dummyClassroomId = "cE1sLWEWj31aFO1CxwZB"
