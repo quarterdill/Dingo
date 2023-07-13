@@ -1,5 +1,6 @@
 package com.example.dingo.trips
 
+import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
@@ -17,13 +18,50 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
+
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.util.Log
+import androidx.lifecycle.MutableLiveData
+import com.example.dingo.model.Location
+
+
 @HiltViewModel
 class TripViewModel
 @Inject
 constructor(
     private val userService: UserService,
     private val tripService: TripService,
+    private val application: Application
 ) : ViewModel() {
+
+    private val locationTrackingStoppedReceiver: LocationTrackingStoppedReceiver
+    private val locationListLiveData = MutableLiveData<List<Location>>()
+
+    init {
+        locationTrackingStoppedReceiver = LocationTrackingStoppedReceiver { locationArray ->
+            // Process the location array as needed
+
+            Log.d("locationTrackingStoppedRecevier init processing:", locationArray.toString())
+
+            locationListLiveData.postValue(locationArray.toList())
+        }
+
+        val intentFilter = IntentFilter(LocationTrackingService.ACTION_LOCATION_TRACKING_STOPPED)
+        application.registerReceiver(locationTrackingStoppedReceiver, intentFilter)
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        application.unregisterReceiver(locationTrackingStoppedReceiver)
+    }
+
+    fun getLocationFeed(userId: String): MutableLiveData<List<Location>> {
+        // Return the tripLiveData object
+        return locationListLiveData
+    }
 
     fun getTripFeed(userId: String): LiveData<MutableList<Trip>?> {
         return liveData(Dispatchers.IO) {
