@@ -10,7 +10,4 @@ data class Trip (
     var discoveredEntries: List<String> = emptyList(),
 )
 
-val TripComparator = Comparator { post1: Post, post2: Post ->
-    post2.timestamp.compareTo(post1.timestamp)
-}
 
