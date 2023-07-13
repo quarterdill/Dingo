@@ -4,6 +4,10 @@ import com.google.firebase.firestore.DocumentId
 
 data class Trip (
     @DocumentId val id: String = "",
-    var locations: List<Location>,
-    var discoveredEntries: List<String>
+    var userId: String = "",
+    var username: String = "",
+    var locations: List<Location> = emptyList(),
+    var discoveredEntries: List<String> = emptyList(),
 )
+
+
