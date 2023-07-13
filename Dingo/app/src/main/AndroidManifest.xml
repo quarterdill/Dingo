@@ -7,6 +7,7 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <uses-feature
         android:name="android.hardware.camera"
@@ -27,6 +28,7 @@
             android:value="AIzaSyDYLklNTARaADkReJ1mAsxcnsh4CKW7Fpw" />
         <service
             android:name="com.example.dingo.trips.LocationTrackingService"
+            android:foregroundServiceType="location"
             android:enabled="true"
             android:exported="false" />
         <activity
