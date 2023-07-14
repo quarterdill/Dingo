@@ -1,25 +1,16 @@
 package com.example.dingo.model.service.impl
 
-import com.example.dingo.model.AccountType
 import com.example.dingo.model.Classroom
-import com.example.dingo.model.Location
-import com.example.dingo.model.Post
+import com.example.dingo.model.LocationTime
 import com.example.dingo.model.Trip
-import com.example.dingo.model.User
-import com.example.dingo.model.UserType
 import com.example.dingo.model.service.AccountService
-import com.example.dingo.model.service.ClassroomService
 import com.example.dingo.model.service.TripService
-import com.example.dingo.model.service.UserService
-import com.google.firebase.Timestamp
-import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
-import java.time.Duration
 import javax.inject.Inject
 
 class TripServiceImpl
@@ -29,7 +20,7 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
     override suspend fun createTrip(
         userId: String,
         username: String,
-        locations: List<Location>,
+        locations: List<LocationTime>,
         discoveredEntries: List<String>
 
     ): String {

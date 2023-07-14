@@ -1,7 +1,6 @@
 package com.example.dingo.model.service
 
-import com.example.dingo.model.Location
-import com.example.dingo.model.Post
+import com.example.dingo.model.LocationTime
 import com.example.dingo.model.Trip
 import kotlinx.coroutines.flow.Flow
 interface TripService {
@@ -9,7 +8,7 @@ interface TripService {
     suspend fun createTrip(
         userId: String,
         username: String,
-        locations: List<Location>,
+        locations: List<LocationTime>,
         discoveredEntries: List<String>,
     ): String
 
