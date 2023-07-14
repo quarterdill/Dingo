@@ -84,7 +84,11 @@ class LocationTrackingService : LifecycleService() {
                 val location = getCurrentLocation()
                 locationList.add(location)
 
-                Log.d("startLocationTracking()", location.toString())
+                if (location != null) {
+                    Log.d("startLocationTracking()", location.toString())
+                } else {
+                    Log.d("startLocationTracking()", "null")
+                }
 //                println(location)
 
                 // Process the location data as needed
@@ -104,8 +108,11 @@ class LocationTrackingService : LifecycleService() {
         val fusedLocationClient = LocationServices.getFusedLocationProviderClient(this@LocationTrackingService)
 
         val locationResult = fusedLocationClient.lastLocation.await()
-
+        if (locationResult != null) {
         Log.d("getCurrentLocation():",locationResult.toString() )
+        } else {
+            Log.d("getCurrentLocation():", "null")
+        }
 
 
         return locationResult
