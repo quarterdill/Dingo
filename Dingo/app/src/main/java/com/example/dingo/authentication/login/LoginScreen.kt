@@ -1,30 +1,36 @@
 package com.example.dingo.authentication.login
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Button
-import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.ViewModel
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import com.example.dingo.MainScreen
 import com.example.dingo.authentication.signup.SignUpViewModel
+import com.example.dingo.common.composable.BasicButton
+import com.example.dingo.common.composable.DisplayPasswordField
+import com.example.dingo.common.composable.EmailField
+import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 @Composable
 fun LoginScreen(
@@ -32,29 +38,72 @@ fun LoginScreen(
     navController: NavHostController
 ) {
     val uiState by viewModel.uiState
+    val viewModelJob = Job()
+    val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.Main)
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        var email by remember{ mutableStateOf("") }
-        var password by remember{ mutableStateOf("") }
-        TextField(
-            singleLine = true,
-            value = email,
-            onValueChange = {email= it},
-            placeholder = { Text(text="Email") },
-        )
-        TextField(
-            singleLine = true,
-            value = password,
-            onValueChange = {password=it},
-            placeholder = { Text(text="Password") },
-        )
+        EmailField(value = uiState.email, onNewValue = viewModel::onEmailChange)
+        DisplayPasswordField(value = uiState.password, onNewValue = viewModel::onPasswordChange)
         Button(
-            onClick = {navController.navigate("mainScreen")}
+            onClick = { coroutineScope.launch {
+                Log.d("STATE", "in on click")
+                viewModel.onSignInClick()
+            } },
+            colors =
+            ButtonDefaults.buttonColors(
+                contentColor = MaterialTheme.colorScheme.onPrimary
+            )
         ) {
-            Text(text = "Login")
+            Text(text = "Login", fontSize = 16.sp)
         }
+//        BasicButton(text = "Login") {viewModel::onSignInClick }
+
     }
 }
+
+//@Composable
+//fun LoginScreen(
+//    viewModel: LoginViewModel = hiltViewModel(),
+//    navController: NavHostController
+//) {
+//    val uiState by viewModel.uiState.collectAsState()
+//
+//    Column(
+//        modifier = Modifier.fillMaxSize(),
+//        horizontalAlignment = Alignment.CenterHorizontally,
+//        verticalArrangement = Arrangement.Center
+//    ) {
+//        EmailField(
+//            value = uiState.email,
+//            onValueChange = { viewModel.onEmailChange(it) }
+//        )
+//        PasswordField(
+//            value = uiState.password,
+//            onValueChange = { viewModel.onPasswordChange(it) }
+//        )
+//        Button(
+//            onClick = {
+//                viewModel.onSignInClick()
+//            }
+//        ) {
+//            Text(text = "Login")
+//        }
+//
+//        if (uiState.loginSuccess) {
+//            Text(text = "Login Successful")
+//        } else if (uiState.loginError != null) {
+//            Text(text = "Login Failed: ${uiState.loginError}")
+//        }
+//    }
+//
+//    // Observe the login state
+//    LaunchedEffect(viewModel.uiState) {
+//        if (uiState.loginSuccess) {
+//            // Navigate to the next screen upon successful login
+//            navController.navigate("Home")
+//        }
+//    }
+//}
