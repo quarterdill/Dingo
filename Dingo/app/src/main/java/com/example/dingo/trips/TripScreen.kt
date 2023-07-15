@@ -1,6 +1,7 @@
 package com.example.dingo.trips
 
 import android.content.Intent
+import android.util.Log
 import androidx.compose.runtime.Composable
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
@@ -31,16 +32,24 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Observer
 
 @Composable
-fun TripScreen() {
+fun TripScreen(
+    viewModel: TripViewModel = hiltViewModel()
+) {
     val context = LocalContext.current
+    val lifeCycleOwner = LocalLifecycleOwner.current
 
     LaunchedEffect(key1 = true) {
         LocationTrackingService().createNotificationChannel(context)
+        LocationTrackingService.locationList.observe(lifeCycleOwner, Observer {
+            viewModel.locationTrackingStopped(it)
+        })
     }
     LocationPermissionScreen()
-//    ComposeDemoApp()
     LocationTrackingScreen()
 }
 @Composable

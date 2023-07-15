@@ -1,31 +1,22 @@
 package com.example.dingo.trips
 
-import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
-import com.example.dingo.model.AccountType
 import com.example.dingo.model.Trip
-import com.example.dingo.model.User
 import com.example.dingo.model.UserType
 import com.example.dingo.model.service.TripService
 import com.example.dingo.model.service.UserService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
-
-
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
+import android.location.Location
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
-import com.example.dingo.model.Location
+import com.google.android.gms.maps.model.LatLng
+
 
 
 @HiltViewModel
@@ -34,32 +25,14 @@ class TripViewModel
 constructor(
     private val userService: UserService,
     private val tripService: TripService,
-    private val application: Application
 ) : ViewModel() {
 
-    private val locationTrackingStoppedReceiver: LocationTrackingStoppedReceiver
     private val locationListLiveData = MutableLiveData<List<Location>>()
 
-    init {
-        locationTrackingStoppedReceiver = LocationTrackingStoppedReceiver { locationArray ->
-            // Process the location array as needed
-
-            Log.d("locationTrackingStoppedRecevier init processing:", locationArray.toString())
-
-            locationListLiveData.postValue(locationArray.toList())
-        }
-
-        val intentFilter = IntentFilter(LocationTrackingService.ACTION_LOCATION_TRACKING_STOPPED)
-        application.registerReceiver(locationTrackingStoppedReceiver, intentFilter)
+    fun locationTrackingStopped(locationList: MutableList<LatLng>) {
+        Log.d("view Model locationList", locationList.toString())
     }
-
-    override fun onCleared() {
-        super.onCleared()
-        application.unregisterReceiver(locationTrackingStoppedReceiver)
-    }
-
     fun getLocationFeed(userId: String): MutableLiveData<List<Location>> {
-        // Return the tripLiveData object
         return locationListLiveData
     }
 
