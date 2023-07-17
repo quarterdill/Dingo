@@ -137,15 +137,18 @@ fun DingoDexScreen(
                 }
             }
             composable(DingoDexNavItem.Description.route) {
-                Column() {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
                     Row(
-                        horizontalArrangement = Arrangement.Center
+                        modifier = Modifier.padding(16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(10.dp),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
                         Button(
                             onClick = {
                                 navController.navigate(DingoDexNavItem.DingoDex.route)
                             },
-
                         ) {
                             Text(
                                 modifier = Modifier.padding(4.dp),
@@ -155,33 +158,25 @@ fun DingoDexScreen(
                         }
                     }
                     Row() {
-                        Column(
-                            verticalArrangement = Arrangement.Center
-                        ) {
-                            Image(
-                                painter = painterResource(R.drawable.fauna_placeholder),
-                                contentDescription = "Fauna",
-                                contentScale = ContentScale.Inside,
-                                alignment = Alignment.CenterStart,
-                            )
-                        }
-                        Column(
-                            verticalArrangement = Arrangement.Center
-                        ) {
-                            Text(
-                                textAlign = TextAlign.Left,
-                                modifier = Modifier.width(200.dp),
-                                fontSize = 16.sp,
-                                text = """
-                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod 
-                                        tempor incididunt ut labore et dolore magna aliqua. Ac auctor augue mauris 
-                                        augue neque gravida in fermentum et. Id faucibus nisl tincidunt eget nullam 
-                                        non nisi est sit. Aliquam faucibus purus in massa tempor nec feugiat. Mollis 
-                                        nunc sed id semper risus in hendrerit gravida. Felis eget velit aliquet 
-                                        sagittis id consectetur purus ut. 
-                                       """.trimIndent()
-                            )
-                        }
+                        Image(
+                            painter = painterResource(R.drawable.fauna_placeholder),
+                            contentDescription = "Fauna",
+                            contentScale = ContentScale.Inside,
+                            alignment = Alignment.CenterStart,
+                        )
+                        Text(
+                            textAlign = TextAlign.Left,
+                            modifier = Modifier.width(200.dp),
+                            fontSize = 16.sp,
+                            text = """
+                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod 
+                                    tempor incididunt ut labore et dolore magna aliqua. Ac auctor augue mauris 
+                                    augue neque gravida in fermentum et. Id faucibus nisl tincidunt eget nullam 
+                                    non nisi est sit. Aliquam faucibus purus in massa tempor nec feugiat. Mollis 
+                                    nunc sed id semper risus in hendrerit gravida. Felis eget velit aliquet 
+                                    sagittis id consectetur purus ut. 
+                                   """.trimIndent()
+                        )
                     }
                 }
             }
