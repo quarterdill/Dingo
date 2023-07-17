@@ -59,7 +59,6 @@ class AccountServiceImpl @Inject constructor(
 
     override suspend fun loginUser(email: String, password: String) {
         try {
-            Log.d("STATE", "in login user")
             val authResult = auth.signInWithEmailAndPassword(email, password).await()
             // Authentication successful
             val user = authResult.user
@@ -113,10 +112,18 @@ class AccountServiceImpl @Inject constructor(
     }
 
     override suspend fun signOut() {
-        if (auth.currentUser!!.isAnonymous) {
-            auth.currentUser!!.delete()
+//        if (auth.currentUser!!.isAnonymous) {
+//            auth.currentUser!!.delete()
+//        }
+        try {
+            auth.signOut()
+
+            // Handle the logged-in user as needed
+        } catch (e: Exception) {
+            // Authentication failed
+            Log.e("STATE", "Log out failed")
+            // Handle the authentication failure as needed
         }
-        auth.signOut()
     }
 
     override suspend fun reloadFirebaseUser() = try {

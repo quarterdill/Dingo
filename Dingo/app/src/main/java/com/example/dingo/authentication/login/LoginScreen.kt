@@ -26,6 +26,7 @@ import com.example.dingo.common.composable.BasicButton
 import com.example.dingo.common.composable.DisplayPasswordField
 import com.example.dingo.common.composable.EmailField
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.dingo.navigation.Screen
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -51,7 +52,8 @@ fun LoginScreen(
             onClick = { coroutineScope.launch {
                 Log.d("STATE", "in on click")
                 viewModel.onSignInClick()
-            } },
+                navController.navigate(route = Screen.MainScreen.route)
+            }},
             colors =
             ButtonDefaults.buttonColors(
                 contentColor = MaterialTheme.colorScheme.onPrimary
@@ -59,51 +61,6 @@ fun LoginScreen(
         ) {
             Text(text = "Login", fontSize = 16.sp)
         }
-//        BasicButton(text = "Login") {viewModel::onSignInClick }
 
     }
 }
-
-//@Composable
-//fun LoginScreen(
-//    viewModel: LoginViewModel = hiltViewModel(),
-//    navController: NavHostController
-//) {
-//    val uiState by viewModel.uiState.collectAsState()
-//
-//    Column(
-//        modifier = Modifier.fillMaxSize(),
-//        horizontalAlignment = Alignment.CenterHorizontally,
-//        verticalArrangement = Arrangement.Center
-//    ) {
-//        EmailField(
-//            value = uiState.email,
-//            onValueChange = { viewModel.onEmailChange(it) }
-//        )
-//        PasswordField(
-//            value = uiState.password,
-//            onValueChange = { viewModel.onPasswordChange(it) }
-//        )
-//        Button(
-//            onClick = {
-//                viewModel.onSignInClick()
-//            }
-//        ) {
-//            Text(text = "Login")
-//        }
-//
-//        if (uiState.loginSuccess) {
-//            Text(text = "Login Successful")
-//        } else if (uiState.loginError != null) {
-//            Text(text = "Login Failed: ${uiState.loginError}")
-//        }
-//    }
-//
-//    // Observe the login state
-//    LaunchedEffect(viewModel.uiState) {
-//        if (uiState.loginSuccess) {
-//            // Navigate to the next screen upon successful login
-//            navController.navigate("Home")
-//        }
-//    }
-//}

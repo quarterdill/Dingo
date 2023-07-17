@@ -1,6 +1,7 @@
 package com.example.dingo
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -54,10 +55,12 @@ class MainActivity : ComponentActivity() {
     @Composable
     private fun AuthState(navController: NavHostController) {
         val isUserSignedOut = viewModel.getAuthState().collectAsState().value
+        Log.d("STATE", isUserSignedOut.toString())
         if (isUserSignedOut) {
             navController.navigate(Screen.LoginScreen.route)
+        } else {
+            navController.navigate(Screen.MainScreen.route)
         }
-        navController.navigate(Screen.LoginScreen.route)
 //        else {
 //            if (viewModel.isEmailVerified) {
 //                NavigateToMainScreen()
@@ -99,7 +102,7 @@ class MainActivity : ComponentActivity() {
             composable(route = Screen.SignUpScreen.route) {
                 SignUpScreen(navController = navController)
             }
-            composable("mainScreen") {
+            composable(route = Screen.MainScreen.route) {
                 MainScreen()
             }
 

@@ -18,6 +18,8 @@ constructor(
 
     fun getAuthState() = repo.getAuthState(viewModelScope)
 
+    fun getUser() = repo.currentUser
+
     val isEmailVerified get() = repo.currentUser?.isEmailVerified ?: false
 
 }

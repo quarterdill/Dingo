@@ -1,5 +1,6 @@
 package com.example.dingo.social
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -32,14 +33,21 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.dingo.model.Post
 import com.example.dingo.model.User
 import com.example.dingo.model.UserType
+import com.example.dingo.model.service.AccountService
 import com.google.firebase.Timestamp
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import java.time.Duration
 import java.time.LocalDateTime
 
 @Composable
 fun SocialScreen(
-    viewModel: SocialViewModel = hiltViewModel()
+    viewModel: SocialViewModel = hiltViewModel(),
 ) {
+    val viewModelJob = Job()
+    val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.Main)
     val dummyUserId = "Q0vMYa9VSh7tyFdLTPgX" // eric shang
     val feedItems = viewModel
         .getFeedForUser(dummyUserId)
@@ -75,6 +83,13 @@ fun SocialScreen(
             ) {
                 Text(text = "My Friends")
             }
+        }
+        Button(
+            onClick = { coroutineScope.launch {
+                viewModel.onSignOutClick()
+            }},
+        ) {
+            Text(text = "Sign Out")
         }
 
         // COMMENT THIS OUT
