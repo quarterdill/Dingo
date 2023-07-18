@@ -2,6 +2,8 @@ package com.example.dingo
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Face
@@ -35,6 +37,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.dingo.dingodex.DingoDexScreen
 import com.example.dingo.social.ClassroomScreen
 import com.example.dingo.social.SocialScreen
+import com.example.dingo.trips.TripScreen
 import kotlinx.coroutines.launch
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
@@ -47,7 +50,7 @@ sealed class NavBarItem(
     val route: String,
     val icon: ImageVector,
 ) {
-    object Trips : NavBarItem(
+    object Trip : NavBarItem(
         name = "Trip",
         route = "trip",
         icon = Icons.Rounded.AddCircle,
@@ -125,18 +128,20 @@ fun MainScreen() {
         Scaffold(
             bottomBar = { navBar(navController) }
         ) {
-            navigationConfiguration(navController,
-                hasPermission = cameraPermissionState.status.isGranted,
-                onRequestPermission = cameraPermissionState::launchPermissionRequest
-            )
+            Box(modifier = Modifier.padding(it)) {
+                navigationConfiguration(navController,
+                    hasPermission = cameraPermissionState.status.isGranted,
+                    onRequestPermission = cameraPermissionState::launchPermissionRequest
+                )
+            }
         }
     }
 }
 @Composable
 private fun navigationConfiguration(navController: NavHostController, hasPermission: Boolean, onRequestPermission: () -> Unit) {
     NavHost(navController = navController, startDestination = NavBarItem.Scanner.route) {
-        composable(NavBarItem.Trips.route) {
-            TripsScreen()
+        composable(NavBarItem.Trip.route) {
+            TripScreen()
         }
         composable(NavBarItem.Scanner.route) {
             if (hasPermission) {
@@ -155,7 +160,7 @@ private fun navigationConfiguration(navController: NavHostController, hasPermiss
 }
 @Composable
 private fun navBar(navController: NavHostController) {
-    val navItems = listOf(NavBarItem.Trips, NavBarItem.Scanner, NavBarItem.Social, NavBarItem.Classroom)
+    val navItems = listOf(NavBarItem.Trip, NavBarItem.Scanner, NavBarItem.Social, NavBarItem.Classroom)
     NavigationBar() {
         val currentRoute = getCurrentRoute(navController = navController)
         navItems.forEach{

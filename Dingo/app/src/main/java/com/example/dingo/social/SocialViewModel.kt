@@ -48,20 +48,18 @@ constructor(
         entryIds: List<String>,
         tripId: String?
     ) {
-        runBlocking{
-            var postId = withContext(Dispatchers.Default) {
-                postService.createPost(
-                    userId,
-                    username,
-                    entryIds,
-                    tripId,
-                    textContent,
-                )
-            }
+        viewModelScope.launch {
+            var postId = postService.createPost(
+                userId,
+                username,
+                entryIds,
+                tripId,
+                textContent,
+            )
 
-            var user = withContext(Dispatchers.Default) {
-                userService.getUser(userId)
-            }
+            var user = userService.getUser(userId)
+
+            println("making post with post id $postId for user: $user")
 
             if (user != null) {
                 val currPostHead = user.postHead
@@ -124,12 +122,78 @@ constructor(
         return ret
     }
 
+    fun getUsersPosts(userId: String): LiveData<MutableList<Post>?> {
+        return liveData(Dispatchers.IO) {
+            try {
+                userService.getUsersPosts(userId).collect {
+                    if (it != null) {
+                        val posts = it
+                        emit(posts)
+                    } else {
+                        emit(null)
+                    }
+                }
+            } catch (e: java.lang.Exception) {
+                // Do nothing
+                println("Error in getting user's own posts: $e")
+            }
+        }
+    }
+
     fun getFriendsForUser(userId: String): LiveData<MutableList<User>?> {
         return liveData(Dispatchers.IO) {
             try {
                 userService.getFriends(userId).collect {
                     if (it != null) {
                         emit(it)
+                    } else {
+                        emit(null)
+                    }
+                }
+            } catch (e: java.lang.Exception) {
+                // Do nothing
+                println("$e")
+            }
+        }
+    }
+
+    fun sendFriendReq(senderId: String, receiverName: String): Boolean {
+        var receiverUser: User? = null
+        var friendReqOk: Boolean = false
+        runBlocking {
+            receiverUser = userService.getUserByUsername(receiverName)
+        }
+        runBlocking{
+            if (receiverUser != null) {
+                friendReqOk = userService.sendFriendReq(senderId, receiverUser!!.id)
+            }
+        }
+        return friendReqOk
+    }
+
+    fun acceptFriendReq(senderId: String, receiverId: String): String {
+        var msg: String = "Something went wrong..."
+        runBlocking{
+            msg = userService.acceptFriendReq(senderId, receiverId)
+        }
+        return msg
+    }
+
+    fun declineFriendReq(senderId: String, receiverId: String): String {
+        var msg: String = "Something went wrong..."
+        runBlocking{
+            msg = userService.declineFriendReq(senderId, receiverId)
+        }
+        return msg
+    }
+
+    fun getPendingFriendReqs(userId: String): LiveData<MutableList<User>?>{
+        return liveData(Dispatchers.IO) {
+            try {
+                userService.getPendingFriendReqs(userId).collect {
+                    if (it != null) {
+                        val pending = it
+                        emit(pending)
                     } else {
                         emit(null)
                     }
