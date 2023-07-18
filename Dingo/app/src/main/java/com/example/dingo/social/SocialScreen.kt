@@ -140,6 +140,13 @@ fun SocialScreen(
                         ) {
                             Text("My Friends")
                         }
+                        Button(
+                            onClick = { coroutineScope.launch {
+                                viewModel.onSignOutClick()
+                            }},
+                        ) {
+                            Text(text = "Sign Out")
+                        }
                     }
                     LazyColumn(
                         modifier = Modifier.weight(1.0f, true)
@@ -179,14 +186,6 @@ fun SocialScreen(
                         ) {
                             Text("My Friends")
                         }
-                        
-                    }
-                     Button(
-                        onClick = { coroutineScope.launch {
-                            viewModel.onSignOutClick()
-                        }},
-                    ) {
-                        Text(text = "Sign Out")
                     }
                     LazyColumn(
                         modifier = Modifier.weight(1.0f, true)
