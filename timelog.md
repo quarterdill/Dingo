@@ -8,5 +8,5 @@ Making project proposal | 0 | 3 | 4 | 4 | 5 | 3 | 4
 Making buddy team evaluation | 0 | 0 | 0 | 0 | 1 | 0 | 3
 Coding for prototype demo | 10 | 10 | 10 | 10 | 10 | 10 | 10
 Making prototype doc | 2 | 2 | 2 | 2 | 2 | 2 | 2
-Worked on DingoDex | 0 | 0 | 5? | 0 | 0 | 0 | 5
-Total | 15 | 23 | 29 | 23 | 26 | 23 | 30
+Worked on DingoDex | 0 | 8 | 0 | 0 | 0 | 0 | 6
+Total | 15 | 31 | 24 | 23 | 26 | 23 | 33
