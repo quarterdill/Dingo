@@ -13,4 +13,4 @@ Worked on DingoDex | 0 | 8 | 0 | 0 | 0 | 0 | 6
 Social coding | 0 | 0 | 16 | 0 | 0 | 0 | 0
 Classroom coding | 0 | 0 | 8 | 0 | 0 | 0 | 0
 Profile coding | 0 | 0 | 3 | 0 | 0 | 0 | 0
-Total | 15 | 31 | 48 | 23 | 26 | 25 | 35
+Total | 15 | 31 | 53 | 23 | 26 | 25 | 35
