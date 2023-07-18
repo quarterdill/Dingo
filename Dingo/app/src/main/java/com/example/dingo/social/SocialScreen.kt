@@ -1,5 +1,6 @@
 package com.example.dingo.social
 
+import android.util.Log
 import android.app.PendingIntent.getActivity
 import android.widget.Toast
 import androidx.camera.core.impl.utils.ContextUtil.getApplicationContext
@@ -42,7 +43,12 @@ import androidx.navigation.compose.rememberNavController
 import com.example.dingo.model.Post
 import com.example.dingo.model.User
 import com.example.dingo.model.UserType
+import com.example.dingo.model.service.AccountService
 import com.google.firebase.Timestamp
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import java.time.Duration
 import java.time.LocalDateTime
 
@@ -79,8 +85,10 @@ sealed class SocialNavigationItem(
 
 @Composable
 fun SocialScreen(
-    viewModel: SocialViewModel = hiltViewModel()
+    viewModel: SocialViewModel = hiltViewModel(),
 ) {
+    val viewModelJob = Job()
+    val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.Main)
 //    val dummyUserId = "Q0vMYa9VSh7tyFdLTPgX" // eric shang
 //    val dummyUsername = "Eric Shang"
     val dummyUserId = "U47K9DYLoJLJlXHZrU7l"
@@ -131,6 +139,13 @@ fun SocialScreen(
                             },
                         ) {
                             Text("My Friends")
+                        }
+                        Button(
+                            onClick = { coroutineScope.launch {
+                                viewModel.onSignOutClick()
+                            }},
+                        ) {
+                            Text(text = "Sign Out")
                         }
                     }
                     LazyColumn(
