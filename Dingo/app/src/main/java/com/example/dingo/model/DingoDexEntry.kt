@@ -12,4 +12,5 @@ data class DingoDexEntry (
     var location: String = "",
     var pictures: List<String> = emptyList(),
     var displayPicture: String = "",
+    var scientificName: String = "",
 )
