@@ -7,6 +7,7 @@ import com.google.firebase.firestore.DocumentId
 import java.time.Month
 
 data class Comment (
+    var authorName: String = "",
     var textContent: String = "",
     var timestamp: Timestamp = Timestamp.now(),
 )
@@ -22,7 +23,7 @@ data class Post constructor(
     var entryIds: List<String> = emptyList(),
     var tripId: String? = null,
     var textContent: String = "",
-    var comments: List<Comment> = emptyList(),
+    var comments: List<String> = emptyList(),
     var timestamp: Timestamp = Timestamp.now(),
     var nextPost: String = "",
     var prevPost: String = "",

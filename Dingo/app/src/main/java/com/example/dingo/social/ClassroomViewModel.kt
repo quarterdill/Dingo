@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
 import com.example.dingo.model.AccountType
+import com.example.dingo.model.Comment
 import com.example.dingo.model.Post
 import com.example.dingo.model.User
 import com.example.dingo.model.UserType
@@ -190,4 +191,23 @@ constructor(
             }
         }
     }
+
+    fun getCommentsForPost(postId: String): LiveData<MutableList<Comment>?> {
+        return liveData(Dispatchers.IO) {
+            try {
+                postService.getComments(postId, 50).collect {
+                    if (it != null) {
+                        emit(it)
+                    } else {
+                        emit(null)
+                    }
+                }
+            } catch (e: java.lang.Exception) {
+                // Do nothing
+                println("$e")
+            }
+        }
+    }
+
+
 }

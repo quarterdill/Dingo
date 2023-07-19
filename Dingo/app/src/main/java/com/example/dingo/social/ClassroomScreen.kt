@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material3.BottomSheetScaffold
@@ -25,6 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,7 +35,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -42,7 +46,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.dingo.NavBarItem
 import com.example.dingo.NoPermission
 import com.example.dingo.ScannerScreen
-import com.example.dingo.TripsScreen
+import com.example.dingo.model.Comment
 import com.example.dingo.model.Post
 import com.example.dingo.model.User
 import com.example.dingo.model.UserType
@@ -71,6 +75,14 @@ sealed class ClassroomNavigationItem(
         name = "AddMember",
         route = "addmember",
     )
+    object ViewComments : ClassroomNavigationItem(
+        name = "ViewComments",
+        route = "viewcomments",
+    )
+    object MyProfile : ClassroomNavigationItem(
+        name = "MyProfile",
+        route = "myprofile",
+    )
 }
 
 
@@ -93,6 +105,9 @@ fun ClassroomScreen(
         .observeAsState()
     val fetchStudents = viewModel
         .getUsersOfType(dummyClassroomId, UserType.STUDENT)
+        .observeAsState()
+    var fetchComments = viewModel
+        .getCommentsForPost("")
         .observeAsState()
 
     val navController = rememberNavController()
@@ -130,6 +145,13 @@ fun ClassroomScreen(
                         ) {
                             Text("Students/Teachers")
                         }
+                        Button(
+                            onClick = {
+                                navController.navigate(ClassroomNavigationItem.MyProfile.route)
+                            },
+                        ) {
+                            Text("MyProfile")
+                        }
                     }
 //                COMMENT THIS OUT
 //              Button(
@@ -146,7 +168,7 @@ fun ClassroomScreen(
                         var posts =  feedItems.value
                         if (posts != null) {
                             items(posts.size) {
-                                ClassroomPost(posts[it])
+                                ClassroomPost(posts[it], navController, viewModel, fetchComments)
                                 println("post content: ${posts[it].textContent}")
                             }
                         }
@@ -180,6 +202,23 @@ fun ClassroomScreen(
             composable(ClassroomNavigationItem.AddMember.route) {
                 AddMemberModal(viewModel, navController)
             }
+            composable(ClassroomNavigationItem.ViewComments.route) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    LazyColumn(
+                        modifier = Modifier.weight(1.0f, true)
+                    ) {
+                        // idk if this will make it crash or smth
+                        var comments = fetchComments.value
+                        if (comments != null) {
+                            items(comments.size) {
+                                CommentText(comments[it])
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -187,7 +226,12 @@ fun ClassroomScreen(
 
 
 @Composable
-private fun ClassroomPost(post: Post) {
+private fun ClassroomPost(
+    post: Post,
+    navController: NavHostController,
+    viewModel: ClassroomViewModel,
+    fetchComments: State<MutableList<Comment>?>,
+) {
     Row(
         modifier = Modifier.padding(16.dp),
         horizontalArrangement = Arrangement.spacedBy(10.dp),
@@ -195,8 +239,34 @@ private fun ClassroomPost(post: Post) {
     ) {
         var timeDiffMsg = getTimeDiffMessage(post.timestamp)
 
-        Text("${post.username} posted $timeDiffMsg ago")
-        Text("${post.textContent}")
+        Column(
+
+        ) {
+            Text(
+                modifier = Modifier.height(20.dp),
+                fontSize = 12.sp,
+                color = Color.Gray,
+                text="${post.username} posted $timeDiffMsg ago")
+            Text(
+                modifier = Modifier.padding(all = 12.dp),
+                text = "${post.textContent}"
+            )
+            ClickableText(
+                text = AnnotatedString("${post.comments.size} comment(s)"),
+                onClick = {
+                    TODO("figure out how to get the right set of comments")
+//                    fetchComments = viewModel
+//                        .getCommentsForPost("")
+//                        .observeAsState()
+                    navController.navigate(ClassroomNavigationItem.ViewComments.route)
+                }
+            )
+            Divider(
+                thickness = 1.dp,
+                color = Color.Gray,
+            )
+
+        }
     }
 }
 
@@ -297,4 +367,23 @@ private fun AddMemberModal(
     navController: NavHostController,
 ) {
     Text("Cannot add new members as a student")
+}
+
+@Composable
+private fun CommentText(comment: Comment){
+    var timeDiffMsg = getTimeDiffMessage(comment.timestamp)
+    Text(
+        modifier = Modifier.height(20.dp),
+        fontSize = 10.sp,
+        color = Color.Gray,
+        text="${comment.authorName} posted $timeDiffMsg ago")
+    Text(
+        modifier = Modifier.padding(all = 12.dp),
+        text = "${comment.textContent}"
+    )
+
+    Divider(
+        thickness = 1.dp,
+        color = Color.Gray,
+    )
 }
