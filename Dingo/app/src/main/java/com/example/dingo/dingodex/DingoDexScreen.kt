@@ -2,13 +2,11 @@ package com.example.dingo.dingodex
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -37,70 +35,150 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.dingo.R
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 
-// Todo: Make heights and stuff into consts
+sealed class DingoDexNavItem(
+    val name: String,
+    val route: String,
+) {
+    object Description : DingoDexNavItem(
+        name = "Description",
+        route = "description",
+    )
+    object Main : DingoDexNavItem(
+        name = "Main",
+        route = "main",
+    )
+    object DingoDex : DingoDexNavItem(
+        name = "DingoDex",
+        route = "dingodex"
+    )
+}
+
+// TODO: Make heights and stuff into constants
 @Composable
 fun DingoDexScreen(
     viewModel: DingoDexViewModel = hiltViewModel()
 ) {
+    val navController = rememberNavController()
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
-            modifier = Modifier.padding(16.dp),
-            fontSize = 36.sp,
-            text = "DingoDex",
-        )
-        var showFaunaDingoDex by remember { mutableStateOf(true) }
-        val collectedFaunaDingoDex = viewModel.collectedDingoDexFauna.observeAsState()
-        val uncollectedFaunaDingoDex = viewModel.uncollectedDingoDexFauna.observeAsState()
-        val collectedFloraDingoDex = viewModel.collectedDingoDexFlora.observeAsState()
-        val uncollectedFloraDingoDex = viewModel.uncollectedDingoDexFlora.observeAsState()
+        NavHost(
+            navController = navController,
+            startDestination = DingoDexNavItem.DingoDex.route
+        ) {
+            composable(DingoDexNavItem.DingoDex.route) {
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Text(
+                        modifier = Modifier.padding(16.dp),
+                        fontSize = 36.sp,
+                        text = "DingoDex",
+                    )
+                    var showFaunaDingoDex by remember { mutableStateOf(true) }
+                    val collectedFaunaDingoDex = viewModel.collectedDingoDexFauna.observeAsState()
+                    val uncollectedFaunaDingoDex =
+                        viewModel.uncollectedDingoDexFauna.observeAsState()
+                    val collectedFloraDingoDex = viewModel.collectedDingoDexFlora.observeAsState()
+                    val uncollectedFloraDingoDex =
+                        viewModel.uncollectedDingoDexFlora.observeAsState()
 
-        println("$showFaunaDingoDex")
-        val isNull = if (showFaunaDingoDex) {
-            collectedFaunaDingoDex.value == null || uncollectedFaunaDingoDex.value == null
-        } else {
-            collectedFloraDingoDex.value == null || uncollectedFloraDingoDex.value == null
-        }
-        if (!isNull) {
-            val items: List<DingoDexCollectionItem> = if (showFaunaDingoDex) {
-                collectedFaunaDingoDex.value!! + uncollectedFaunaDingoDex.value!!
-            } else {
-                collectedFloraDingoDex.value!! + uncollectedFloraDingoDex.value!!
-            }
-            LazyVerticalGrid(
-                modifier = Modifier.weight(1.0f),
-                columns = GridCells.Fixed(3),
-            ) {
-                items(items.size) {
-                    DingoDexItem(items[it])
+                    val isNull = if (showFaunaDingoDex) {
+                        collectedFaunaDingoDex.value == null || uncollectedFaunaDingoDex.value == null
+                    } else {
+                        collectedFloraDingoDex.value == null || uncollectedFloraDingoDex.value == null
+                    }
+                    if (!isNull) {
+                        val items: List<DingoDexCollectionItem> = if (showFaunaDingoDex) {
+                            collectedFaunaDingoDex.value!! + uncollectedFaunaDingoDex.value!!
+                        } else {
+                            collectedFloraDingoDex.value!! + uncollectedFloraDingoDex.value!!
+                        }
+                        LazyVerticalGrid(
+                            modifier = Modifier.weight(1.0f),
+                            columns = GridCells.Fixed(3),
+                        ) {
+                            items(items.size) {
+                                DingoDexItem(items[it], navController)
+                            }
+                        }
+                    } else {
+                        Text("Loading")
+                    }
+                    Row(
+                        modifier = Modifier.padding(16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(10.dp),
+                        verticalAlignment = Alignment.Bottom
+                    ) {
+                        Button(
+                            onClick = { showFaunaDingoDex = true },
+                        ) {
+                            Text(text = "Fauna")
+                        }
+                        Divider(
+                            modifier = Modifier
+                                .height(30.dp)
+                                .width(1.dp),
+                            color = Color.Gray,
+                        )
+                        Button(
+                            onClick = { showFaunaDingoDex = false }
+                        ) {
+                            Text(text = "Flora")
+                        }
+                    }
                 }
             }
-        } else {
-            Text("Loading")
-        }
-        Row (
-            modifier = Modifier.padding(16.dp),
-            horizontalArrangement  = Arrangement.spacedBy(10.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ){
-            Button(
-                onClick = { showFaunaDingoDex = true },
-            ) {
-                Text(text = "Fauna")
-            }
-            Divider(
-                modifier = Modifier
-                    .height(30.dp)
-                    .width(1.dp),
-                color = Color.Gray,
-            )
-            Button(
-                onClick = { showFaunaDingoDex = false }
-            ) {
-                Text(text = "Flora")
+            composable(DingoDexNavItem.Description.route) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Row(
+                        modifier = Modifier.padding(16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(10.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Button(
+                            onClick = {
+                                navController.navigate(DingoDexNavItem.DingoDex.route)
+                            },
+                        ) {
+                            Text(
+                                modifier = Modifier.padding(4.dp),
+                                fontSize = 16.sp,
+                                text = "Back",
+                            )
+                        }
+                    }
+                    Row() {
+                        Image(
+                            painter = painterResource(R.drawable.fauna_placeholder),
+                            contentDescription = "Fauna",
+                            contentScale = ContentScale.Inside,
+                            alignment = Alignment.CenterStart,
+                        )
+                        Text(
+                            textAlign = TextAlign.Left,
+                            modifier = Modifier.width(200.dp),
+                            fontSize = 16.sp,
+                            text = """
+                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod 
+                                    tempor incididunt ut labore et dolore magna aliqua. Ac auctor augue mauris 
+                                    augue neque gravida in fermentum et. Id faucibus nisl tincidunt eget nullam 
+                                    non nisi est sit. Aliquam faucibus purus in massa tempor nec feugiat. Mollis 
+                                    nunc sed id semper risus in hendrerit gravida. Felis eget velit aliquet 
+                                    sagittis id consectetur purus ut. 
+                                   """.trimIndent()
+                        )
+                    }
+                }
             }
         }
     }
@@ -108,42 +186,45 @@ fun DingoDexScreen(
 
 @Composable
 private fun DingoDexItem(
-    item: DingoDexCollectionItem
+    item: DingoDexCollectionItem,
+    navController: NavHostController,
 ) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Box() {
-            if (item.pictureURL == "") {
-                Image(
-                    painter = if (item.isFauna) {
-                        painterResource(R.drawable.fauna_placeholder)
-                    } else {
-                        painterResource(R.drawable.flore_placeholder)
-                    },
-                    contentDescription = if (item.isFauna) "Fauna" else "Flora",
-                    contentScale = ContentScale.Inside,
-                    modifier = Modifier
-                        .size(64.dp)
-                        .clip(CircleShape)                       // clip to the circle shape
-                        .border(2.dp, Color.Gray, CircleShape)
-                )
+    Button(onClick = {navController.navigate(DingoDexNavItem.Description.route)}) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Box() {
+                if (item.pictureURL == "") {
+                    Image(
+                        painter = if (item.isFauna) {
+                            painterResource(R.drawable.fauna_placeholder)
+                        } else {
+                            painterResource(R.drawable.flore_placeholder)
+                        },
+                        contentDescription = if (item.isFauna) "Fauna" else "Flora",
+                        contentScale = ContentScale.Inside,
+                        modifier = Modifier
+                            .size(64.dp)
+                            .clip(CircleShape)  // clip to the circle shape
+                            .border(2.dp, Color.Gray, CircleShape)
+                    )
+                }
+                // TODO: Actual images
+                Box(
+                    contentAlignment = Alignment.Center
+                ) {
+                    Canvas(modifier = Modifier.size(25.dp), onDraw = {
+                        drawCircle(color = Color.LightGray)
+                    })
+                    Text(text = "${item.numEncounters}", color = Color.White)
+                }
             }
-            // TODO: Actual images
-            Box (
-                contentAlignment = Alignment.Center
-            ) {
-                Canvas(modifier = Modifier.size(25.dp), onDraw = {
-                    drawCircle(color = Color.LightGray)
-                })
-                Text(text = "${item.numEncounters}", color = Color.White)
-            }
+            Text(
+                modifier = Modifier.width(72.dp),
+                text = "${item.name}",
+                textAlign = TextAlign.Center
+            )
         }
-        Text(
-            modifier = Modifier.width(72.dp),
-            text = "${item.name}",
-            textAlign = TextAlign.Center
-        )
     }
 }
