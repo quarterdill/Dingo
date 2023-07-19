@@ -1,5 +1,6 @@
 package com.example.dingo.model.service
 
+import com.example.dingo.model.Comment
 import com.example.dingo.model.Post
 import kotlinx.coroutines.flow.Flow
 
@@ -22,4 +23,6 @@ interface PostService {
 
     suspend fun setPostPrev(postId: String, prevPostId: String)
     suspend fun setPostNext(postId: String, nextPostId: String)
+    suspend fun getComments(postId: String, limit: Int = 10): Flow<MutableList<Comment>?>
+    suspend fun addComment(postId: String, username: String, commentText: String)
 }

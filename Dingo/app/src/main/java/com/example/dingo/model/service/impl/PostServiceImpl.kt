@@ -2,6 +2,7 @@ package com.example.dingo.model.service.impl
 
 import com.example.dingo.model.AccountType
 import com.example.dingo.model.Classroom
+import com.example.dingo.model.Comment
 import com.example.dingo.model.Post
 import com.example.dingo.model.User
 import com.example.dingo.model.UserType
@@ -91,9 +92,88 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
             .await()
     }
 
+    override suspend fun getComments(postId: String, limit: Int): Flow<MutableList<Comment>?> {
+        return callbackFlow {
+            if (postId == "") {
+                trySend(mutableListOf<Comment>())
+            } else {
+                val postCollection = firestore.collection(POST_COLLECTIONS)
+                    .document(postId)
+                val subscription = postCollection.addSnapshotListener { snapshot, e ->
+                    if (snapshot == null) {
+                        trySend(null)
+                    } else if (snapshot!!.exists()) {
+                        var post = snapshot.toObject(Post::class.java)
+                        var limiter = 0
+                        var ret: MutableList<Comment> = mutableListOf<Comment>()
+                        if (post != null) {
+                            for (commentId in post.comments.reversed()) {
+                                if (limiter > limit) {
+                                    break
+                                }
+                                limiter++
+
+                                var comment: Comment? = null
+
+                                runBlocking {
+                                    comment = firestore.collection(COMMENT_COLLECTIONS)
+                                        .document(commentId)
+                                        .get()
+                                        .await()
+                                        .toObject(Comment::class.java)
+                                }
+
+                                if (comment != null) {
+                                    ret.add(comment!!)
+                                } else {
+                                    println("comment $commentId not found!?")
+                                }
+                            }
+                        }
+                        trySend(ret)
+                    }
+                }
+                awaitClose { subscription.remove() }
+            }
+        }
+    }
+    override suspend fun addComment(postId: String, username: String, commentText: String) {
+        var commentId = ""
+
+        val comment: Comment = Comment()
+        comment.authorName = username
+        comment.textContent = commentText
+        comment.timestamp = Timestamp.now()
+
+        firestore.collection(COMMENT_COLLECTIONS)
+            .add(comment)
+            .addOnSuccessListener {
+                commentId = it.id
+            }
+            .addOnFailureListener {e ->
+                println("Error adding Post document: $e")
+            }
+            .await()
+
+        if (commentId.isEmpty()) {
+            println("Error: empty comment id found")
+        }
+
+        firestore.collection(POST_COLLECTIONS)
+            .document(postId)
+            .update("comments", FieldValue.arrayUnion(commentId))
+            .addOnSuccessListener {
+                println("Successfully added comment id $commentId with test $commentText to post $postId")
+            }
+            .addOnFailureListener {e ->
+                println("Error in adding comment to post: $e")
+            }
+    }
+
 
     companion object {
         private const val POST_COLLECTIONS = "postCollections"
+        private const val COMMENT_COLLECTIONS = "commentCollections"
     }
 }
 

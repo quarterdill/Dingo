@@ -85,7 +85,8 @@ constructor(
 
             if (user != null) {
                 val postQueueByTimestamp = PriorityQueue(PostComparator)
-                for (friendId in user.friends) {
+                var friendsAndMe = user.friends + listOf(userId)
+                for (friendId in friendsAndMe) {
                     val friend = withContext(Dispatchers.Default) {
                         userService.getUser(friendId)
                     }
