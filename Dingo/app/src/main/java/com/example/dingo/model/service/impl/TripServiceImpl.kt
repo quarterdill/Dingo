@@ -16,6 +16,8 @@ import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 
+
+// This is for converting the Firestore representation of Trips with GeoPoint to the application version of Trips with LatLong
 data class GeoTrip (
     val id: String = "",
     var userId: String = "",
@@ -23,10 +25,6 @@ data class GeoTrip (
     var locations: List<HashMap<String, Any>> =emptyList(),
     var discoveredEntries: List<String> = emptyList(),
 )
-
-
-data class GeoPointList(val locations: List<HashMap<String, Any>>): ArrayList<HashMap<String, Any>>(locations)
-
 
 class TripServiceImpl
 @Inject
@@ -152,16 +150,4 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
     }
 }
 
-//private fun QueryDocumentSnapshot.getLatLngList(s: String, genericTypeIndicator: GenericTypeIndicator<List<HashMap<String, Any>>>): List<LatLng?> {
-//    val geoPointList : GenericTypeIndicator<List<HashMap<String, Any>>> = this.get(s) as GenericTypeIndicator<List<HashMap<String, Any>>>
-//    return geoPointList?.map { location ->
-//        val latitude = location?.latitude ?: 0.0
-//        val longitude = location?.longitude ?: 0.0
-//        LatLng(latitude, longitude)
-//    } ?: emptyList()
-//}
-
-//private fun <T> GenericTypeIndicator<T>.map(function: (LatLng?) -> LatLng): List<LatLng?>? {
-//    return emptyList()
-//}
 
