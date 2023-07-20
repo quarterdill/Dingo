@@ -1,6 +1,8 @@
 package com.example.dingo.model.service.impl
 
+import android.util.Log
 import com.example.dingo.model.Classroom
+import com.example.dingo.model.GeoTrip
 import com.example.dingo.model.LocationTime
 import com.example.dingo.model.Trip
 import com.example.dingo.model.service.AccountService
@@ -66,49 +68,33 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
     }
 
     override suspend fun getTripFeed(userId: String, limit: Int): Flow<MutableList<Trip>?> {
-        // TODO("get (limit) most recent posts for feed")
+        Log.d("TripService", "getTripFeed($userId, $limit)")
 
         return callbackFlow {
-            // get the Trip collection belonging to userId
+            // Get a reference to the trips collection and create a query to filter by userId
             val tripCollection = firestore.collection(TripServiceImpl.TRIP_COLLECTIONS)
-                .document(userId)
-            val subscription = tripCollection.addSnapshotListener { snapshot, e ->
+            Log.d("TripService", "tripCollection: $tripCollection")
+
+            val query = tripCollection.whereEqualTo("userId", userId).limit(limit.toLong())
+            Log.d("TripService", "query: $query")
+
+            val subscription = query.addSnapshotListener { snapshot, e ->
                 if (snapshot == null) {
                     trySend(null)
-                } else if (snapshot!!.exists()) {
-                    var trips = snapshot.toObject(Classroom::class.java)
-                    var limiter = 0
-                    var ret: MutableList<Trip> = mutableListOf<Trip>()
-                    if (trips != null) {
-                        for (tripId in trips.posts) {
-                            if (limiter > limit) {
-                                break
-                            }
-                            limiter++
+                } else if (!snapshot.isEmpty) {
+                    Log.d("TripService", "snapshot: $snapshot")
+                    Log.d("TripService", "snapshot.documents: ${snapshot.documents}")
 
-                            var trip: Trip? = null
+                    val trips = snapshot.toObjects(Trip::class.java)
+                    Log.d("TripService", "trips: $trips")
 
-                            runBlocking {
-                                trip = firestore.collection(TripServiceImpl.TRIP_COLLECTIONS)
-                                    .document(tripId)
-                                    .get()
-                                    .await()
-                                    .toObject(Trip::class.java)
-                            }
-
-                            if (trip != null) {
-                                ret.add(trip!!)
-                            } else {
-                                println("Trip $tripId not found!?")
-                            }
-                        }
-                    }
-                    trySend(ret)
+                    trySend(trips)
                 }
             }
             awaitClose { subscription.remove() }
         }
     }
+
 
 
 

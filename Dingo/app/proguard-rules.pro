@@ -12,6 +12,20 @@
 #   public *;
 #}
 
+# This rule tells ProGuard to keep the constructor that takes two double arguments in the LatLng class.
+#-keep class * extends com.google.protobuf.GeneratedMessageLite { *; }
+#
+#-keep,allowobfuscation class * extends com.google.protobuf.GeneratedMessageLite { *; }
+#
+#-keepclassmembers class * extends com.google.protobuf.GeneratedMessageLite { *; }
+
+# This rule tells ProGuard to keep the constructor that takes two double arguments in the LatLng class.
+-keepclassmembers class com.google.android.gms.maps.model.LatLng {
+    <init>(double, double);
+}
+
+
+
 # Uncomment this to preserve the line number information for
 # debugging stack traces.
 #-keepattributes SourceFile,LineNumberTable

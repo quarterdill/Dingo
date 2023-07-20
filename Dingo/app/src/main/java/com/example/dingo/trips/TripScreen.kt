@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Observer
@@ -43,15 +44,26 @@ fun TripScreen(
     val context = LocalContext.current
     val lifeCycleOwner = LocalLifecycleOwner.current
 
+    val dummyUserId = "Q0vMYa9VSh7tyFdLTPgX"
+    val dummyUsername = "Eric Shang"
+    val limit = 50
+    val feedItems = viewModel
+        .getTripFeed(dummyUserId)
+        .observeAsState()
+
     LaunchedEffect(key1 = true) {
         LocationTrackingService().createNotificationChannel(context)
         LocationTrackingService.locationList.observe(lifeCycleOwner, Observer {
             var locations:List<LatLng> = viewModel.locationTrackingStopped(it)
-
-            Log.d("tripViewScreen got location:", locations.toString())
-            Log.d("tripViewScreen MakeTrip:", "making trip...")
+            Log.d("tripViewScreen", "locations: $locations")
+            // TODO:  Get user
             viewModel.makeDummyTrips(locations)
-            Log.d("tripViewScreen dummy trip:", locations.toString())
+
+//            Eric Shang
+            var tripFeed = viewModel.getTripFeed("Q0vMYa9VSh7tyFdLTPgX")
+            Log.d("tripViewScreen", "tripFeed ${tripFeed}")
+
+
 
 
 

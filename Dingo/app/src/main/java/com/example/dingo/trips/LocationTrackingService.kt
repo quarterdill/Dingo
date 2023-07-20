@@ -24,6 +24,7 @@ import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.Priority.PRIORITY_HIGH_ACCURACY
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.cancel
+import java.sql.Time
 import javax.inject.Inject
 
 
@@ -81,13 +82,14 @@ class LocationTrackingService @Inject constructor(): LifecycleService() {
 
     private val locationCallback = object : LocationCallback() {
         override fun onLocationResult(result: LocationResult) {
-            Log.d("location Callback before onLocationResult", result.toString())
+            Log.d("LocationTrackingService", "Callback before onLocationResult: $result")
 
             super.onLocationResult(result)
             result?.locations?.let { locations ->
                 for(location in locations) {
                     val pos = LatLng(location.latitude, location.longitude)
-                    Log.d("location Callback", pos.toString())
+                    val time = location.time
+                    Log.d("locationCallBack", "pos: $pos; time: $time")
                     locationList.value?.add(pos)
                 }
             }

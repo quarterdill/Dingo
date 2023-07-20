@@ -36,18 +36,6 @@ constructor(
 
         Log.d("view Model locationList", locationList.toString())
         return locationList as List<LatLng>
-    //        val user = userService.getUserByEmail("e2shang@uwaterloo.ca")
-//
-//        Log.d("view Model locationTrackingStopped user", user.toString())
-//
-//        if (user != null) {
-//            Log.d("tripViewModel calling makeTrip with user", user.toString())
-//            makeTrip(userId=user.id, username=user.username, locations = locationList as List<LatLng>)
-//        } else {
-//            Log.d("tripViewModel calling makeTrip without", "u")
-//
-//        }
-
     }
 
     fun getLocationFeed(userId: String): MutableLiveData<List<Location>> {
@@ -78,10 +66,14 @@ constructor(
 
 
     fun getTripFeed(userId: String): LiveData<MutableList<Trip>?> {
+        Log.d("TripViewModel", "getTripFeed($userId)")
+
         return liveData(Dispatchers.IO) {
             try {
                 tripService.getTripFeed(userId, 50).collect {
                     if (it != null) {
+                        Log.d("TripViewModel", "tripService it: $it")
+
                         val trips = it
                         emit(trips)
                     } else {
@@ -96,20 +88,15 @@ constructor(
     }
 
 
-    private fun getDummyTrips(): List<Triple<String, String, UserType>> {
+    private fun getDummyTrips(): List<Trip> {
         return listOf(
-            Triple("Dylan Xiao", "d29xiao@uwaterloo.ca", UserType.STUDENT),
-            Triple("Eric Shang", "e2shang@uwaterloo.ca", UserType.STUDENT),
-            Triple("Austin Lin", "a62lin@uwaterloo.ca", UserType.STUDENT),
-            Triple("Simhon Chourasia", "s2choura@uwaterloo.ca", UserType.STUDENT),
-            Triple("Hitanshu Dalwadi", "hmdalwad@uwaterloo.ca", UserType.STUDENT),
-            Triple("Eden Chan", "e223chan@uwaterloo.ca", UserType.STUDENT),
-            Triple("Philip Chen", "p242chen@uwaterloo.ca", UserType.TEACHER)
+
         )
     }
 
     fun makeDummyTrips(locations: List<LatLng>) {
         viewModelScope.launch {
+            Log.d("TripViewModel", "makeDummyTrips($locations)")
             val user = userService.getUserByEmail("e2shang@uwaterloo.ca")
             if (user != null) {
                 val tripId = tripService.createTrip(
@@ -118,9 +105,7 @@ constructor(
                     locations = locations,
                     emptyList(),
                 )
-                Log.d("TripViewModel making a trip with tripId:", tripId)
-
-                println("successfully posted a trip")
+                Log.d("TripViewModel", " making a trip with tripId: $tripId")
             } else {
                 Log.d("TripViewModel", "fail to make trip since no user")
 
