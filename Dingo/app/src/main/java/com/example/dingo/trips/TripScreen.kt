@@ -61,7 +61,7 @@ fun TripScreen(
 
 //            Eric Shang
             var tripFeed = viewModel.getTripFeed("Q0vMYa9VSh7tyFdLTPgX")
-            Log.d("tripViewScreen", "tripFeed ${tripFeed}")
+            Log.d("tripViewScreen", "tripFeed ${tripFeed.value}")
 
 
 
