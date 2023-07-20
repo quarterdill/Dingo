@@ -57,7 +57,7 @@ fun TripScreen(
             var locations:List<LatLng> = viewModel.locationTrackingStopped(it)
             Log.d("tripViewScreen", "locations: $locations")
             // TODO:  Get user
-            viewModel.makeDummyTrips(locations)
+//            viewModel.makeDummyTrips(locations)
 
 //            Eric Shang
             var tripFeed = viewModel.getTripFeed("Q0vMYa9VSh7tyFdLTPgX")

@@ -2,57 +2,33 @@ package com.example.dingo.model.service.impl
 
 import android.util.Log
 import com.example.dingo.model.Trip
-import com.example.dingo.model.TripDeserializer
 import com.example.dingo.model.service.AccountService
 import com.example.dingo.model.service.TripService
 import com.google.android.gms.maps.model.LatLng
+import com.google.firebase.database.GenericTypeIndicator
+import com.google.firebase.firestore.DocumentId
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.GeoPoint
+import com.google.firebase.firestore.QueryDocumentSnapshot
+import com.google.firebase.firestore.ktx.getField
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import com.google.gson.*
-
 import java.lang.reflect.Type
+import com.google.firebase.firestore.util.CustomClassMapper
+import kotlinx.coroutines.flow.emptyFlow
 
-class TripDeserializer : JsonDeserializer<Trip> {
-    override fun deserialize(
-        json: JsonElement?,
-        typeOfT: Type?,
-        context: JsonDeserializationContext?
-    ): Trip {
-        val jsonObject = json?.asJsonObject
-        val id = jsonObject?.get("id")?.asString ?: ""
-        val userId = jsonObject?.get("userId")?.asString ?: ""
-        val username = jsonObject?.get("username")?.asString ?: ""
-        val discoveredEntries = jsonObject?.get("discoveredEntries")?.asJsonArray?.map { it.asString } ?: emptyList()
 
-        val locations = jsonObject?.get("locations")?.asJsonArray?.map {
-            val geoPoint = it.asJsonObject
-            val latitude = geoPoint.get("latitude").asDouble
-            val longitude = geoPoint.get("longitude").asDouble
-            LatLng(latitude, longitude)
-        } ?: emptyList()
-
-        return Trip(id, userId, username, locations, discoveredEntries)
-    }
-}
-
-class GeoPointDeserializer : JsonDeserializer<LatLng> {
-    override fun deserialize(
-        json: JsonElement?,
-        typeOfT: Type?,
-        context: JsonDeserializationContext?
-    ): LatLng {
-        val jsonObject = json?.asJsonObject
-        val latitude = jsonObject?.get("latitude")?.asDouble ?: 0.0
-        val longitude = jsonObject?.get("longitude")?.asDouble ?: 0.0
-        return LatLng(latitude, longitude)
-    }
-}
-
+data class GeoTrip (
+    val id: String = "",
+    var userId: String = "",
+    var username: String = "",
+    var locations: List<LatLng?>? = emptyList<LatLng>(),
+    var discoveredEntries: List<String> = emptyList(),
+)
 class TripServiceImpl
 @Inject
 constructor(private val firestore: FirebaseFirestore, private val auth: AccountService) : TripService {
@@ -117,20 +93,23 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
         return latLngs as List<LatLng>
     }
 
+
+
+
     override suspend fun getTripFeed(userId: String, limit: Int): Flow<MutableList<Trip>?> {
         Log.d("TripService", "getTripFeed($userId, $limit)")
 
-        val gson = GsonBuilder()
-            .registerTypeAdapter(GeoPoint::class.java, GeoPointDeserializer())
-            .create()
-
         return callbackFlow {
             // Get a reference to the trips collection and create a query to filter by userId
-            val tripCollection = firestore.collection(TripServiceImpl.TRIP_COLLECTIONS)
-            Log.d("TripService", "tripCollection: $tripCollection")
+            val tripCollectionRef = firestore.collection(TripServiceImpl.TRIP_COLLECTIONS)
+            Log.d("TripService", "tripCollection: $tripCollectionRef")
 
-            val query = tripCollection.whereEqualTo("userId", userId).limit(limit.toLong())
+
+            val query = tripCollectionRef.whereEqualTo("userId", userId).limit(limit.toLong())
             Log.d("TripService", "query: $query")
+
+            val ret: MutableList<Trip> = mutableListOf()
+
 
             val subscription = query.addSnapshotListener { snapshot, e ->
                 if (snapshot == null) {
@@ -139,22 +118,11 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
                     Log.d("TripService", "snapshot TRIPS: $snapshot")
                     Log.d("TripService", "snapshot.documents!: ${snapshot.documents}")
 
-
-//                    DEBUG THIS
-
-                    val gson = GsonBuilder()
-                        .registerTypeAdapter(LatLng::class.java, GeoPointDeserializer())
-                        .create()
-
-                    val gson2: Gson = GsonBuilder()
-                        .registerTypeAdapter(Trip::class.java, TripDeserializer())
-                        .create()
-
-                    val trips = snapshot.toObjects(Trip::class.java)
+                    val trips = snapshot.toObjects(GeoTrip::class.java)
 
                     Log.d("TripService", "trips: $trips")
 
-                    trySend(trips)
+                    trySend(ret)
                 }
             }
             awaitClose { subscription.remove() }
