@@ -26,9 +26,11 @@ data class GeoTrip (
     val id: String = "",
     var userId: String = "",
     var username: String = "",
-    var locations: List<LatLng?>? = emptyList<LatLng>(),
+    var locations: List<GeoPoint?> = emptyList<GeoPoint>(),
     var discoveredEntries: List<String> = emptyList(),
 )
+
+
 class TripServiceImpl
 @Inject
 constructor(private val firestore: FirebaseFirestore, private val auth: AccountService) : TripService {
@@ -81,19 +83,6 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
     }
 
 
-    fun convertGeoPointsToLatLngs(geoPoints: List<GeoPoint>): List<LatLng> {
-        val latLngs = mutableListOf<LatLng>()
-
-        for (geoPoint in geoPoints) {
-
-            val latLng = LatLng(geoPoint.latitude, geoPoint.longitude)
-            latLngs.add(latLng)
-        }
-
-        return latLngs as List<LatLng>
-    }
-
-
 
 
     override suspend fun getTripFeed(userId: String, limit: Int): Flow<MutableList<Trip>?> {
@@ -110,6 +99,25 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
 
             val ret: MutableList<Trip> = mutableListOf()
 
+            val geoTripDeserializer = { snapshot: QueryDocumentSnapshot ->
+                val id = snapshot.id
+                val userId = snapshot.getString("userId") ?: ""
+                val username = snapshot.getString("username") ?: ""
+
+                val locations = snapshot.get("locations", List::class.java)
+                    ?.map { location ->
+                        val locationMap = location as? HashMap<String, Any> ?: hashMapOf()
+                        val latitude = locationMap["latitude"] as? Double ?: 0.0
+                        val longitude = locationMap["longitude"] as? Double ?: 0.0
+                        LatLng(latitude, longitude)
+//                        hashMapOf("location" to LatLng(latitude, longitude))
+                    } ?: emptyList()
+
+                val discoveredEntries = snapshot.get("discoveredEntries", List::class.java)?.map {entry -> entry as String} ?: emptyList()
+                Trip(id, userId, username, locations, discoveredEntries)
+            }
+
+
 
             val subscription = query.addSnapshotListener { snapshot, e ->
                 if (snapshot == null) {
@@ -118,11 +126,11 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
                     Log.d("TripService", "snapshot TRIPS: $snapshot")
                     Log.d("TripService", "snapshot.documents!: ${snapshot.documents}")
 
-                    val trips = snapshot.toObjects(GeoTrip::class.java)
-
-                    Log.d("TripService", "trips: $trips")
-
-                    trySend(ret)
+                    val geoTrips = snapshot.documents.map { document ->
+                        val queryDocumentSnapshot = document as QueryDocumentSnapshot
+                        geoTripDeserializer(queryDocumentSnapshot)
+                    }
+                    trySend(geoTrips.toMutableList())
                 }
             }
             awaitClose { subscription.remove() }
