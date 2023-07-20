@@ -1,5 +1,8 @@
 package com.example.dingo.dingodex
 
+import android.content.res.AssetManager
+import android.graphics.BitmapFactory
+import android.graphics.drawable.Drawable
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
@@ -28,17 +31,22 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.graphics.createBitmap
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.dingo.R
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.dingo.R
+import com.example.dingo.model.DingoDexEntryListings
+
 
 sealed class DingoDexNavItem(
     val name: String,
@@ -189,6 +197,10 @@ private fun DingoDexItem(
     item: DingoDexCollectionItem,
     navController: NavHostController,
 ) {
+    val currentContext = LocalContext.current
+    val assetManager: AssetManager = currentContext.assets
+    val bitmap = BitmapFactory.decodeStream(currentContext.assets.open(DingoDexEntryListings.getInstance(currentContext).dingoDexEntryList[0].default_picture_name))
+    //Bitmap bit = BitmapFactory.decodeFile( DingoDexEntryListings.getInstance(currentContext).dingoDexEntryList[0].default_picture_name)
     Button(onClick = {navController.navigate(DingoDexNavItem.Description.route)}) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -197,11 +209,13 @@ private fun DingoDexItem(
             Box() {
                 if (item.pictureURL == "") {
                     Image(
-                        painter = if (item.isFauna) {
-                            painterResource(R.drawable.fauna_placeholder)
-                        } else {
-                            painterResource(R.drawable.flore_placeholder)
-                        },
+                        bitmap = bitmap.asImageBitmap(),
+//                        painter = if (item.isFauna) {
+//                            painterResource(Drawable.createFromPath(DingoDexEntryListings.getInstance(currentContext).dingoDexEntryList[0].default_picture_name))
+//                            //painterResource(R.drawable.fauna_placeholder)
+//                        } else {
+//                            painterResource(R.drawable.flore_placeholder)
+//                        },
                         contentDescription = if (item.isFauna) "Fauna" else "Flora",
                         contentScale = ContentScale.Inside,
                         modifier = Modifier

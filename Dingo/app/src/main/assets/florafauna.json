@@ -1,8 +1,9 @@
 [
   {
+    "is_fauna": true,
     "name": "Canada Goose",
     "scientific_name": "Branta canadensis",
     "description": "The Canada goose is a large migratory bird with a distinctive black head and neck, white chinstrap, and brown body feathers. Known for its honking call, it adapts to various habitats and undertakes seasonal migrations across North America.",
-    "default_picture_name": "goose.jpg"
+    "default_picture_name": "images/goose.jpg"
   }
 ]
