@@ -1,0 +1,22 @@
+[
+  {
+    "name": "Dingo Diver",
+    "description": "Make a Dingo account",
+    "conditions": [{"field": "Logins", "value": 1}]
+  },
+  {
+    "name": "Scanning...",
+    "description": "Make your first scan",
+    "conditions": [{"field": "SuccessfulScans", "value": 1}]
+  },
+  {
+    "name": "Social Butterfly",
+    "description": "Make your first social post",
+    "conditions": [{"field": "NumSocialPosts", "value": 1}]
+  },
+  {
+    "name": "Social Butterfly...",
+    "description": "Make your first classroom post",
+    "conditions": [{"field": "NumClassroomPosts", "value": 1}]
+  }
+]

@@ -1,9 +1,13 @@
 package com.example.dingo.social
 
+import android.content.Intent
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
+import com.example.dingo.MainActivity
+import com.example.dingo.common.isValidEmail
 import com.example.dingo.model.AccountType
 import com.example.dingo.model.Classroom
 import com.example.dingo.model.Post
@@ -11,6 +15,7 @@ import com.example.dingo.model.PostComparator
 import com.example.dingo.model.PostType
 import com.example.dingo.model.User
 import com.example.dingo.model.UserType
+import com.example.dingo.model.service.AccountService
 import com.example.dingo.model.service.ClassroomService
 import com.example.dingo.model.service.PostService
 import com.example.dingo.model.service.UserService
@@ -28,7 +33,13 @@ class SocialViewModel
 constructor(
     private val userService: UserService,
     private val postService: PostService,
+    private val accountService: AccountService,
 ) : ViewModel() {
+
+    suspend fun onSignOutClick() {
+        Log.d("STATE", "signing out")
+        accountService.signOut();
+    }
 
     fun makePost(
         userId: String,
@@ -74,7 +85,8 @@ constructor(
 
             if (user != null) {
                 val postQueueByTimestamp = PriorityQueue(PostComparator)
-                for (friendId in user.friends) {
+                var friendsAndMe = user.friends + listOf(userId)
+                for (friendId in friendsAndMe) {
                     val friend = withContext(Dispatchers.Default) {
                         userService.getUser(friendId)
                     }

@@ -14,10 +14,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
+import androidx.navigation.NavHostController
+import com.example.dingo.common.composable.BasicButton
+import com.example.dingo.common.composable.DisplayPasswordField
+import com.example.dingo.common.composable.EmailField
+import com.example.dingo.common.composable.RepeatPasswordField
 
 @Composable
 fun SignUpScreen(
-    viewModel: SignUpViewModel = hiltViewModel()
+    viewModel: SignUpViewModel = hiltViewModel(),
+    navController: NavHostController
 ) {
     val uiState by viewModel.uiState
     Column(
@@ -25,23 +31,10 @@ fun SignUpScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        TextField(
-            singleLine = true,
-            value = uiState.email,
-            onValueChange = {viewModel.onEmailChange(uiState.email)},
-            placeholder = { Text(text="Email") },
-        )
-        TextField(
-            singleLine = true,
-            value = uiState.password,
-            onValueChange = {viewModel.onPasswordChange(uiState.password)},
-            placeholder = { Text(text="Password") },
-        )
-        TextField(
-            singleLine = true,
-            value = uiState.repeatPassword,
-            onValueChange = {viewModel.onRepeatPasswordChange(uiState.repeatPassword)},
-            placeholder = { Text(text="Repeat Password") },
-        )
+        EmailField(uiState.email,  viewModel::onEmailChange)
+        DisplayPasswordField(uiState.password, viewModel::onPasswordChange)
+        RepeatPasswordField(uiState.repeatPassword, viewModel::onRepeatPasswordChange)
+        BasicButton("Sign Up") {viewModel::onSignUpClick}
+//        BasicButton("Sign Up") { navController.navigate("mainScreen") }
     }
 }
