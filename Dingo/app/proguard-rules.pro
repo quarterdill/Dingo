@@ -23,6 +23,10 @@
 -keepclassmembers class com.google.android.gms.maps.model.LatLng {
     <init>(double, double);
 }
+-keep class com.google.firebase.firestore.GeoPoint {
+    <init>(double, double);
+}
+
 
 
 
