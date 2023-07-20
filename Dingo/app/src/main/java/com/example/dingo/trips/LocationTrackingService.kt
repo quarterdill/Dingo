@@ -4,96 +4,96 @@ import android.annotation.SuppressLint
 import android.app.Notification
 import android.app.Service
 import android.content.Intent
-import android.location.Location
 import android.os.IBinder
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.core.app.NotificationCompat
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.location.LocationServices
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
-import kotlinx.coroutines.withContext
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
+import android.os.Looper
 import android.util.Log
+import androidx.lifecycle.MutableLiveData
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationResult
+import com.google.android.gms.location.Priority.PRIORITY_HIGH_ACCURACY
+import com.google.android.gms.maps.model.LatLng
+import kotlinx.coroutines.cancel
+import java.sql.Time
+import javax.inject.Inject
+
 
 private const val CHANNEL_ID = "my_channel_id"
 private const val CHANNEL_NAME = "My Channel"
 private const val CHANNEL_DESCRIPTION = "This is my notification channel"
 
-class LocationTrackingService : LifecycleService() {
+class LocationTrackingService @Inject constructor(): LifecycleService() {
 
     private val notificationId = 1
-    private var isTracking by mutableStateOf(false)
-    private val locationList = mutableListOf<Location>()
-
+    private lateinit var locationClient: FusedLocationProviderClient
+    companion object {
+        val locationList = MutableLiveData<MutableList<LatLng>>()
+    }
 
     override fun onCreate() {
         super.onCreate()
         val notification = createNotification()
-        try {
-            startForeground(notificationId, notification)
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-
+        startForeground(notificationId, notification)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
-        isTracking = true
+        locationList.value = mutableListOf()
         startLocationTracking()
         return Service.START_STICKY
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        isTracking = false
         stopLocationTracking()
     }
     private fun stopLocationTracking() {
-        // Stop location tracking
-        // ...
-
-        // Return the list of locations
-        val intent = Intent(ACTION_LOCATION_TRACKING_STOPPED).apply {
-            putExtra(EXTRA_LOCATION_LIST, locationList.toTypedArray())
-        }
-        sendBroadcast(intent)
+        lifecycleScope.cancel()
+        locationClient.removeLocationUpdates(locationCallback)
+        locationList.postValue(locationList.value)
     }
 
     private fun startLocationTracking() {
-        lifecycleScope.launch {
-            while (isTracking) {
-                val location = getCurrentLocation()
-                locationList.add(location)
-                Log.d("asdfadf", location.toString())
-//                println(location)
-
-                // Process the location data as needed
-                // For example, update a mutable state variable with the latest location
-                // locationLiveData.value = location
-                delay(1000) // Delay between location updates
-            }
-        }
+       lifecycleScope.launch {
+           getLocationUpdates()
+       }
     }
 
     @SuppressLint("MissingPermission")
-    private suspend fun getCurrentLocation():  Location {
-        // Use the appropriate location provider to get the current location
-        // For example, use FusedLocationProviderClient in Android
-            val fusedLocationClient =
-                LocationServices.getFusedLocationProviderClient(this@LocationTrackingService)
-            val locationResult = fusedLocationClient.lastLocation.await()
-         return locationResult
+    private suspend fun getLocationUpdates() {
+        val request = LocationRequest().apply {
+            interval = 1000L
+            fastestInterval = 1000L
+            priority = PRIORITY_HIGH_ACCURACY
+        }
+        locationClient = LocationServices.getFusedLocationProviderClient(applicationContext)
+        locationClient.requestLocationUpdates(request, locationCallback, Looper.getMainLooper())
+    }
+
+    private val locationCallback = object : LocationCallback() {
+        override fun onLocationResult(result: LocationResult) {
+            Log.d("LocationTrackingService", "Callback before onLocationResult: $result")
+
+            super.onLocationResult(result)
+            result?.locations?.let { locations ->
+                for(location in locations) {
+                    val pos = LatLng(location.latitude, location.longitude)
+                    val time = location.time
+                    Log.d("locationCallBack", "pos: $pos; time: $time")
+                    locationList.value?.add(pos)
+                }
+            }
+        }
     }
 
     private fun createNotification(): Notification {
@@ -126,10 +126,5 @@ class LocationTrackingService : LifecycleService() {
                 context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
         }
-    }
-
-    companion object {
-        const val ACTION_LOCATION_TRACKING_STOPPED = "com.example.dingo.trips.ACTION_LOCATION_TRACKING_STOPPED"
-        const val EXTRA_LOCATION_LIST = "com.example.dingo.trips.EXTRA_LOCATION_LIST"
     }
 }

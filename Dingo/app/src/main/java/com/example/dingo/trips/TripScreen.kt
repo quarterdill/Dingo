@@ -1,6 +1,7 @@
 package com.example.dingo.trips
 
 import android.content.Intent
+import android.util.Log
 import androidx.compose.runtime.Composable
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
@@ -31,20 +32,72 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Observer
+import com.example.dingo.model.Post
+import com.example.dingo.model.Trip
 @Composable
-fun TripScreen() {
+fun TripScreen(
+    viewModel: TripViewModel = hiltViewModel()
+) {
     val context = LocalContext.current
+    val lifeCycleOwner = LocalLifecycleOwner.current
+
+    val dummyUserId = "Q0vMYa9VSh7tyFdLTPgX"
+    val dummyUsername = "Eric Shang"
+    val limit = 50
+    val feedItems = viewModel
+        .getTripFeed(dummyUserId)
+        .observeAsState()
 
     LaunchedEffect(key1 = true) {
         LocationTrackingService().createNotificationChannel(context)
+        LocationTrackingService.locationList.observe(lifeCycleOwner, Observer {
+            var locations:List<LatLng> = viewModel.locationTrackingStopped(it)
+            Log.d("tripViewScreen", "locations: $locations")
+            //            viewModel.makeDummyTrips(locations)
+
+        })
     }
     LocationPermissionScreen()
-//    ComposeDemoApp()
     LocationTrackingScreen()
+
+    LazyColumn(
+//        modifier = Modifier.weight(1.0f, true)
+    ) {
+        var trips =  feedItems.value
+        if (trips != null) {
+            items(trips.size) {
+                TripPost(trips[it])
+
+            }
+        }
+    }
+
 }
+
+@Composable
+private fun TripPost(trip: Trip) {
+    Row(
+        modifier = Modifier.padding(16.dp),
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text("${trip.username} posted ${trip.locations} ago")
+    }
+}
+
 @Composable
 fun LocationPermissionScreen() {
+
+
+
     val context = LocalContext.current
     val permissionState = remember { mutableStateOf(false) }
 
@@ -64,6 +117,8 @@ fun LocationPermissionScreen() {
         }
 
         Text(text = "Permission Granted: ${permissionState.value}")
+
+
     }
 }
 

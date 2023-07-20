@@ -28,7 +28,9 @@
         <service
             android:name="com.example.dingo.trips.LocationTrackingService"
             android:enabled="true"
-            android:exported="false" />
+            android:exported="false"
+            android:foregroundServiceType="location"
+            />
         <activity
             android:name=".MainActivity"
             android:exported="true"
