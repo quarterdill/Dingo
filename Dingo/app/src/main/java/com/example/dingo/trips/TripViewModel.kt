@@ -15,8 +15,8 @@ import javax.inject.Inject
 import android.location.Location
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
+import com.example.dingo.model.User
 import com.google.android.gms.maps.model.LatLng
-
 
 
 @HiltViewModel
@@ -29,12 +29,53 @@ constructor(
 
     private val locationListLiveData = MutableLiveData<List<Location>>()
 
-    fun locationTrackingStopped(locationList: MutableList<LatLng>) {
+
+
+
+    fun locationTrackingStopped(locationList: MutableList<LatLng>) : List<LatLng> {
+
         Log.d("view Model locationList", locationList.toString())
+        return locationList as List<LatLng>
+    //        val user = userService.getUserByEmail("e2shang@uwaterloo.ca")
+//
+//        Log.d("view Model locationTrackingStopped user", user.toString())
+//
+//        if (user != null) {
+//            Log.d("tripViewModel calling makeTrip with user", user.toString())
+//            makeTrip(userId=user.id, username=user.username, locations = locationList as List<LatLng>)
+//        } else {
+//            Log.d("tripViewModel calling makeTrip without", "u")
+//
+//        }
+
     }
+
     fun getLocationFeed(userId: String): MutableLiveData<List<Location>> {
         return locationListLiveData
     }
+
+    fun makeTrip(
+        userId: String,
+        username: String,
+        locations: List<LatLng>
+    ) {
+        var discoveredEntries = emptyList<String>()
+        viewModelScope.launch {
+
+            val tripId = tripService.createTrip(
+                userId,
+                username,
+                locations,
+                discoveredEntries
+            )
+            Log.d("TripViewModel making a trip with tripId:", tripId)
+
+//            classroomService.addPost(classroomId, postId)
+//            userService.addClassroomPost(userId, postId)
+        }
+
+    }
+
 
     fun getTripFeed(userId: String): LiveData<MutableList<Trip>?> {
         return liveData(Dispatchers.IO) {
@@ -67,32 +108,25 @@ constructor(
         )
     }
 
-    fun makeDummyTrips() {
+    fun makeDummyTrips(locations: List<LatLng>) {
         viewModelScope.launch {
             val user = userService.getUserByEmail("e2shang@uwaterloo.ca")
             if (user != null) {
-                val trip = tripService.createTrip(
+                val tripId = tripService.createTrip(
                     user.id,
                     user.username,
-                    emptyList(),
+                    locations = locations,
                     emptyList(),
                 )
+                Log.d("TripViewModel making a trip with tripId:", tripId)
+
                 println("successfully posted a trip")
+            } else {
+                Log.d("TripViewModel", "fail to make trip since no user")
+
             }
         }
 
-        viewModelScope.launch {
-            val user = userService.getUserByEmail("e2shang@uwaterloo.ca")
-            if (user != null) {
-                val trip = tripService.createTrip(
-                    user.id,
-                    user.username,
-                    emptyList(),
-                    emptyList(),
-                )
-                println("successfully posted another trip!")
-            }
-        }
     }
 
 }

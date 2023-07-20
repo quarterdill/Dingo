@@ -5,6 +5,7 @@ import com.example.dingo.model.LocationTime
 import com.example.dingo.model.Trip
 import com.example.dingo.model.service.AccountService
 import com.example.dingo.model.service.TripService
+import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -20,13 +21,14 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
     override suspend fun createTrip(
         userId: String,
         username: String,
-        locations: List<LocationTime>,
+        locations: List<LatLng>,
         discoveredEntries: List<String>
 
     ): String {
         var trip: Trip = Trip()
         trip.userId = userId
         trip.username = username
+        trip.locations = locations
 
 //        Default to empty lists for now
 //        TODO("Fetch locations using Android API and discoveredEntries from Scanner Service")

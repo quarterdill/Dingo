@@ -81,6 +81,8 @@ class LocationTrackingService @Inject constructor(): LifecycleService() {
 
     private val locationCallback = object : LocationCallback() {
         override fun onLocationResult(result: LocationResult) {
+            Log.d("location Callback before onLocationResult", result.toString())
+
             super.onLocationResult(result)
             result?.locations?.let { locations ->
                 for(location in locations) {

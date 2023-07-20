@@ -1,14 +1,14 @@
 package com.example.dingo.model.service
 
-import com.example.dingo.model.LocationTime
 import com.example.dingo.model.Trip
+import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.flow.Flow
 interface TripService {
     // returns post id
     suspend fun createTrip(
         userId: String,
         username: String,
-        locations: List<LocationTime>,
+        locations: List<LatLng>,
         discoveredEntries: List<String>,
     ): String
 

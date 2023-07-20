@@ -46,7 +46,16 @@ fun TripScreen(
     LaunchedEffect(key1 = true) {
         LocationTrackingService().createNotificationChannel(context)
         LocationTrackingService.locationList.observe(lifeCycleOwner, Observer {
-            viewModel.locationTrackingStopped(it)
+            var locations:List<LatLng> = viewModel.locationTrackingStopped(it)
+
+            Log.d("tripViewScreen got location:", locations.toString())
+            Log.d("tripViewScreen MakeTrip:", "making trip...")
+            viewModel.makeDummyTrips(locations)
+            Log.d("tripViewScreen dummy trip:", locations.toString())
+
+
+
+
         })
     }
     LocationPermissionScreen()
