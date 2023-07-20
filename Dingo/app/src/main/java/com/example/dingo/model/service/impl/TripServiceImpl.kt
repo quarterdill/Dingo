@@ -81,6 +81,24 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
 
 
 
+    fun convertGeoTripsToTrips(geoTrips: List<GeoTrip>): List<Trip> {
+        val trips = mutableListOf<Trip>()
+        for (geoTrip in geoTrips) {
+            val locations = geoTrip.locations.map { location ->
+                LatLng(location["latitude"] as Double, location["longitude"] as Double)
+            }
+            val trip = Trip(
+                id = geoTrip.id,
+                userId = geoTrip.userId,
+                username = geoTrip.username,
+                locations = locations,
+                discoveredEntries = geoTrip.discoveredEntries
+            )
+            trips.add(trip)
+        }
+        return trips
+    }
+
 
     override suspend fun getTripFeed(userId: String, limit: Int): Flow<MutableList<Trip>?> {
         Log.d("TripService", "getTripFeed($userId, $limit)")
@@ -100,41 +118,7 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
                 val id = snapshot.id
                 val userId = snapshot.getString("userId") ?: ""
                 val username = snapshot.getString("username") ?: ""
-//                snapshot.toObject()
-//                val geoPointList = snapshot.get("locations", GeoPointList::class.java)
-//                val locations = geoPointList?.map { location ->
-//                    val latitude = location["latitude"] as? Double ?: 0.0
-//                    val longitude = location["longitude"] as? Double ?: 0.0
-//                    LatLng(latitude, longitude)
-//                } ?: emptyList()
-
-//                val locations = snapshot.get("locations", List::class.java)?.mapNotNull { location ->
-//                    if (location is HashMap<*, *>) {
-//                        val latitude = location["latitude"] as? Double ?: 0.0
-//                        val longitude = location["longitude"] as? Double ?: 0.0
-//                        LatLng(latitude, longitude)
-//                    } else {
-//                        null
-//                    }
-//                } ?: emptyList()
-
-//                val locations = snapshot.get("locations", object : GenericTypeIndicator<List<HashMap<String, Any>>>() {})
-//                    ?.flatMap { it.values }
-//                    ?.mapNotNull { location ->
-//                        if (location is HashMap<*, *>) {
-//                            val latitude = location["latitude"] as? Double ?: 0.0
-//                            val longitude = location["longitude"] as? Double ?: 0.0
-//                            LatLng(latitude, longitude)
-//                        } else {
-//                            null
-//                        }
-//                    } ?: emptyList()
-
-//                val locations = snapshot.get("locations", object : GenericTypeIndicator<List<HashMap<String, Any>>>() {})
-
-//                val discoveredEntries : List<String?> = emptyList()
-//                Trip(id, userId, username, locations, discoveredEntries)
-            }
+  }
 
 
             val subscription = query.addSnapshotListener { snapshot, e ->
@@ -144,16 +128,14 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
                     Log.d("TripService", "snapshot TRIPS: $snapshot")
                     Log.d("TripService", "snapshot.documents!: ${snapshot.documents}")
 
-                    val ret : Any = snapshot.toObjects(GeoTrip::class.java)
-                    Log.d("TripService", "toObjects!: ${ret}")
+                    val geoTripList : List<GeoTrip> = snapshot.toObjects(GeoTrip::class.java)
+                    val trips = convertGeoTripsToTrips(geoTripList)
 
-//                    val geoTrips = snapshot.documents.map { document ->
-//                        val queryDocumentSnapshot = document as QueryDocumentSnapshot
-//                        geoTripDeserializer(queryDocumentSnapshot)
-//                    }
-//                    trySend(geoTrips.toMutableList())
+                    Log.d("TripService", "toObjects!: ${geoTripList}")
+                    Log.d("TripService", "toObjects after conversion for trips!: ${trips}")
 
-                    trySend(mutableListOf())
+
+                    trySend(trips as MutableList<Trip>)
                 }
 
             }
