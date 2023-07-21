@@ -11,6 +11,7 @@ import com.example.dingo.model.service.ClassroomService
 import com.example.dingo.model.service.UserService
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.toObject
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -51,8 +52,9 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
     }
 
     override suspend fun getUser(userId: String): User? {
+        var user = if (userId == "") "temp" else userId
         return firestore.collection(USER_COLLECTIONS)
-            .document(userId)
+            .document(user)
             .get()
             .await()
             .toObject(User::class.java)
@@ -246,8 +248,7 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
     }
 
     override suspend fun updateDingoDex(
-        userId: String,
-        uncollected: List<String>,
+        newEntryId: String,
         isFauna: Boolean
     ) {
         val field = if (isFauna) {
@@ -255,8 +256,19 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
         } else {
             UNCOLLECTED_FLORA
         }
+        val user = firestore.collection(USER_COLLECTIONS)
+            .document("temp").get().await().toObject(User::class.java)
+        if (user != null) {
+            val collection = if (isFauna) {
+                user.uncollectedFauna.toMutableList()
+            } else {
+                user.uncollectedFlora.toMutableList()
+            }
+            collection.remove(newEntryId)
+            // TODO: change temp once auth is done
+            firestore.collection(USER_COLLECTIONS).document("temp").update(field, collection)
+        }
 
-        firestore.collection(USER_COLLECTIONS).document(userId).update(field, uncollected)
     }
 
     // This is for social posts

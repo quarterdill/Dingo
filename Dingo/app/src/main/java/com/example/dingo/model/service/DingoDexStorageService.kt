@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface DingoDexStorageService {
     suspend fun getDingoDexItem(dingoId: String, isFauna: Boolean): DingoDex?
+    suspend fun findDingoDexItem(entryName: String): DingoDex?
     suspend fun getDingoDex(isFauna: Boolean): MutableList<DingoDex>
     // Dev only
     suspend fun addDummyDingoDex(isFauna: Boolean)

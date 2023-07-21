@@ -8,10 +8,8 @@ import com.example.dingo.model.Post
 import com.example.dingo.model.PostType
 import kotlinx.coroutines.flow.Flow
 
-
-
 interface UserService {
-    suspend fun getUser(userId: String): User?
+    suspend fun getUser(userId: String = ""): User?
     suspend fun getUserFlow(userId: String = ""): Flow<User?>
     suspend fun getUserByEmail(email: String): User?
     suspend fun getUserByUsername(username: String): User?
