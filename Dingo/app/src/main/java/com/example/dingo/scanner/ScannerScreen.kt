@@ -33,7 +33,23 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import android.graphics.BitmapFactory
 import androidx.compose.ui.unit.dp
 import android.graphics.Matrix
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.rounded.Info
+import androidx.compose.material3.Button
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.Divider
 import androidx.compose.material3.FabPosition
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Text
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.Color
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
@@ -69,17 +85,67 @@ fun ScannerScreen(
 @Composable
 private fun CapturedImageBitmapDialog(
     capturedImage: Bitmap,
-    onDismissRequest: () -> Unit
+    onDismissRequest: () -> Unit,
+    viewModel: ScannerViewModel = hiltViewModel()
 ) {
     val capturedImageBitmap: ImageBitmap = remember { capturedImage.asImageBitmap() }
 
     Dialog(
         onDismissRequest = onDismissRequest
     ) {
-        Image(
-            bitmap = capturedImageBitmap,
-            contentDescription = "Captured Image"
-        )
+        Box() {
+            var setDefaultPicture by remember { mutableStateOf(true) }
+            Image(
+                bitmap = capturedImageBitmap,
+                contentDescription = "Captured Image"
+            )
+            Row(
+                modifier = Modifier.padding(12.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = "Entry Name",
+                )
+                IconButton(
+                    modifier = Modifier.size(24.dp),
+                    onClick = {
+                        // TODO: Description POPup or smth
+                    }
+                ) {
+                    Icon(
+                        Icons.Rounded.Info,
+                        "contentDescription",
+                    )
+                }
+            }
+
+            Column(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Checkbox(checked = setDefaultPicture, onCheckedChange = {
+                        setDefaultPicture = it
+                    })
+                    Text("Set as Default Picture")
+                }
+                Button(
+                    onClick = {
+                        println("Saving Image")
+                        viewModel.savePicture("", capturedImage, setDefaultPicture)
+                    },
+                ) {
+                    Text(text = "Save Image")
+                }
+            }
+
+        }
     }
 }
 

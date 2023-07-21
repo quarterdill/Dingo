@@ -1,5 +1,6 @@
 package com.example.dingo.model.service
 
+import android.graphics.Bitmap
 import com.example.dingo.model.DingoDex
 import com.example.dingo.model.DingoDexEntry
 import kotlinx.coroutines.flow.Flow
@@ -12,4 +13,5 @@ interface DingoDexEntryService {
     suspend fun addNewEntry(newDingoDexEntry: DingoDex)
     suspend fun updateEntry(entry: DingoDexEntry)
     suspend fun deleteEntry(entryId: String)
+    suspend fun addPicture(entryName: String, image: Bitmap, setDefault: Boolean)
 }
