@@ -17,7 +17,7 @@ interface UserService {
     suspend fun acceptFriendReq(senderId: String, receiverId: String): String
     suspend fun declineFriendReq(senderId: String, receiverId: String): String
     suspend fun createUser(username: String, email: String, accountType: AccountType): String
-    suspend fun updateDingoDex(userId: String, uncollected: List<String>, isFauna: Boolean)
+    suspend fun updateDingoDex(newEntryId: String, isFauna: Boolean)
     suspend fun setPostHeadForUser(userId: String, postId: String, postType: PostType)
     suspend fun addClassroomPost(userId: String, postId: String)
     suspend fun getFriends(userId: String, limit: Int = 10): Flow<MutableList<User>?>

@@ -38,14 +38,19 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -89,62 +94,78 @@ private fun CapturedImageBitmapDialog(
     viewModel: ScannerViewModel = hiltViewModel()
 ) {
     val capturedImageBitmap: ImageBitmap = remember { capturedImage.asImageBitmap() }
-
+    val isLoading = viewModel.isLoading.observeAsState()
+    viewModel.addEntry("Dummy Data")
     Dialog(
-        onDismissRequest = onDismissRequest
+        onDismissRequest = onDismissRequest,
     ) {
-        Box() {
-            var setDefaultPicture by remember { mutableStateOf(true) }
-            Image(
-                bitmap = capturedImageBitmap,
-                contentDescription = "Captured Image"
-            )
-            Row(
-                modifier = Modifier.padding(12.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Text(
-                    text = "Entry Name",
-                )
-                IconButton(
-                    modifier = Modifier.size(24.dp),
-                    onClick = {
-                        // TODO: Description POPup or smth
-                    }
-                ) {
-                    Icon(
-                        Icons.Rounded.Info,
-                        "contentDescription",
+        Box (
+            // TODO: might need to change height property so it matches imges exactly
+            modifier = Modifier.width(capturedImageBitmap.width.dp).height(capturedImageBitmap.height.dp/3),
+            contentAlignment = Alignment.Center
+        ){
+            if (isLoading.value!!) {
+                CircularProgressIndicator()
+            } else {
+                Box {
+                    var setDefaultPicture by remember { mutableStateOf(true) }
+                    Image(
+                        bitmap = capturedImageBitmap,
+                        contentDescription = "Captured Image"
                     )
+                    Row(
+                        modifier = Modifier.padding(12.dp).fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        IconButton(
+                            modifier = Modifier.size(24.dp),
+                            onClick = onDismissRequest
+                        ) {
+                            Icon(
+                                Icons.Rounded.Close,
+                                "close",
+                            )
+                        }
+                        Text(
+                            text = "Entry Name",
+                        )
+                        IconButton(
+                            modifier = Modifier.size(24.dp),
+                            onClick = {
+                                // TODO: Description POPup or smth
+                            }
+                        ) {
+                            Icon(
+                                Icons.Rounded.Info,
+                                "contentDescription",
+                            )
+                        }
+                    }
+                    Column(
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Checkbox(checked = setDefaultPicture, onCheckedChange = {
+                                setDefaultPicture = it
+                            })
+                            Text("Set as Default Picture")
+                        }
+                        Button(
+                            onClick = {
+                                println("Saving Image")
+                                viewModel.savePicture("Dummy Data", capturedImage, setDefaultPicture)
+                            },
+                        ) {
+                            Text(text = "Save Image")
+                        }
+                    }
                 }
             }
-
-            Column(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
-
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Checkbox(checked = setDefaultPicture, onCheckedChange = {
-                        setDefaultPicture = it
-                    })
-                    Text("Set as Default Picture")
-                }
-                Button(
-                    onClick = {
-                        println("Saving Image")
-                        viewModel.savePicture("", capturedImage, setDefaultPicture)
-                    },
-                ) {
-                    Text(text = "Save Image")
-                }
-            }
-
         }
     }
 }

@@ -10,8 +10,8 @@ interface DingoDexEntryService {
     val dingoDexFloraEntries: Flow<List<DingoDexEntry>>
 
     suspend fun getEntry(entryName: String) : List<DingoDexEntry>
-    suspend fun addNewEntry(newDingoDexEntry: DingoDex)
-    suspend fun updateEntry(entry: DingoDexEntry)
+    suspend fun addNewEntry(newDingoDexEntry: DingoDex) : Boolean
+    suspend fun updateEntry(entry: DingoDexEntry) : Boolean
     suspend fun deleteEntry(entryId: String)
-    suspend fun addPicture(entryName: String, image: Bitmap, setDefault: Boolean)
+    suspend fun addPicture(entryName: String, image: Bitmap) : String
 }
