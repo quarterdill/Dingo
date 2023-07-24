@@ -53,7 +53,7 @@ constructor(
                 if (dingoDex != null) {
                     userService.updateDingoDex(dingoDex.id, dingoDex.isFauna)
 
-                    result =dingoDexEntryService.addNewEntry(dingoDex)
+                    result = dingoDexEntryService.addNewEntry(dingoDex)
                 }
             } else {
                 // Should only have 1 entry for each animal/plant
@@ -69,9 +69,9 @@ constructor(
 
     fun savePicture(entryName: String, image: Bitmap, saveAsDefault: Boolean, context: Context) {
         viewModelScope.launch {
-            imageInternalStorageService.saveImage("test", image, context)
-            if (saveAsDefault) {
 
+            imageInternalStorageService.saveImage(entryName, image, context)
+            if (saveAsDefault) {
                     var result = false
                     val imagePath = dingoDexEntryService.addPicture(entryName, image)
                     if (imagePath != "") {

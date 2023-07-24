@@ -168,17 +168,7 @@ fun DingoDexScreen(
                             )
                         }
                     }
-                    val file = File(LocalContext.current.filesDir, "Users/temp/images/test/my_bitmap.png")
-                    val inputStream = FileInputStream(file)
-                    var test = BitmapFactory.decodeStream(inputStream)
-                    Image(
-                        bitmap = test.asImageBitmap(),
-                        contentDescription = "Captured Image"
-                    )
                     Row() {
-
-
-
                         Image(
                             painter = painterResource(R.drawable.fauna_placeholder),
                             contentDescription = "Fauna",

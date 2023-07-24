@@ -1,5 +1,6 @@
 package com.example.dingo.model.service.impl
 
+import com.example.dingo.common.SessionInfo
 import com.example.dingo.model.AccountType
 import com.example.dingo.model.Classroom
 import com.example.dingo.model.Post
@@ -9,6 +10,7 @@ import com.example.dingo.model.UserType
 import com.example.dingo.model.service.AccountService
 import com.example.dingo.model.service.ClassroomService
 import com.example.dingo.model.service.UserService
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.toObject
@@ -99,6 +101,21 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
             }
             awaitClose { subscription.remove() }
         }
+    }
+
+    override suspend fun getCurrentUser() {
+        if (auth.currentUserId.isNotEmpty()) {
+            val querySnapshot = firestore.collection(USER_COLLECTIONS)
+                .whereEqualTo("authId", auth.currentUserId)
+                .get()
+                .await()
+
+            if (!querySnapshot.isEmpty) {
+                val documentSnapshot = querySnapshot.documents[0]
+                SessionInfo.currentUser = documentSnapshot.toObject(User::class.java)
+            }
+        }
+
     }
 
     override suspend fun getUserByEmail(email: String): User? {

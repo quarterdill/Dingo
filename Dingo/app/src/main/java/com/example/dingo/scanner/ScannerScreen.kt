@@ -159,7 +159,7 @@ private fun CapturedImageBitmapDialog(
                         Button(
                             onClick = {
                                 println("Saving Image")
-                                viewModel.savePicture("Dummy Data", capturedImage, setDefaultPicture, context)
+                                viewModel.savePicture("Dummy_Data", capturedImage, setDefaultPicture, context)
                             },
                         ) {
                             Text(text = "Save Image")

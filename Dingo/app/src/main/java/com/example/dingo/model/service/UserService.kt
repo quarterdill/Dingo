@@ -24,4 +24,6 @@ interface UserService {
     suspend fun getPendingFriendReqs(userId: String): Flow<MutableList<User>?>
     suspend fun getUsersPosts(userId: String): Flow<MutableList<Post>?>
     suspend fun addAchievementForUser(user: User, achievementId: Int)
+
+    suspend fun getCurrentUser()
 }
