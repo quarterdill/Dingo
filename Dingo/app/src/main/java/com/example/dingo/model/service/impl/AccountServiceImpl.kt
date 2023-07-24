@@ -3,6 +3,7 @@ package com.example.dingo.model.service.impl
 // from https://github.com/FirebaseExtended/make-it-so-android/blob/main/start/app/src/main/java/com/example/makeitso/model/service/impl/AccountServiceImpl.kt
 
 import android.util.Log
+import com.example.dingo.common.SessionInfo
 import com.example.dingo.model.Response.Failure
 import com.example.dingo.model.Response.Success
 import com.example.dingo.model.User
@@ -57,18 +58,20 @@ class AccountServiceImpl @Inject constructor(
 //        Failure(e)
 //    }
 
-    override suspend fun loginUser(email: String, password: String) {
+    override suspend fun loginUser(email: String, password: String): Boolean {
         try {
             val authResult = auth.signInWithEmailAndPassword(email, password).await()
             // Authentication successful
             val user = authResult.user
-
+            SessionInfo.currentUserAuthId = user?.uid
             // Handle the logged-in user as needed
+            return true
         } catch (e: Exception) {
             // Authentication failed
             Log.e("STATE", "Login failed: ${e.message}")
             // Handle the authentication failure as needed
         }
+        return false
     }
 
     override suspend fun sendEmailVerification() = try {
