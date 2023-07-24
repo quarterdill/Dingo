@@ -1,7 +1,12 @@
 package com.example.dingo.model.service.impl
 
+import android.content.Context
+import androidx.compose.ui.platform.LocalContext
 import com.example.dingo.model.DingoDex
 import com.example.dingo.model.DingoDexEntry
+import com.example.dingo.model.DingoDexEntryContent
+import com.example.dingo.model.DingoDexEntryListings
+import com.example.dingo.model.DingoDexScientificToIndex
 import com.example.dingo.model.service.AccountService
 import com.example.dingo.model.service.DingoDexStorageService
 import com.google.firebase.firestore.DocumentSnapshot
@@ -17,29 +22,28 @@ class DingoDexStorageServiceImpl
 constructor(private val firestore: FirebaseFirestore, private val auth: AccountService) :
     DingoDexStorageService {
     // TODO: Make this live data somehow
-    override suspend fun getDingoDexItem(dingoId: String, isFauna: Boolean): DingoDex? {
+    override suspend fun getDingoDexItem(dingoId: Int, isFauna: Boolean): DingoDexEntryContent {
         val collection = if (isFauna) {
-            firestore.collection(DINGO_DEX_FAUNA)
+            DingoDexEntryListings.faunaEntryList
         } else {
-            firestore.collection(DINGO_DEX_FLORA)
+            DingoDexEntryListings.floraEntryList
         }
-        return collection.document(dingoId).get().await().toObject(DingoDex::class.java)
+        return collection[dingoId]
 
     }
 
-    override suspend fun findDingoDexItem(entryName: String): DingoDex? {
-        var collection = firestore.collection(DINGO_DEX_FAUNA)
-            .whereEqualTo(ENTRY_NAME, entryName).get().await().toObjects(DingoDex::class.java)
-        if (collection.isNotEmpty()) {
-            // Should only have 1 entry per animal
-            return collection[0]
+    override suspend fun findDingoDexItem(entryName: String): DingoDexEntryContent? {
+        // TODO Replace with this once we make everything local
+        var index = DingoDexScientificToIndex.dingoDexFaunaScientificToIndex[entryName]
+        if (index != null) {
+            return DingoDexEntryListings.faunaEntryList[index]
         }
-        collection = firestore.collection(DINGO_DEX_FLORA)
-            .whereEqualTo(ENTRY_NAME, entryName).get().await().toObjects(DingoDex::class.java)
-        if (collection.isNotEmpty()) {
-            // Should only have 1 entry per animal
-            return collection[0]
+
+        index = DingoDexScientificToIndex.dingoDexFloraScientificToIndex[entryName]
+        if (index != null) {
+            return DingoDexEntryListings.floraEntryList[index]
         }
+
         return null
     }
 

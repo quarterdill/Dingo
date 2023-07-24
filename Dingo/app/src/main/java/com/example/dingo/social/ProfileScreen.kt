@@ -15,7 +15,7 @@ fun ProfileScreen(
     viewModel: ProfileViewModel = hiltViewModel()
 ) {
     val numFloraFound = viewModel.getNumFlora()
-    val totalFlora = DingoDexEntryListings.getInstance(LocalContext.current).floraEntryList.size
+    val totalFlora = DingoDexEntryListings.floraEntryList.size
 
     Column(
         modifier = Modifier.fillMaxSize(),
