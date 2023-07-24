@@ -6,9 +6,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavHostController
 import com.example.dingo.authentication.signup.SignUpUIState
+import com.example.dingo.common.SessionInfo
 import com.example.dingo.common.isValidEmail
 import com.example.dingo.common.isValidPassword
 import com.example.dingo.model.service.AccountService
+import com.example.dingo.model.service.UserService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -16,7 +18,8 @@ import javax.inject.Inject
 class LoginViewModel
 @Inject
 constructor(
-    private val accountService: AccountService
+    private val accountService: AccountService,
+    private val userService: UserService,
 ) : ViewModel() {
     private val _uiState = mutableStateOf(LoginUIState())
     val uiState: State<LoginUIState> = _uiState
@@ -47,7 +50,11 @@ constructor(
 //            return
 //        }
         Log.d("STATE","trying to login")
-        accountService.loginUser(email, password);
+        val successfulLogin = accountService.loginUser(email, password)
+        if (successfulLogin) {
+            val user = userService.getUserByEmail(email)
+            SessionInfo.currentUser = user
+        }
     }
 
 

@@ -391,6 +391,13 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
         }
     }
 
+    override suspend fun addAchievementForUser(user: User, achievementId: Int) {
+        firestore.collection(USER_COLLECTIONS)
+            .document(user.id)
+            .update("achievements", FieldValue.arrayUnion(achievementId))
+            .await()
+    }
+
 
     companion object {
         private const val USER_COLLECTIONS = "userCollections"

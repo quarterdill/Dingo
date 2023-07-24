@@ -24,6 +24,8 @@ data class DingoDexEntryContent (
 )
 
 class DingoDexEntryListings private constructor(context: Context){
+    val floraEntryList: MutableList<DingoDexEntryContent> = mutableListOf()
+    val faunaEntryList: MutableList<DingoDexEntryContent> = mutableListOf()
     var dingoDexEntryList: List<DingoDexEntryContent> = emptyList()
     // from https://www.bezkoder.com/kotlin-android-read-json-file-assets-gson/
     fun getJsonDataFromAsset(context: Context, fileName: String) {
@@ -41,6 +43,11 @@ class DingoDexEntryListings private constructor(context: Context){
         dingoDexEntryList = gson.fromJson(jsonString, listDingoDexEntryType)
         dingoDexEntryList.forEach {
             println(it)
+            if (it.is_fauna) {
+                faunaEntryList.add(it)
+            } else {
+                floraEntryList.add(it)
+            }
         }
     }
     init {

@@ -2,6 +2,7 @@ package com.example.dingo.social
 
 import android.util.Log
 import android.app.PendingIntent.getActivity
+import android.se.omapi.Session
 import android.widget.Toast
 import androidx.camera.core.impl.utils.ContextUtil.getApplicationContext
 import androidx.camera.core.impl.utils.ContextUtil.getBaseContext
@@ -40,6 +41,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.dingo.common.SessionInfo
 import com.example.dingo.model.Post
 import com.example.dingo.model.User
 import com.example.dingo.model.UserType
@@ -96,15 +98,21 @@ fun SocialScreen(
 //    val dummyUserId = "XQIfyBwIwQKyAfiIDKggy"
 //    val dummyUsername = "Simhon Chourasia"
 
+    var currUserId = dummyUserId
+    var currUsername = dummyUsername
+//    var currUser = SessionInfo.currentUser
+//    if (currUser != null) {
+//        currUserId = currUser.id
+//    }
     val feedItems = viewModel
-        .getFeedForUser(dummyUserId)
+        .getFeedForUser(currUserId)
     val myPostItems = viewModel
-        .getUsersPosts(dummyUserId)
+        .getUsersPosts(currUserId)
     val pendingFriendReqItems = viewModel
-        .getPendingFriendReqs(dummyUserId)
+        .getPendingFriendReqs(currUserId)
         .observeAsState()
     val friendItems = viewModel
-        .getFriendsForUser(dummyUserId)
+        .getFriendsForUser(currUserId)
         .observeAsState()
 
     val navController = rememberNavController()
@@ -203,8 +211,8 @@ fun SocialScreen(
                 CreatePostModal(
                     viewModel,
                     navController,
-                    dummyUserId,
-                    dummyUsername,
+                    currUserId,
+                    currUsername,
                 )
             }
             composable(SocialNavigationItem.FriendList.route) {
@@ -246,7 +254,7 @@ fun SocialScreen(
                 }
             }
             composable(SocialNavigationItem.SendFriendReqs.route) {
-                SendFriendReqModal(dummyUserId, viewModel, navController)
+                SendFriendReqModal(currUserId, viewModel, navController)
             }
             composable(SocialNavigationItem.AcceptFriendReqs.route) {
                 Column(
@@ -259,7 +267,7 @@ fun SocialScreen(
                         var pending = pendingFriendReqItems.value
                         if (pending != null) {
                             items(pending.size) {
-                                PendingFriendReqItem(viewModel, dummyUserId, pending[it])
+                                PendingFriendReqItem(viewModel, currUserId, pending[it])
                             }
                         }
                     }
