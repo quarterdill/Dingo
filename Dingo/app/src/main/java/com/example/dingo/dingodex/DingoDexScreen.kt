@@ -46,6 +46,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.dingo.R
 import com.example.dingo.model.DingoDexEntryListings
+import java.io.File
+import java.io.FileInputStream
 
 
 sealed class DingoDexNavItem(
@@ -81,6 +83,7 @@ fun DingoDexScreen(
             startDestination = DingoDexNavItem.DingoDex.route
         ) {
             composable(DingoDexNavItem.DingoDex.route) {
+
                 Column(
                     modifier = Modifier.fillMaxSize(),
                     horizontalAlignment = Alignment.CenterHorizontally,
