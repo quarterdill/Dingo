@@ -11,7 +11,7 @@ data class Trip (
     @DocumentId val id: String = "",
     var userId: String = "",
     var username: String = "",
-    var locations: List<LatLng?> = emptyList<LatLng>(),
+    var locations: List<LatLng> = emptyList<LatLng>(),
     var discoveredEntries: List<String?> = emptyList(),
     var timestamp: Timestamp = Timestamp.now(),
     )
@@ -20,7 +20,7 @@ data class GeoTrip (
     @DocumentId val id: String = "",
     var userId: String = "",
     var username: String = "",
-    var locations: List<LatLng?>? = emptyList<LatLng>(),
+    var locations: List<LatLng> = emptyList<LatLng>(),
     var discoveredEntries: List<String> = emptyList(),
     var timestamp: Timestamp = Timestamp.now(),
 

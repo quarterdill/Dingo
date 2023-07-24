@@ -4,7 +4,6 @@ import android.content.Intent
 import android.util.Log
 import androidx.compose.runtime.Composable
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.Marker
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.maps.android.compose.GoogleMap
@@ -35,12 +34,10 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.Divider
 import androidx.compose.material3.TextField
-import androidx.compose.runtime.State
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
@@ -54,12 +51,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.dingo.model.Comment
-import com.example.dingo.model.Post
 import com.example.dingo.model.Trip
-import com.example.dingo.model.User
-import com.example.dingo.model.UserType
 import com.example.dingo.model.service.impl.getTimeDiffMessage
-import com.example.dingo.social.ClassroomNavigationItem
+import com.google.maps.android.compose.Polyline
 
 
 @Composable
@@ -79,6 +73,15 @@ fun TripScreen(
     val navController = rememberNavController()
     var isServiceRunning by remember { mutableStateOf(false) }
     var trackedLocations : List<LatLng> by remember { mutableStateOf(emptyList()) }
+    var selectedTrip: Trip? by remember { mutableStateOf(null) }
+
+    val permissionState = remember { mutableStateOf(false) }
+
+    val requestPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        permissionState.value = isGranted
+    }
 
 
 
@@ -111,10 +114,25 @@ fun TripScreen(
                     ) {
                         Button(
                             onClick = {
-                                navController.navigate(TripNavigationItem.TrackTrip.route)
+                                if (!permissionState.value) {
+                                    requestPermissionLauncher.launch(android.Manifest.permission.ACCESS_FINE_LOCATION)
+                                }
+                                    isServiceRunning = !isServiceRunning
+                                    if (isServiceRunning) {
+                                        ContextCompat.startForegroundService(
+                                            context,
+                                            Intent(context, LocationTrackingService::class.java)
+                                        )
+                                        Log.d("tripScreen", "trackedLocations: $trackedLocations")
+                                        navController.navigate(TripNavigationItem.TrackTrip.route)
+                                    } else {
+                                        context.stopService(Intent(context, LocationTrackingService::class.java))
+                                        navController.navigate(TripNavigationItem.TripPostFeed.route)
+                                    }
                             },
                         ) {
-                            Text("Start Trip")
+                            Text(text = if (isServiceRunning) "Stop Tracking Permission Granted: ${permissionState.value}" else "Start Tracking Permission Granted: ${permissionState.value}")
+
                         }
                     }
                     LazyColumn(
@@ -125,8 +143,7 @@ fun TripScreen(
                             items(trips.size) {
 //                            TODO: Make Trip Screen for entry space
                                 Log.d("tripScreen", "trips size: ${trips.size} trip: ${trips[it]}")
-                                TripPost(trips[it], navController)
-
+                                TripPost(trips[it], navController, onTripSelected = { selectedTrip = it })
                             }
                         }
                     }
@@ -135,11 +152,14 @@ fun TripScreen(
             composable(TripNavigationItem.TrackTrip.route) {
                 val dummyTripId = "dummy"
                 LocationPermissionScreen()
-                ComposeDemoApp()
+                ComposeDemoApp(trackedLocations)
                 val context = LocalContext.current
                 Column {
                     Button(
                         onClick = {
+                            if (!permissionState.value) {
+                                requestPermissionLauncher.launch(android.Manifest.permission.ACCESS_FINE_LOCATION)
+                            }
                             isServiceRunning = !isServiceRunning
                             if (isServiceRunning) {
                                 ContextCompat.startForegroundService(
@@ -158,24 +178,28 @@ fun TripScreen(
                         },
                         modifier = Modifier.padding(16.dp)
                     ) {
-                        Text(text = if (isServiceRunning) "Stop Tracking" else "Start Tracking")
+                        Text(text = if (isServiceRunning) "Stop Tracking Permission Granted: ${permissionState.value}" else "Start Tracking Permission Granted: ${permissionState.value}")
                     }
                 }
             }
             composable(TripNavigationItem.CreatePost.route) {
                 Log.d("tripScreen", "trackedLocations: $trackedLocations")
-                CreatePostModal(navController = navController, tripId = "", userId = "" , username = "", locations = trackedLocations )
+                TripDetailsModal(navController = navController, tripId = "", userId = "" , username = "", locations = trackedLocations )
             }
             composable(TripNavigationItem.TripDetails.route) {
-                Log.d("tripScreen", "trackedLocations: $trackedLocations")
-                CreatePostModal(navController = navController, tripId = "", userId = "" , username = "", locations = trackedLocations )
+                Log.d("tripScreen", "Trip Details selectedTrip: $selectedTrip")
+                if (selectedTrip != null) {
+                    val trip = selectedTrip as Trip
+                    ComposeDemoApp(trip.locations)
+                }
+                TripDetailsModal(navController = navController, tripId = "", userId = "" , username = "", locations = trackedLocations )
             }
         }
     }
 }
 
 @Composable
-private fun TripPost(trip: Trip, navController: NavHostController) {
+private fun TripPost(trip: Trip, navController: NavHostController, onTripSelected : (Trip) -> Unit ) {
     Row(
         modifier = Modifier.padding(16.dp),
         horizontalArrangement = Arrangement.spacedBy(10.dp),
@@ -185,6 +209,7 @@ private fun TripPost(trip: Trip, navController: NavHostController) {
         ClickableText(
             text = AnnotatedString("${trip.username} posted ${trip.locations} with ${trip.discoveredEntries} entrie(s)"),
             onClick = {
+                onTripSelected(trip)
                 navController.navigate(TripNavigationItem.TripDetails.route)
             }
         )
@@ -227,6 +252,7 @@ fun LocationTrackingScreen() {
     Column {
         Button(
             onClick = {
+
                 isServiceRunning = !isServiceRunning
                 if (isServiceRunning) {
                     ContextCompat.startForegroundService(
@@ -240,26 +266,49 @@ fun LocationTrackingScreen() {
             },
             modifier = Modifier.padding(16.dp)
         ) {
-            Text(text = if (isServiceRunning) "Stop Tracking" else "Start Tracking")
+            Text(text = if (isServiceRunning) "Stop Tracking" else "Start Tracking ")
         }
     }
 }
 
 @Composable
-fun ComposeDemoApp() {
-    val singapore = LatLng(51.52061810406676, -0.12635325270312533)
+fun ComposeDemoApp(points: List<LatLng>) {
+//    val singapore = LatLng(51.52061810406676, -0.12635325270312533)
+//    val cameraPositionState = rememberCameraPositionState {
+//        position = CameraPosition.fromLatLngZoom(points.lastOrNull() ?: singapore, 10f)
+//    }
+//    Log.d("tripScreen", "Google Maps, startState: ${points.lastOrNull() ?: singapore}")
+//
+//    GoogleMap(
+//        modifier = Modifier.fillMaxSize(),
+//        cameraPositionState = cameraPositionState
+//    ) {
+//        if (points != null) {
+//            Polyline(points = points)
+//        }
+//        Marker(
+//            state = MarkerState(position = points.lastOrNull() ?: singapore),
+//            title = "London",
+//            snippet = "Marker in Big Ben"
+//        )
+//    }
+
     val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(singapore, 10f)
+        position = CameraPosition.fromLatLngZoom(points.lastOrNull() ?: LatLng(51.52061810406676, -0.12635325270312533), 10f)
     }
+
     GoogleMap(
         modifier = Modifier.fillMaxSize(),
         cameraPositionState = cameraPositionState
     ) {
-        Marker(
-            state = MarkerState(position = singapore),
-            title = "London",
-            snippet = "Marker in Big Ben"
-        )
+        if (points.lastOrNull() != null) {
+            Polyline(points = points)
+            Marker(
+                state = MarkerState(position = points.last()),
+                title = "Current Location",
+                snippet = "You are here"
+            )
+        }
     }
 }
 
@@ -342,7 +391,7 @@ private fun TripPost(
     }
 }
 @Composable
-private fun CreatePostModal(
+private fun TripDetailsModal(
     viewModel: TripViewModel = hiltViewModel(),
     navController: NavHostController,
     tripId: String,
