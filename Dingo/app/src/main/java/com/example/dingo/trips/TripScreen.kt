@@ -275,8 +275,10 @@ fun LocationTrackingScreen() {
 fun ComposeDemoApp(points: List<LatLng>) {
     val singapore = LatLng(51.52061810406676, -0.12635325270312533)
     val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(singapore, 10f)
+        position = CameraPosition.fromLatLngZoom(points.lastOrNull() ?: singapore, 10f)
     }
+    Log.d("tripScreen", "Google Maps, startState: ${points.lastOrNull() ?: singapore}")
+
     GoogleMap(
         modifier = Modifier.fillMaxSize(),
         cameraPositionState = cameraPositionState
@@ -285,7 +287,7 @@ fun ComposeDemoApp(points: List<LatLng>) {
             Polyline(points = points)
         }
         Marker(
-            state = MarkerState(position = singapore),
+            state = MarkerState(position = points.lastOrNull() ?: singapore),
             title = "London",
             snippet = "Marker in Big Ben"
         )
