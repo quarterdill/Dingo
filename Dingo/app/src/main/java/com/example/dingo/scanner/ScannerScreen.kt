@@ -95,6 +95,7 @@ private fun CapturedImageBitmapDialog(
 ) {
     val capturedImageBitmap: ImageBitmap = remember { capturedImage.asImageBitmap() }
     val isLoading = viewModel.isLoading.observeAsState()
+    val context = LocalContext.current
     viewModel.addEntry("Dummy Data")
     Dialog(
         onDismissRequest = onDismissRequest,
@@ -158,7 +159,7 @@ private fun CapturedImageBitmapDialog(
                         Button(
                             onClick = {
                                 println("Saving Image")
-                                viewModel.savePicture("Dummy Data", capturedImage, setDefaultPicture)
+                                viewModel.savePicture("Dummy Data", capturedImage, setDefaultPicture, context)
                             },
                         ) {
                             Text(text = "Save Image")

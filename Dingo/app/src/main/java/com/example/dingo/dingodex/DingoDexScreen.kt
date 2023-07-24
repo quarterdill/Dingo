@@ -46,6 +46,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.dingo.R
 import com.example.dingo.model.DingoDexEntryListings
+import java.io.File
+import java.io.FileInputStream
 
 
 sealed class DingoDexNavItem(
@@ -81,6 +83,7 @@ fun DingoDexScreen(
             startDestination = DingoDexNavItem.DingoDex.route
         ) {
             composable(DingoDexNavItem.DingoDex.route) {
+
                 Column(
                     modifier = Modifier.fillMaxSize(),
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -165,7 +168,17 @@ fun DingoDexScreen(
                             )
                         }
                     }
+                    val file = File(LocalContext.current.filesDir, "Users/temp/images/test/my_bitmap.png")
+                    val inputStream = FileInputStream(file)
+                    var test = BitmapFactory.decodeStream(inputStream)
+                    Image(
+                        bitmap = test.asImageBitmap(),
+                        contentDescription = "Captured Image"
+                    )
                     Row() {
+
+
+
                         Image(
                             painter = painterResource(R.drawable.fauna_placeholder),
                             contentDescription = "Fauna",

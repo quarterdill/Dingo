@@ -1,5 +1,6 @@
 package com.example.dingo.scanner
 
+import android.content.Context
 import android.graphics.Bitmap
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -7,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.dingo.model.service.AccountService
 import com.example.dingo.model.service.DingoDexEntryService
 import com.example.dingo.model.service.DingoDexStorageService
+import com.example.dingo.model.service.ImageInternalStorageService
 import com.example.dingo.model.service.UserService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,6 +25,7 @@ constructor(
     private val userService: UserService,
     private val dingoDexEntryService: DingoDexEntryService,
     private val dingoDexStorageService: DingoDexStorageService,
+    private val imageInternalStorageService: ImageInternalStorageService,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(ScannerState())
@@ -40,6 +43,7 @@ constructor(
     }
 
     fun addEntry(entryName: String) {
+
         viewModelScope.launch {
             var result = false
             isLoading.value = true
@@ -63,21 +67,23 @@ constructor(
         }
     }
 
-    fun savePicture(entryName: String, image: Bitmap, saveAsDefault: Boolean) {
-        if (saveAsDefault) {
-            viewModelScope.launch {
-                var result = false
-                val imagePath = dingoDexEntryService.addPicture(entryName, image)
-                if (imagePath != "") {
-                    val entries = dingoDexEntryService.getEntry(entryName)
-                    if (entries.isNotEmpty()) {
-                        // Should only have 1 entry for each animal/plant
-                        var entry = entries[0]
-                        entry.displayPicture = imagePath
-                        result = dingoDexEntryService.updateEntry(entry)
+    fun savePicture(entryName: String, image: Bitmap, saveAsDefault: Boolean, context: Context) {
+        viewModelScope.launch {
+            imageInternalStorageService.saveImage("test", image, context)
+            if (saveAsDefault) {
+
+                    var result = false
+                    val imagePath = dingoDexEntryService.addPicture(entryName, image)
+                    if (imagePath != "") {
+                        val entries = dingoDexEntryService.getEntry(entryName)
+                        if (entries.isNotEmpty()) {
+                            // Should only have 1 entry for each animal/plant
+                            var entry = entries[0]
+                            entry.displayPicture = imagePath
+                            result = dingoDexEntryService.updateEntry(entry)
+                        }
                     }
                 }
-            }
         }
     }
 
