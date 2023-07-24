@@ -1,6 +1,8 @@
 package com.example.dingo.common.composable
 
 import androidx.annotation.StringRes
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
@@ -24,6 +26,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.unit.dp
 import com.example.dingo.R
 
 @Composable
@@ -70,7 +73,7 @@ private fun PasswordField(
 //        Icons.Filled.VisibilityOff
 //    }
 
-    val icon = ImageVector.vectorResource(id = androidx.core.R.drawable.ic_call_answer_video)
+    val icon = ImageVector.vectorResource(id = R.drawable.ic_open_eye)
     val imageVector = rememberVectorPainter(icon)
     val visualTransformation =
         if (isVisible) VisualTransformation.None else PasswordVisualTransformation()
@@ -82,7 +85,11 @@ private fun PasswordField(
         leadingIcon = { Icon(imageVector = Icons.Default.Lock, contentDescription = "Lock") },
         trailingIcon = {
             IconButton(onClick = { isVisible = !isVisible }) {
-                Icon(painter = imageVector, contentDescription = "Visibility")
+                Icon(
+                    modifier = Modifier.height(25.dp).width(25.dp),
+                    painter = imageVector,
+                    contentDescription = "Visibility"
+                )
             }
         },
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
