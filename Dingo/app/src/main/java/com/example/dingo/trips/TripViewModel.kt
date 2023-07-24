@@ -18,7 +18,6 @@ import androidx.lifecycle.MutableLiveData
 import com.example.dingo.model.User
 import com.google.android.gms.maps.model.LatLng
 
-
 @HiltViewModel
 class TripViewModel
 @Inject
