@@ -16,6 +16,7 @@ import java.io.IOException
 // it will be activated once the condition fields have at least the specified value
 // retrieved from the user's stats
 data class DingoDexEntryContent (
+    var id: Int = 0,
     var is_fauna: Boolean = false,
     var name: String = "",
     var scientific_name: String = "",
@@ -27,6 +28,7 @@ class DingoDexEntryListings private constructor(context: Context){
     val floraEntryList: MutableList<DingoDexEntryContent> = mutableListOf()
     val faunaEntryList: MutableList<DingoDexEntryContent> = mutableListOf()
     var dingoDexEntryList: List<DingoDexEntryContent> = emptyList()
+    val dingoDexScientificToIndex: MutableMap<String, Int> = mutableMapOf()
     // from https://www.bezkoder.com/kotlin-android-read-json-file-assets-gson/
     fun getJsonDataFromAsset(context: Context, fileName: String) {
         val jsonString: String
@@ -48,6 +50,7 @@ class DingoDexEntryListings private constructor(context: Context){
             } else {
                 floraEntryList.add(it)
             }
+            dingoDexScientificToIndex[it.scientific_name] = it.id
         }
     }
     init {

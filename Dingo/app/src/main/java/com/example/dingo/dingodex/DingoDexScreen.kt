@@ -199,6 +199,7 @@ private fun DingoDexItem(
 ) {
     val currentContext = LocalContext.current
     val assetManager: AssetManager = currentContext.assets
+    val index = DingoDexEntryListings.getInstance(currentContext).dingoDexScientificToIndex[item.name]
     val bitmap = BitmapFactory.decodeStream(currentContext.assets.open(DingoDexEntryListings.getInstance(currentContext).dingoDexEntryList[0].default_picture_name))
     //Bitmap bit = BitmapFactory.decodeFile( DingoDexEntryListings.getInstance(currentContext).dingoDexEntryList[0].default_picture_name)
     Button(onClick = {navController.navigate(DingoDexNavItem.Description.route)}) {
