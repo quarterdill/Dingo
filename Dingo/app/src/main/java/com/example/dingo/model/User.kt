@@ -25,8 +25,8 @@ data class User (
     var classroomPosts: List<String> = emptyList(),
     var postHead: String = "",
     var trips: List<String> = emptyList(),
-    var uncollectedFauna : List<String> = emptyList(),
-    var uncollectedFlora : List<String> = emptyList(),
+    var uncollectedFauna : List<Int> = emptyList(),
+    var uncollectedFlora : List<Int> = emptyList(),
     var stats: Map<String, Int> = emptyMap(),
     var achievements: MutableList<Int> = mutableListOf() // list of achievement ids
 )

@@ -48,7 +48,6 @@ constructor(
                         } else {
                             it.uncollectedFlora
                         }
-
                         for (item in uncollectedDingoDex) {
                             try {
                                 dingoDexStorageService.getDingoDexItem(item, isFauna)
@@ -58,7 +57,7 @@ constructor(
                                         DingoDexCollectionItem(
                                             id = dingoDexItem.id,
                                             name = dingoDexItem.name,
-                                            pictureURL = dingoDexItem.defaultPicture,
+                                            pictureURL = dingoDexItem.default_picture_name,
                                             isFauna = isFauna,
                                             numEncounters = 0
                                         )
@@ -93,7 +92,7 @@ constructor(
                     for (item in it) {
                         dingoDexItems.add(
                             DingoDexCollectionItem(
-                                id = item.id,
+                                id = item.dingoDexId,
                                 name = item.name,
                                 pictureURL = item.displayPicture,
                                 isFauna = isFauna,
@@ -130,7 +129,7 @@ constructor(
                             name = "Dummy Data",
                             isFauna = i == 0
                         )
-                        dingoDexEntryService.addNewEntry(temp)
+                        //dingoDexEntryService.addNewEntry(temp)
                     } else {
                         uncollectedDingoDex[i].add(dingoDexes[i][j].id)
                     }
