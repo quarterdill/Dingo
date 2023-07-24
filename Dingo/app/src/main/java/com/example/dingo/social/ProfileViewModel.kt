@@ -1,10 +1,15 @@
 package com.example.dingo.social
 
+import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.dingo.common.SessionInfo
 import com.example.dingo.model.Achievement
+import com.example.dingo.model.AchievementListings
+import com.example.dingo.model.DingoDexEntryListings
 import com.example.dingo.model.User
+import com.example.dingo.model.service.AccountService
 import com.example.dingo.model.service.ClassroomService
 import com.example.dingo.model.service.PostService
 import com.example.dingo.model.service.UserService
@@ -17,15 +22,30 @@ class ProfileViewModel
 @Inject
 constructor(
     private val userService: UserService,
+    private val accountService: AccountService,
 ) : ViewModel() {
-    fun getNumFlora(user: User): Int {
-        return user.uncollectedFlora.size
+    fun getNumFlora(): Int {
+        val currUser = SessionInfo.currentUser
+        if (currUser != null) {
+            return currUser.uncollectedFlora.size
+        }
+        return 0
     }
     fun getNumFauna(user: User): Int {
-        return user.uncollectedFauna.size
+        val currUser = SessionInfo.currentUser
+        if (currUser != null) {
+            return currUser.uncollectedFauna.size
+        }
+        return 0
     }
-    fun getAchievements(user: User): List<Achievement> {
-        return emptyList()
+
+    fun getAchievements(context: Context, user: User): List<Achievement> {
+        val achievementIds = user.achievements
+        var ret: MutableList<Achievement> = mutableListOf()
+        for (i in achievementIds) {
+            ret.add(AchievementListings.getInstance(context).achievementList[i])
+        }
+        return ret
     }
 
 }

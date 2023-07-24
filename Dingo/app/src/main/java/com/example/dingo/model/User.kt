@@ -13,6 +13,7 @@ enum class AccountType {
 
 data class User (
     @DocumentId val id: String = "",
+    val authId: String = "", // from firebase auth
     var username: String = "",
     var email: String = "",
     var accountType: AccountType = AccountType.STANDARD,
@@ -27,5 +28,5 @@ data class User (
     var uncollectedFauna : List<String> = emptyList(),
     var uncollectedFlora : List<String> = emptyList(),
     var stats: Map<String, Int> = emptyMap(),
-    var achievements: List<Int> = emptyList() // list of achievement ids
+    var achievements: MutableList<Int> = mutableListOf() // list of achievement ids
 )
