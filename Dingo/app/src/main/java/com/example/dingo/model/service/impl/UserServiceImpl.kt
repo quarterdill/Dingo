@@ -264,8 +264,9 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
         return msg
     }
 
+
     override suspend fun updateDingoDex(
-        newEntryId: String,
+        newEntryId: Int,
         isFauna: Boolean
     ) {
         val field = if (isFauna) {
@@ -282,6 +283,7 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
                 user.uncollectedFlora.toMutableList()
             }
             collection.remove(newEntryId)
+
             // TODO: change temp once auth is done
             firestore.collection(USER_COLLECTIONS).document("temp").update(field, collection)
         }

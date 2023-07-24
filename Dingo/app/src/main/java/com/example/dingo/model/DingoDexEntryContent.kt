@@ -23,40 +23,14 @@ data class DingoDexEntryContent (
     var description: String = "",
     var default_picture_name: String = "",
 )
+object DingoDexScientificToIndex {
+    val dingoDexFaunaScientificToIndex: MutableMap<String, Int> = mutableMapOf()
+    val dingoDexFloraScientificToIndex: MutableMap<String, Int> = mutableMapOf()
+}
 
-class DingoDexEntryListings private constructor(context: Context){
+
+object DingoDexEntryListings {
     val floraEntryList: MutableList<DingoDexEntryContent> = mutableListOf()
     val faunaEntryList: MutableList<DingoDexEntryContent> = mutableListOf()
     var dingoDexEntryList: List<DingoDexEntryContent> = emptyList()
-    val dingoDexScientificToIndex: MutableMap<String, Int> = mutableMapOf()
-    // from https://www.bezkoder.com/kotlin-android-read-json-file-assets-gson/
-    fun getJsonDataFromAsset(context: Context, fileName: String) {
-        val jsonString: String
-        try {
-            jsonString = context.assets.open(fileName).bufferedReader().use {
-                it.readText()
-            }
-        } catch (e: IOException) {
-            e.printStackTrace()
-            return
-        }
-        val gson = Gson()
-        val listDingoDexEntryType = object : TypeToken<List<DingoDexEntryContent>>() {}.type
-        dingoDexEntryList = gson.fromJson(jsonString, listDingoDexEntryType)
-        dingoDexEntryList.forEach {
-            println(it)
-            if (it.is_fauna) {
-                faunaEntryList.add(it)
-            } else {
-                floraEntryList.add(it)
-            }
-            dingoDexScientificToIndex[it.scientific_name] = it.id
-        }
-    }
-    init {
-        println("Initial")
-        getJsonDataFromAsset(context, "florafauna.json")
-    }
-
-    companion object : SingletonHolder<DingoDexEntryListings, Context>(::DingoDexEntryListings)
 }
