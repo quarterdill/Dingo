@@ -1,5 +1,6 @@
 package com.example.dingo.model.service.impl
 
+import com.example.dingo.common.SessionInfo
 import com.example.dingo.model.AccountType
 import com.example.dingo.model.Classroom
 import com.example.dingo.model.Post
@@ -9,8 +10,10 @@ import com.example.dingo.model.UserType
 import com.example.dingo.model.service.AccountService
 import com.example.dingo.model.service.ClassroomService
 import com.example.dingo.model.service.UserService
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.toObject
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -51,8 +54,9 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
     }
 
     override suspend fun getUser(userId: String): User? {
+        var user = if (userId == "") "temp" else userId
         return firestore.collection(USER_COLLECTIONS)
-            .document(userId)
+            .document(user)
             .get()
             .await()
             .toObject(User::class.java)
@@ -97,6 +101,21 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
             }
             awaitClose { subscription.remove() }
         }
+    }
+
+    override suspend fun getCurrentUser() {
+        if (auth.currentUserId.isNotEmpty()) {
+            val querySnapshot = firestore.collection(USER_COLLECTIONS)
+                .whereEqualTo("authId", auth.currentUserId)
+                .get()
+                .await()
+
+            if (!querySnapshot.isEmpty) {
+                val documentSnapshot = querySnapshot.documents[0]
+                SessionInfo.currentUser = documentSnapshot.toObject(User::class.java)
+            }
+        }
+
     }
 
     override suspend fun getUserByEmail(email: String): User? {
@@ -246,8 +265,7 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
     }
 
     override suspend fun updateDingoDex(
-        userId: String,
-        uncollected: List<String>,
+        newEntryId: String,
         isFauna: Boolean
     ) {
         val field = if (isFauna) {
@@ -255,8 +273,19 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
         } else {
             UNCOLLECTED_FLORA
         }
+        val user = firestore.collection(USER_COLLECTIONS)
+            .document("temp").get().await().toObject(User::class.java)
+        if (user != null) {
+            val collection = if (isFauna) {
+                user.uncollectedFauna.toMutableList()
+            } else {
+                user.uncollectedFlora.toMutableList()
+            }
+            collection.remove(newEntryId)
+            // TODO: change temp once auth is done
+            firestore.collection(USER_COLLECTIONS).document("temp").update(field, collection)
+        }
 
-        firestore.collection(USER_COLLECTIONS).document(userId).update(field, uncollected)
     }
 
     // This is for social posts

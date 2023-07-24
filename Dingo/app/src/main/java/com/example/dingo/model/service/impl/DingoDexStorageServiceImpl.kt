@@ -1,6 +1,7 @@
 package com.example.dingo.model.service.impl
 
 import com.example.dingo.model.DingoDex
+import com.example.dingo.model.DingoDexEntry
 import com.example.dingo.model.service.AccountService
 import com.example.dingo.model.service.DingoDexStorageService
 import com.google.firebase.firestore.DocumentSnapshot
@@ -24,6 +25,22 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
         }
         return collection.document(dingoId).get().await().toObject(DingoDex::class.java)
 
+    }
+
+    override suspend fun findDingoDexItem(entryName: String): DingoDex? {
+        var collection = firestore.collection(DINGO_DEX_FAUNA)
+            .whereEqualTo(ENTRY_NAME, entryName).get().await().toObjects(DingoDex::class.java)
+        if (collection.isNotEmpty()) {
+            // Should only have 1 entry per animal
+            return collection[0]
+        }
+        collection = firestore.collection(DINGO_DEX_FLORA)
+            .whereEqualTo(ENTRY_NAME, entryName).get().await().toObjects(DingoDex::class.java)
+        if (collection.isNotEmpty()) {
+            // Should only have 1 entry per animal
+            return collection[0]
+        }
+        return null
     }
 
 
@@ -86,6 +103,7 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
         private const val USER_ID_FIELD = "userId"
         private const val DINGO_DEX_FAUNA = "dingoDexFauna"
         private const val DINGO_DEX_FLORA = "dingoDexFlora"
+        private const val ENTRY_NAME = "name"
         private val dummyFaunaDingoDex = DingoDex(
             name = "Dummy Fauna",
             isFauna = true,

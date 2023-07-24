@@ -43,9 +43,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.dingo.NavBarItem
-import com.example.dingo.NoPermission
-import com.example.dingo.ScannerScreen
 import com.example.dingo.model.Comment
 import com.example.dingo.trips.TripScreen
 import com.example.dingo.model.Post

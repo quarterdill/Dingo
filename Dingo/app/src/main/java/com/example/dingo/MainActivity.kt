@@ -39,6 +39,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
+            viewModel.getUser()
             navController = rememberNavController()
             DingoTheme {
                 // A surface container using the 'background' color from the theme
