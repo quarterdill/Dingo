@@ -54,9 +54,7 @@ import com.example.dingo.model.Post
 import com.example.dingo.model.User
 import com.example.dingo.model.UserType
 import com.example.dingo.model.service.impl.getTimeDiffMessage
-import com.google.firebase.Timestamp
-import java.time.Duration
-import java.time.LocalDateTime
+
 
 sealed class ClassroomNavigationItem(
     val name: String,

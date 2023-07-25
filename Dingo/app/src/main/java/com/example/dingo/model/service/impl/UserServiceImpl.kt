@@ -84,6 +84,7 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
                         if (snapshot == null) {
                             trySend(null)
                         } else if (snapshot.exists()) {
+                            println("SNAPSHOT: $snapshot")
                             trySend(snapshot.toObject(User::class.java))
                         }
                     }
