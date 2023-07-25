@@ -6,6 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -22,6 +23,7 @@ import com.example.dingo.authentication.login.LoginViewModel
 import com.example.dingo.ui.theme.DingoTheme
 import dagger.hilt.android.AndroidEntryPoint
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.platform.LocalContext
 import com.example.dingo.authentication.signup.SignUpScreen
@@ -40,16 +42,23 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
+            val isLoading = viewModel.isLoading.observeAsState()
+
             viewModel.getUser()
             viewModel.setUpDingoDex(LocalContext.current)
             navController = rememberNavController()
+
             DingoTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    navigationConfiguration2(navController)
+                    if (isLoading.value!!) {
+                        CircularProgressIndicator()
+                    } else {
+                        navigationConfiguration2(navController)
+                    }
                 }
             }
         }
