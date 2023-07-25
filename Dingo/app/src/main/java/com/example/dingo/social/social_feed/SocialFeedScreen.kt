@@ -1,14 +1,14 @@
 package com.example.dingo.social.social_feed
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -30,10 +30,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.dingo.CustomDialog
 import com.example.dingo.UIConstants
 import com.example.dingo.common.SessionInfo
 import com.example.dingo.model.Comment
@@ -136,24 +137,27 @@ private fun CreatePostModal(
     username: String,
     onDismissRequest: () -> Unit,
 ) {
-    Dialog(onDismissRequest = onDismissRequest) {
+    CustomDialog(onDismissRequest = onDismissRequest) {
         var textContentState by remember { mutableStateOf("") }
-        Box(
-            modifier = Modifier
-                .padding(all = UIConstants.LARGE_PADDING)
-                .background(shape = RoundedCornerShape(12.dp), color = Color.White)
-        ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
-            ) {
-                Text(text = "Post")
-                TextField(
-                    value = textContentState,
-                    onValueChange = { textContentState = it },
-                    label = { Text("") }
-                )
 
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+        ) {
+            Text(
+                text = "Post",
+                fontSize = UIConstants.SUBTITLE2_TEXT
+            )
+            TextField(
+                modifier = Modifier.padding(vertical = UIConstants.MEDIUM_PADDING),
+                value = textContentState,
+                onValueChange = { textContentState = it },
+                label = { Text("") }
+            )
+            Row (
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
                 Button(
                     onClick = {
                         viewModel.makePost(
@@ -168,7 +172,6 @@ private fun CreatePostModal(
                 ) {
                     Text(text = "Create Post")
                 }
-
                 Button(
                     onClick = onDismissRequest
                 ) {
@@ -188,50 +191,71 @@ private fun CommentsDialog(
     val fetchComments = viewModel
         .getCommentsForPost(currentPostId.value)
         .observeAsState()
-    Dialog(onDismissRequest = onDismissRequest) {
-        Box(
-            modifier = Modifier
-                .padding(all = UIConstants.LARGE_PADDING)
-                .background(shape = RoundedCornerShape(12.dp), color = Color.White)
+    CustomDialog(
+        onDismissRequest = onDismissRequest
+    ) {
+        Column(
+            modifier = Modifier.fillMaxHeight(0.85f),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
+            Text(
+                "Comments",
+                fontSize = UIConstants.SUBTITLE1_TEXT,
+                modifier = Modifier.padding(bottom = UIConstants.MEDIUM_PADDING),
+            )
+            var textContentState by remember { mutableStateOf("") }
+            Box(
+                modifier = Modifier.weight(1.0f),
+                contentAlignment = Alignment.Center,
             ) {
-                Text("Comments")
-                var textContentState by remember { mutableStateOf("") }
-                LazyColumn(
-                    modifier = Modifier.weight(0.7f, true)
-                ) {
-                    // idk if this will make it crash or smth
-                    var comments = fetchComments.value
-                    println("comments: $comments")
-                    if (comments != null) {
-                        items(comments.size) {
-                            CommentText(comments[it])
+                if (fetchComments.value.isNullOrEmpty()) {
+                    Text(
+                        "No comments yet. Be the first to comment!",
+                        textAlign = TextAlign.Center,
+                    )
+                } else {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxHeight()
+                    ) {
+                        // idk if this will make it crash or smth
+                        var comments = fetchComments.value
+                        println("comments: $comments")
+                        if (comments != null) {
+                            items(comments.size) {
+                                CommentText(comments[it])
+                            }
                         }
                     }
                 }
-                Row(
-                    modifier = Modifier.weight(0.3f, true)
-                ) {
-                    TextField(
-                        value = textContentState,
-                        onValueChange = { textContentState = it },
-                        label = { Text("") }
-                    )
-                    Button(
-                        onClick = {
-                            if (textContentState != "") {
-                                viewModel.makeComment(
-                                    currentPostId.value,
-                                    textContentState,
-                                )
-                            }
-                            textContentState = ""
+            }
+
+            TextField(
+                modifier = Modifier.padding(vertical = UIConstants.MEDIUM_PADDING),
+                value = textContentState,
+                onValueChange = { textContentState = it },
+                label = { Text("") }
+            )
+            Row (
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                Button(
+                    onClick = {
+                        if (textContentState != "") {
+                            viewModel.makeComment(
+                                currentPostId.value,
+                                textContentState,
+                            )
                         }
-                    ) {
-                        Text(text = "Comment")
+                        textContentState = ""
                     }
+                ) {
+                    Text(text = "Comment")
+                }
+                Button(
+                    onClick = onDismissRequest
+                ) {
+                    Text(text = "Cancel")
                 }
             }
         }
