@@ -6,8 +6,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.example.dingo.MainActivity
 import com.example.dingo.common.SessionInfo
+import com.example.dingo.common.StatName
+import com.example.dingo.common.incrementStat
 import com.example.dingo.common.isValidEmail
 import com.example.dingo.model.AccountType
 import com.example.dingo.model.Classroom
@@ -21,6 +25,7 @@ import com.example.dingo.model.service.AccountService
 import com.example.dingo.model.service.ClassroomService
 import com.example.dingo.model.service.PostService
 import com.example.dingo.model.service.UserService
+import com.example.dingo.navigation.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -38,9 +43,12 @@ constructor(
     private val accountService: AccountService,
 ) : ViewModel() {
 
-    suspend fun onSignOutClick() {
+    suspend fun onSignOutClick(navController: NavHostController) {
         Log.d("STATE", "signing out")
-        accountService.signOut();
+        val successfulSignOut = accountService.signOut();
+        if (successfulSignOut) {
+            navController.navigate(Screen.LoginScreen.route)
+        }
     }
 
     fun makePost(
@@ -75,6 +83,7 @@ constructor(
             }
 
         }
+        incrementStat(StatName.NUM_SOCIAL_POSTS)
     }
 
     fun getFeedForUser(userId: String, limit: Int = 10): MutableList<Post> {
@@ -153,6 +162,7 @@ constructor(
         viewModelScope.launch {
             postService.addComment(postId, SessionInfo.currentUsername, textContent)
         }
+        incrementStat(StatName.NUM_COMMENTS)
     }
 
     fun getUsersPosts(userId: String): LiveData<MutableList<Post>?> {
@@ -209,6 +219,7 @@ constructor(
         runBlocking{
             msg = userService.acceptFriendReq(senderId, receiverId)
         }
+        incrementStat(StatName.NUM_FRIENDS_ACCEPTED)
         return msg
     }
 
@@ -217,6 +228,7 @@ constructor(
         runBlocking{
             msg = userService.declineFriendReq(senderId, receiverId)
         }
+        incrementStat(StatName.NUM_FRIENDS_DECLINED)
         return msg
     }
 

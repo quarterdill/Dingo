@@ -5,12 +5,15 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavHostController
-import com.example.dingo.authentication.signup.SignUpUIState
 import com.example.dingo.common.SessionInfo
+import com.example.dingo.common.StatName
+import com.example.dingo.common.incrementStat
+import com.example.dingo.common.initializeStats
 import com.example.dingo.common.isValidEmail
 import com.example.dingo.common.isValidPassword
 import com.example.dingo.model.service.AccountService
 import com.example.dingo.model.service.UserService
+import com.example.dingo.navigation.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -37,7 +40,7 @@ constructor(
         _uiState.value = _uiState.value.copy(password = newValue)
     }
 
-    suspend fun onSignInClick() {
+    suspend fun onSignInClick(navHostController: NavHostController) {
         Log.d("STATE", "In on click model")
         if (!email.isValidEmail()) {
             Log.d("STATE","Not a valid email")
@@ -54,6 +57,10 @@ constructor(
         if (successfulLogin) {
             val user = userService.getUserByEmail(email)
             SessionInfo.currentUser = user
+            initializeStats()
+            incrementStat(StatName.LOGINS)
+            navHostController.navigate(route = Screen.MainScreen.route)
+
         }
     }
 

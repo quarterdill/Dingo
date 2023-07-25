@@ -59,6 +59,7 @@ constructor(
                 var entry = entries[0]
                 entry.numEncounters++
                 // TODO: update location
+                // TODO: change name so doesnt have spaces
                 entry.location = ""
                 result = dingoDexEntryService.updateEntry(entry)
             }

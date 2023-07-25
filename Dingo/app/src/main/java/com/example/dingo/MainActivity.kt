@@ -42,6 +42,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             viewModel.getUser()
             viewModel.setUpDingoDex(LocalContext.current)
+            viewModel.setUpAchievements(LocalContext.current)
             navController = rememberNavController()
             DingoTheme {
                 // A surface container using the 'background' color from the theme
@@ -53,6 +54,12 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    override fun onStop() {
+        super.onStop()
+
+        viewModel.updateUserStats()
     }
 
     @Composable
@@ -106,7 +113,7 @@ class MainActivity : ComponentActivity() {
                 SignUpScreen(navController = navController)
             }
             composable(route = Screen.MainScreen.route) {
-                MainScreen()
+                MainScreen(navControllerSignOut = navController)
             }
 
         }
@@ -138,16 +145,16 @@ private fun navigationConfiguration(navController: NavHostController) {
     val signUpViewModel: SignUpViewModel = viewModel()
     NavHost(navController = navController, startDestination = modeSelectionScreenRoute) {
         composable(ModeSelectionButton.Standard.route) {
-            LoginScreen(loginViewModel,navController)
+            LoginScreen(navController)
         }
         composable(ModeSelectionButton.Education.route) {
-            SignUpScreen(signUpViewModel,navController)
+            SignUpScreen(navController = navController)
         }
         composable(modeSelectionScreenRoute) {
             ModeSelectionScreen(navController)
         }
         composable("mainScreen") {
-            MainScreen()
+            MainScreen(navControllerSignOut = navController)
         }
 
     }

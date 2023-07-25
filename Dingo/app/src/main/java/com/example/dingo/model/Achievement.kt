@@ -34,14 +34,17 @@ constructor(
     private val userService: UserService,
 ): IObserver {
     override fun update() {
+        println("got update in achievement!")
         val currUser = SessionInfo.currentUser
         if (currUser != null) {
             val currStats = currUser.stats
             if (currStats.containsKey(conditionField)) {
                 val statVal = currStats[conditionField]
+                println("relevant stat value: $conditionField is $statVal")
                 if (statVal != null && statVal >= conditionValue) {
                     runBlocking {
                         currUser.achievements.add(achievementId)
+                        userService.updateStats()
                         userService.addAchievementForUser(currUser, achievementId)
                     }
                 }
@@ -50,31 +53,6 @@ constructor(
     }
 }
 
-class AchievementListings private constructor(context: Context) {
+object AchievementListings {
     var achievementList: List<Achievement> = emptyList()
-    // from https://www.bezkoder.com/kotlin-android-read-json-file-assets-gson/
-    private fun getJsonDataFromAsset(context: Context, fileName: String) {
-        val jsonString: String
-        try {
-            jsonString = context.assets.open(fileName).bufferedReader().use {
-                it.readText()
-            }
-        } catch (e: IOException) {
-            e.printStackTrace()
-            return
-        }
-        val gson = Gson()
-        val listAchievementType = object : TypeToken<List<Achievement>>() {}.type
-        achievementList = gson.fromJson(jsonString, listAchievementType)
-        achievementList.forEach {
-            println(it)
-        }
-
-    }
-    init {
-        println("Initialized achivements")
-        getJsonDataFromAsset(context, "achievements.json")
-    }
-
-    companion object : SingletonHolder<AchievementListings, Context>(::AchievementListings)
 }
