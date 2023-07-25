@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
 import com.example.dingo.model.Trip
-import com.example.dingo.model.UserType
 import com.example.dingo.model.service.TripService
 import com.example.dingo.model.service.UserService
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,7 +14,6 @@ import javax.inject.Inject
 import android.location.Location
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
-import com.example.dingo.model.User
 import com.google.android.gms.maps.model.LatLng
 
 @HiltViewModel
@@ -41,7 +39,7 @@ constructor(
         return locationListLiveData
     }
 
-    fun makeTrip(
+    fun createTrip(
         userId: String,
         username: String,
         locations: List<LatLng>
@@ -55,10 +53,9 @@ constructor(
                 locations,
                 discoveredEntries
             )
-            Log.d("TripViewModel making a trip with tripId:", tripId)
+            Log.d("TripViewModel", "createTrip: username:$username userId:$userId tripId:$tripId")
 
-//            classroomService.addPost(classroomId, postId)
-//            userService.addClassroomPost(userId, postId)
+            userService.addTripForUser(userId, tripId)
         }
 
     }

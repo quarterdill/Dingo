@@ -50,7 +50,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.dingo.model.Comment
+import com.example.dingo.common.SessionInfo
 import com.example.dingo.model.Trip
 import com.example.dingo.model.service.impl.getTimeDiffMessage
 import com.google.maps.android.compose.Polyline
@@ -63,11 +63,13 @@ fun TripScreen(
     val context = LocalContext.current
     val lifeCycleOwner = LocalLifecycleOwner.current
 
+    val currUser = SessionInfo.currentUser
+    Log.d("TripScreen", "currUser $currUser")
     val dummyUserId = "Q0vMYa9VSh7tyFdLTPgX"
     val dummyUsername = "Eric Shang"
     val limit = 50
     val feedItems = viewModel
-        .getTripFeed(dummyUserId)
+        .getTripFeed(currUser?.id ?: dummyUserId)
         .observeAsState()
 
     val navController = rememberNavController()
@@ -185,7 +187,7 @@ fun TripScreen(
             composable(TripNavigationItem.CreatePost.route) {
                 Log.d("tripScreen", "trackedLocations: $trackedLocations")
                 ComposeDemoApp(trackedLocations)
-                PostTripModal(navController = navController, tripId = "", userId = "" , username = "", locations = trackedLocations )
+                PostTripModal(navController = navController,  locations = trackedLocations, discoveredEntries = emptyList() )
             }
             composable(TripNavigationItem.TripDetails.route) {
                 Log.d("tripScreen", "Trip Details selectedTrip: $selectedTrip")
@@ -274,25 +276,6 @@ fun LocationTrackingScreen() {
 
 @Composable
 fun ComposeDemoApp(points: List<LatLng>) {
-//    val singapore = LatLng(51.52061810406676, -0.12635325270312533)
-//    val cameraPositionState = rememberCameraPositionState {
-//        position = CameraPosition.fromLatLngZoom(points.lastOrNull() ?: singapore, 10f)
-//    }
-//    Log.d("tripScreen", "Google Maps, startState: ${points.lastOrNull() ?: singapore}")
-//
-//    GoogleMap(
-//        modifier = Modifier.fillMaxSize(),
-//        cameraPositionState = cameraPositionState
-//    ) {
-//        if (points != null) {
-//            Polyline(points = points)
-//        }
-//        Marker(
-//            state = MarkerState(position = points.lastOrNull() ?: singapore),
-//            title = "London",
-//            snippet = "Marker in Big Ben"
-//        )
-//    }
 
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(points.lastOrNull() ?: LatLng(51.52061810406676, -0.12635325270312533), 10f)
@@ -435,11 +418,10 @@ private fun TripDetailsModal(
 private fun PostTripModal(
     viewModel: TripViewModel = hiltViewModel(),
     navController: NavHostController,
-    tripId: String,
-    userId: String,
-    username: String,
-    locations : List<LatLng>
-) {
+    locations : List<LatLng>,
+    discoveredEntries: List<String>,
+
+    ) {
     var textContentState by remember { mutableStateOf("") }
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -463,6 +445,14 @@ private fun PostTripModal(
         Button(
             onClick = {
 //                viewModel.makeDummyTrips(trackedLocations)
+                val currUser = SessionInfo.currentUser
+                if (currUser != null) {
+                    val tripId = viewModel.createTrip(userId= currUser.id,username= currUser.username,locations=locations,
+
+                        )
+                }
+
+
 //                TODO: post as trip and create a post of the given trip ID
                 navController.navigate(TripNavigationItem.TripPostFeed.route)
             }
