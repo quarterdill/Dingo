@@ -106,7 +106,7 @@ class MainActivity : ComponentActivity() {
                 SignUpScreen(navController = navController)
             }
             composable(route = Screen.MainScreen.route) {
-                MainScreen()
+                MainScreen(navControllerSignOut = navController)
             }
 
         }
@@ -147,7 +147,7 @@ private fun navigationConfiguration(navController: NavHostController) {
             ModeSelectionScreen(navController)
         }
         composable("mainScreen") {
-            MainScreen()
+            MainScreen(navControllerSignOut = navController)
         }
 
     }

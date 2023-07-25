@@ -6,6 +6,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.example.dingo.MainActivity
 import com.example.dingo.common.SessionInfo
 import com.example.dingo.common.isValidEmail
@@ -21,6 +23,7 @@ import com.example.dingo.model.service.AccountService
 import com.example.dingo.model.service.ClassroomService
 import com.example.dingo.model.service.PostService
 import com.example.dingo.model.service.UserService
+import com.example.dingo.navigation.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -38,9 +41,12 @@ constructor(
     private val accountService: AccountService,
 ) : ViewModel() {
 
-    suspend fun onSignOutClick() {
+    suspend fun onSignOutClick(navController: NavHostController) {
         Log.d("STATE", "signing out")
-        accountService.signOut();
+        val successfulSignOut = accountService.signOut();
+        if (successfulSignOut) {
+            navController.navigate(Screen.LoginScreen.route)
+        }
     }
 
     fun makePost(

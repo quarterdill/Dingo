@@ -53,6 +53,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -114,6 +115,7 @@ sealed class SocialNavigationItem(
 @Composable
 fun SocialScreen(
     viewModel: SocialViewModel = hiltViewModel(),
+    navControllerSignOut: NavHostController
 ) {
     val viewModelJob = Job()
     val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.Main)
@@ -197,7 +199,7 @@ fun SocialScreen(
                         }
                         IconButton(
                             onClick = { coroutineScope.launch {
-                                viewModel.onSignOutClick()
+                                viewModel.onSignOutClick(navControllerSignOut)
                             }},
                         ) {
                             Icon(

@@ -23,13 +23,13 @@ interface AccountService {
 
     //val currentUser: Flow<User>
 
-    suspend fun registerUser(email: String, password: String)
+    suspend fun registerUser(email: String, password: String): Boolean
     suspend fun loginUser(email: String, password: String): Boolean
     suspend fun sendEmailVerification(): SendEmailVerificationResponse
     suspend fun sendRecoveryEmail(email: String): SendRecoveryResponse
     suspend fun linkAccount(email: String, password: String)
     suspend fun deleteAccount(): DeleteAccountResponse
-    suspend fun signOut()
+    suspend fun signOut(): Boolean
     suspend fun reloadFirebaseUser(): ReloadUserResponse
     fun getAuthState(viewModelScope: CoroutineScope): AuthStateResponse
 }
