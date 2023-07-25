@@ -8,7 +8,9 @@ import com.example.dingo.common.isValidEmail
 import com.example.dingo.common.isValidPassword
 import com.example.dingo.common.passwordMatches
 import com.example.dingo.model.service.AccountService
+import com.example.dingo.model.service.UserService
 import com.example.dingo.navigation.Screen
+import com.example.dingo.model.AccountType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -17,6 +19,7 @@ class SignUpViewModel
 @Inject
 constructor(
     private val accountService: AccountService,
+    private val userService: UserService
 ) : ViewModel() {
     var uiState = mutableStateOf(SignUpUIState())
         private set
@@ -26,6 +29,15 @@ constructor(
     private val password
         get() = uiState.value.password
 
+    fun onButtonToggle(type: Boolean) {
+        uiState.value = uiState.value.copy(accountType = type)
+        Log.d("STATE", type.toString())
+    }
+
+    fun onButtonToggleEducation(type: Boolean) {
+        uiState.value = uiState.value.copy(educationType = type)
+        Log.d("STATE", type.toString())
+    }
     fun onEmailChange(newValue: String) {
         uiState.value = uiState.value.copy(email = newValue)
     }
@@ -57,6 +69,15 @@ constructor(
 
         if (successfulSignup) {
             navController.navigate(route = Screen.LoginScreen.route)
+            var accountType: AccountType = AccountType.STANDARD
+            if (uiState.value.accountType) {
+                accountType = if (uiState.value.educationType) {
+                    AccountType.INSTRUCTOR
+                } else {
+                    AccountType.STUDENT
+                }
+            }
+            userService.createUser(uiState.value.email,uiState.value.email,accountType)
         }
     }
 }

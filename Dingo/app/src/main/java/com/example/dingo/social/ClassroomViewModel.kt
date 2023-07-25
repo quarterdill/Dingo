@@ -96,7 +96,7 @@ constructor(
 
         for (userPair in userList) {
             viewModelScope.launch {
-                userService.createUser(userPair.first, userPair.second, AccountType.EDUCATION)
+                userService.createUser(userPair.first, userPair.second, AccountType.STUDENT)
             }
         }
     }
