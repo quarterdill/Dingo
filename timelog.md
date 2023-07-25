@@ -16,4 +16,5 @@ Classroom coding | 0 | 0 | 8 | 0 | 0 | 0 | 0
 Profile coding | 0 | 0 | 3 | 0 | 0 | 0 | 0
 JSON assets coding | 0 | 0 | 0 | 0 | 0 | 0 | 2
 Design pattern examples | 0 | 0 | 2 | 0 | 0 | 0 | 3
-Total | 15 | 31 | 55 | 23 | 26 | 25 | 40
+Trips coding | 15 | 0 | 0 | 15 | 0 | 0 | 0
+Total | 30 | 31 | 55 | 23 | 41 | 25 | 40
