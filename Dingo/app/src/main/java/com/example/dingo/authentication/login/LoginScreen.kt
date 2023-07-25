@@ -40,10 +40,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavHostController
 import com.example.dingo.CustomSwitch
+import com.example.dingo.UIConstants.MEDIUM_PADDING
 import com.example.dingo.common.composable.DisplayPasswordField
 import com.example.dingo.common.composable.EmailField
 import com.example.dingo.navigation.Screen
 import com.example.dingo.ui.theme.Purple40
+import com.example.dingo.ui.theme.Purple80
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -55,9 +57,12 @@ fun LoginScreen(
 ) {
 
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = Purple80),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Center,
+
     ) {
         Image(
             modifier = Modifier
@@ -66,7 +71,11 @@ fun LoginScreen(
             imageVector = Icons.Rounded.AddCircle,
             contentDescription = "Placeholder"
         )
-        CustomSwitch("Standard", "Education") {}
+        CustomSwitch(
+            Modifier.padding(vertical = MEDIUM_PADDING),
+            "Standard",
+            "Education"
+        ) {}
 
         logInFields(navController = navController)
     }
@@ -85,7 +94,7 @@ private fun logInFields(
     val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.Main)
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.spacedBy(MEDIUM_PADDING)
     ) {
         EmailField(value = uiState.email, onNewValue = viewModel::onEmailChange)
         DisplayPasswordField(value = uiState.password, onNewValue = viewModel::onPasswordChange)

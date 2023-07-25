@@ -1,8 +1,10 @@
 package com.example.dingo.common.composable
 
 import androidx.annotation.StringRes
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
@@ -28,10 +30,12 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import com.example.dingo.R
+import com.example.dingo.ui.theme.PurpleGrey80
 
 @Composable
 fun EmailField(value: String, onNewValue: (String) -> Unit) {
     OutlinedTextField(
+        modifier = Modifier.background(color = PurpleGrey80),
         singleLine = true,
         value = value,
         onValueChange = { onNewValue(it) },
@@ -79,6 +83,7 @@ private fun PasswordField(
         if (isVisible) VisualTransformation.None else PasswordVisualTransformation()
 
     OutlinedTextField(
+        modifier = Modifier.background(color = PurpleGrey80),
         value = value,
         onValueChange = { onNewValue(it) },
         placeholder = { Text(text = placeholder) },

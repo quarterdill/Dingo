@@ -26,6 +26,7 @@ import com.example.dingo.ui.theme.Purple40
 
 @Composable
 fun CustomSwitch(
+    modifier: Modifier,
     option1: String,
     option2: String,
     onChanged: (Boolean) -> Unit,
@@ -36,6 +37,7 @@ fun CustomSwitch(
     val toggleThumbWidth= 80.dp
     val color = Purple40
     Surface(
+        modifier = modifier,
         shape = RoundedCornerShape(12.dp),
         color = Color.White,
         shadowElevation = 4.dp
