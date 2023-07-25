@@ -172,7 +172,7 @@ fun TripScreen(
 
                             } else {
                                 context.stopService(Intent(context, LocationTrackingService::class.java))
-                                navController.navigate(TripNavigationItem.TripPostFeed.route)
+                                navController.navigate(TripNavigationItem.CreatePost.route)
 
                             }
                         },
@@ -184,7 +184,8 @@ fun TripScreen(
             }
             composable(TripNavigationItem.CreatePost.route) {
                 Log.d("tripScreen", "trackedLocations: $trackedLocations")
-                TripDetailsModal(navController = navController, tripId = "", userId = "" , username = "", locations = trackedLocations )
+                ComposeDemoApp(trackedLocations)
+                PostTripModal(navController = navController, tripId = "", userId = "" , username = "", locations = trackedLocations )
             }
             composable(TripNavigationItem.TripDetails.route) {
                 Log.d("tripScreen", "Trip Details selectedTrip: $selectedTrip")
@@ -213,7 +214,7 @@ private fun TripPost(trip: Trip, navController: NavHostController, onTripSelecte
                 navController.navigate(TripNavigationItem.TripDetails.route)
             }
         )
-//        Text("${trip.username} posted ${trip.locations} ago")
+
     }
 }
 
@@ -417,43 +418,58 @@ private fun TripDetailsModal(
                 navController.navigate(TripNavigationItem.TripPostFeed.route)
             }
         ) {
-            Text(text = "Discard Current Trip")
+            Text(text = "Return to Trip Feed")
         }
         Button(
             onClick = {
-//                viewModel.makeDummyTrips(tra)
-
+//                viewModel.makeDummyTrips(trackedLocations)
                 navController.navigate(TripNavigationItem.TripPostFeed.route)
             }
         ) {
-            Text(text = "Create Post")
+            Text(text = "Return to Trip Feed")
         }
     }
 }
 
 @Composable
-private fun AddMemberModal(
+private fun PostTripModal(
     viewModel: TripViewModel = hiltViewModel(),
     navController: NavHostController,
+    tripId: String,
+    userId: String,
+    username: String,
+    locations : List<LatLng>
 ) {
-    Text("Cannot add new members as a student")
+    var textContentState by remember { mutableStateOf("") }
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+    ) {
+        Text(text = "Name your Trip")
+        TextField(
+            value = textContentState,
+            onValueChange = { textContentState = it },
+            label = { Text("")}
+        )
+        Button(
+            onClick = {
+                Log.d("tripScreen", "Discard Current Trip Button, trackedLocations: $locations")
+                navController.navigate(TripNavigationItem.TripPostFeed.route)
+            }
+        ) {
+            Text(text = "Discard Current Trip")
+        }
+        Button(
+            onClick = {
+//                viewModel.makeDummyTrips(trackedLocations)
+//                TODO: post as trip and create a post of the given trip ID
+                navController.navigate(TripNavigationItem.TripPostFeed.route)
+            }
+        ) {
+            Text(text = "Post Trip")
+        }
+    }
 }
 
-@Composable
-private fun CommentText(comment: Comment){
-    var timeDiffMsg = getTimeDiffMessage(comment.timestamp)
-    Text(
-        modifier = Modifier.height(20.dp),
-        fontSize = 10.sp,
-        color = Color.Gray,
-        text="${comment.authorName} posted $timeDiffMsg ago")
-    Text(
-        modifier = Modifier.padding(all = 12.dp),
-        text = "${comment.textContent}"
-    )
 
-    Divider(
-        thickness = 1.dp,
-        color = Color.Gray,
-    )
-}
