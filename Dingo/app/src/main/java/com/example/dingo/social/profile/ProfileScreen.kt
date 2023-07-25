@@ -183,6 +183,7 @@ private fun FriendList(
         onDismissRequest = onDismissRequest
     ) {
         Column(
+            modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
@@ -195,20 +196,6 @@ private fun FriendList(
                     items(friends.size) {
                         Row(
                             modifier = Modifier.padding(vertical = UIConstants.SMALL_PADDING),
-                            horizontalArrangement = Arrangement.spacedBy(10.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(friends[it].username)
-                            Divider(
-                                modifier = Modifier
-                                    .height(30.dp)
-                                    .width(1.dp),
-                                color = Color.Gray,
-                            )
-                            Text(text = "oh yeah")
-                        }
-                        Row(
-                            modifier = Modifier.padding(UIConstants.SMALL_PADDING),
                             horizontalArrangement = Arrangement.spacedBy(10.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
