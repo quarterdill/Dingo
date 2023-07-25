@@ -11,6 +11,8 @@ class Stat constructor (statName: String): IObservable {
 object SessionInfo {
     var currentUserAuthId: String? = null
     var currentUser: User? = null
+    var currentUserID: String = ""
+    var currentUsername: String = ""
     var nameToStat: Map<String, Stat> = emptyMap()
 }
 

@@ -2,6 +2,7 @@ package com.example.dingo.model.service
 
 import androidx.lifecycle.LiveData
 import com.example.dingo.model.AccountType
+import com.example.dingo.model.Classroom
 import com.example.dingo.model.Entry
 import com.example.dingo.model.User
 import com.example.dingo.model.Post
@@ -26,4 +27,5 @@ interface UserService {
     suspend fun addAchievementForUser(user: User, achievementId: Int)
 
     suspend fun getCurrentUser()
+    suspend fun getClassrooms(userId: String, limit: Int = 10): Flow<MutableList<Classroom>?>
 }
