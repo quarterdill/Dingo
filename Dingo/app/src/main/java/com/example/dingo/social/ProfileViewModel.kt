@@ -24,14 +24,14 @@ constructor(
     private val userService: UserService,
     private val accountService: AccountService,
 ) : ViewModel() {
-    fun getNumFlora(): Int {
+    fun getNumUncollectedFlora(): Int {
         val currUser = SessionInfo.currentUser
         if (currUser != null) {
             return currUser.uncollectedFlora.size
         }
         return 0
     }
-    fun getNumFauna(): Int {
+    fun getNumUncollectedFauna(): Int {
         val currUser = SessionInfo.currentUser
         if (currUser != null) {
             return currUser.uncollectedFauna.size

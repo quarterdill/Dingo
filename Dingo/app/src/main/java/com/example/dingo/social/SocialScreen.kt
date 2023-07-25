@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -19,11 +20,16 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material.icons.outlined.ArrowBack
+import androidx.compose.material.icons.outlined.Lock
+import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -36,7 +42,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.imageResource
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
@@ -46,6 +57,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.dingo.R
 import com.example.dingo.common.SessionInfo
 import com.example.dingo.model.Comment
 import com.example.dingo.model.Post
@@ -149,37 +161,49 @@ fun SocialScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Row(
-                        modifier = Modifier.padding(16.dp),
-                        horizontalArrangement = Arrangement.spacedBy(10.dp),
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Button(
+                        IconButton(
                             onClick = {
                                 navController.navigate(SocialNavigationItem.CreatePost.route)
                             },
                         ) {
-                            Text("Create Post")
+                            Icon(
+                                imageVector = Icons.Outlined.Add,
+                                contentDescription = "Create Post",
+                            )
                         }
-                        Button(
+                        IconButton(
                             onClick = {
                                 navController.navigate(SocialNavigationItem.FriendList.route)
                             },
                         ) {
-                            Text("My Friends")
+                            Icon(
+                                imageVector = ImageVector.vectorResource(R.drawable.baseline_group_24),
+                                contentDescription = "Friend List",
+                            )
                         }
-                        Button(
-                            onClick = { coroutineScope.launch {
-                                viewModel.onSignOutClick()
-                            }},
-                        ) {
-                            Text(text = "Sign Out")
-                        }
-                        Button(
+                        IconButton(
                             onClick = {
                                 navController.navigate(SocialNavigationItem.MyProfile.route)
                             },
                         ) {
-                            Text(text = "My Profile")
+                            Icon(
+                                imageVector = Icons.Outlined.Person,
+                                contentDescription = "My Profile"
+                            )
+                        }
+                        IconButton(
+                            onClick = { coroutineScope.launch {
+                                viewModel.onSignOutClick()
+                            }},
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.Lock,
+                                contentDescription = "Sign Out"
+                            )
                         }
                     }
                     LazyColumn(
