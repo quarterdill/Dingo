@@ -4,4 +4,6 @@ data class SignUpUIState (
     var email: String = "",
     var password: String = "",
     var repeatPassword: String = "",
+    var accountType: Boolean = false,
+    var educationType: Boolean = false
 )

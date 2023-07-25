@@ -145,7 +145,7 @@ private fun navigationConfiguration(navController: NavHostController) {
     val signUpViewModel: SignUpViewModel = viewModel()
     NavHost(navController = navController, startDestination = modeSelectionScreenRoute) {
         composable(ModeSelectionButton.Standard.route) {
-            LoginScreen(navController)
+            LoginScreen(navController = navController)
         }
         composable(ModeSelectionButton.Education.route) {
             SignUpScreen(navController = navController)
