@@ -222,13 +222,13 @@ fun ClassroomScreen(
                         ) {
                             Text("Students/Teachers")
                         }
-                        Button(
-                            onClick = {
-                                navController.navigate(ClassroomNavigationItem.MyProfile.route)
-                            },
-                        ) {
-                            Text("MyProfile")
-                        }
+//                        Button(
+//                            onClick = {
+//                                navController.navigate(ClassroomNavigationItem.MyProfile.route)
+//                            },
+//                        ) {
+//                            Text("MyProfile")
+//                        }
                     }
 //                COMMENT THIS OUT
 //              Button(
