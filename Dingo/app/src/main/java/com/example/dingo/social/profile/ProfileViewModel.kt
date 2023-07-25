@@ -1,4 +1,4 @@
-package com.example.dingo.social
+package com.example.dingo.social.profile
 
 import android.content.Context
 import android.util.Log

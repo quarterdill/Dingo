@@ -26,9 +26,9 @@ import com.example.dingo.ui.theme.Purple40
 
 @Composable
 fun CustomSwitch(
-    modifier: Modifier,
     option1: String,
     option2: String,
+    modifier: Modifier = Modifier,
     onChanged: (Boolean) -> Unit,
 ) {
     var isChecked by remember { mutableStateOf(false) }
