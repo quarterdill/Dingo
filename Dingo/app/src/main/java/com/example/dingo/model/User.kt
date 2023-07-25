@@ -8,7 +8,7 @@ import java.io.File
 import java.io.IOException
 
 enum class AccountType {
-    STANDARD, STUDENT, INSTRUCTOR
+    STANDARD, EDUCATION, STUDENT, INSTRUCTOR
 }
 
 data class User (
