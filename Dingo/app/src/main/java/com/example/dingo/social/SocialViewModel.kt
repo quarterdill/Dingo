@@ -7,9 +7,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
 import com.example.dingo.MainActivity
+import com.example.dingo.common.SessionInfo
 import com.example.dingo.common.isValidEmail
 import com.example.dingo.model.AccountType
 import com.example.dingo.model.Classroom
+import com.example.dingo.model.Comment
 import com.example.dingo.model.Post
 import com.example.dingo.model.PostComparator
 import com.example.dingo.model.PostType
@@ -121,6 +123,36 @@ constructor(
         }
 
         return ret
+    }
+
+    fun getCommentsForPost(postId: String): LiveData<MutableList<Comment>?> {
+        return liveData(Dispatchers.IO) {
+            try {
+                if (postId == "") {
+                    emit(mutableListOf<Comment>())
+                } else {
+                    postService.getComments(postId, 50).collect {
+                        if (it != null) {
+                            emit(it)
+                        } else {
+                            emit(null)
+                        }
+                    }
+                }
+            } catch (e: java.lang.Exception) {
+                // Do nothing
+                println("$e")
+            }
+        }
+    }
+
+    fun makeComment(
+        postId: String,
+        textContent: String,
+    ) {
+        viewModelScope.launch {
+            postService.addComment(postId, SessionInfo.currentUsername, textContent)
+        }
     }
 
     fun getUsersPosts(userId: String): LiveData<MutableList<Post>?> {

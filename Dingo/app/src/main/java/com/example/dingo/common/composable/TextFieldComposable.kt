@@ -70,7 +70,7 @@ private fun PasswordField(
 //        Icons.Filled.VisibilityOff
 //    }
 
-    val icon = ImageVector.vectorResource(id = androidx.core.R.drawable.ic_call_answer_video)
+    val icon = ImageVector.vectorResource(id = R.drawable.baseline_remove_red_eye_24)
     val imageVector = rememberVectorPainter(icon)
     val visualTransformation =
         if (isVisible) VisualTransformation.None else PasswordVisualTransformation()

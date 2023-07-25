@@ -112,7 +112,13 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
 
             if (!querySnapshot.isEmpty) {
                 val documentSnapshot = querySnapshot.documents[0]
-                SessionInfo.currentUser = documentSnapshot.toObject(User::class.java)
+                val currUser = documentSnapshot.toObject(User::class.java)
+                SessionInfo.currentUser = currUser
+                if (currUser != null) {
+                    SessionInfo.currentUserID = currUser.id
+                    SessionInfo.currentUsername = currUser.username
+                }
+
             }
         }
 
@@ -429,10 +435,43 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
             .await()
     }
 
+    override suspend fun getClassrooms(userId: String, limit: Int): Flow<MutableList<Classroom>?>{
+        return callbackFlow {
+            val userCollection = firestore.collection(USER_COLLECTIONS).document(userId)
+
+            val subscription = userCollection.addSnapshotListener { snapshot, e ->
+                if (snapshot == null) {
+                    println("failed to get user snapshot when fetching classrooms...")
+                    trySend(null)
+                } else if (snapshot!!.exists()) {
+                    var currUser = snapshot.toObject(User::class.java)
+                    var ret: MutableList<Classroom> = mutableListOf()
+                    println("getting classrooms for user: $currUser")
+                    if (currUser != null) {
+                        for (i in 0 until currUser.classroomIds.size) {
+                            runBlocking {
+                                val incoming = firestore.collection(CLASSROOM_COLLECTIONS)
+                                    .document(currUser.classroomIds[i])
+                                    .get()
+                                    .await()
+                                    .toObject(Classroom::class.java)
+                                if (incoming != null) {
+                                    ret.add(incoming)
+                                }
+                            }
+                        }
+                    }
+                    trySend(ret)
+                }
+            }
+            awaitClose { subscription.remove() }
+        }
+    }
 
     companion object {
         private const val USER_COLLECTIONS = "userCollections"
         private const val POST_COLLECTIONS = "postCollections"
+        private const val CLASSROOM_COLLECTIONS = "classroomCollections"
         private const val UNCOLLECTED_FAUNA = "uncollectedFauna"
         private const val UNCOLLECTED_FLORA = "uncollectedFlora"
     }

@@ -24,14 +24,14 @@ constructor(
     private val userService: UserService,
     private val accountService: AccountService,
 ) : ViewModel() {
-    fun getNumFlora(): Int {
+    fun getNumUncollectedFlora(): Int {
         val currUser = SessionInfo.currentUser
         if (currUser != null) {
             return currUser.uncollectedFlora.size
         }
         return 0
     }
-    fun getNumFauna(user: User): Int {
+    fun getNumUncollectedFauna(): Int {
         val currUser = SessionInfo.currentUser
         if (currUser != null) {
             return currUser.uncollectedFauna.size
@@ -39,12 +39,16 @@ constructor(
         return 0
     }
 
-    fun getAchievements(context: Context, user: User): List<Achievement> {
-        val achievementIds = user.achievements
+    fun getAchievements(context: Context): List<Achievement> {
         var ret: MutableList<Achievement> = mutableListOf()
-        for (i in achievementIds) {
-            ret.add(AchievementListings.getInstance(context).achievementList[i])
+        val currUser = SessionInfo.currentUser
+        if (currUser != null) {
+            val achievementIds = currUser.achievements
+            for (i in achievementIds) {
+                ret.add(AchievementListings.getInstance(context).achievementList[i])
+            }
         }
+
         return ret
     }
 

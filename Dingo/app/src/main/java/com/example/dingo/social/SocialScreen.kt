@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -17,15 +18,22 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material.icons.outlined.ArrowBack
+import androidx.compose.material.icons.outlined.Lock
+import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,14 +42,24 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.imageResource
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.dingo.R
 import com.example.dingo.common.SessionInfo
+import com.example.dingo.model.Comment
 import com.example.dingo.model.Post
 import com.example.dingo.model.User
 import com.example.dingo.model.UserType
@@ -83,6 +101,14 @@ sealed class SocialNavigationItem(
         name = "AcceptFriendReqs",
         route = "acceptfriendreqs",
     )
+    object MyProfile : SocialNavigationItem(
+        name = "MyProfile",
+        route = "myprofile",
+    )
+    object ViewComments : SocialNavigationItem(
+        name = "ViewComments",
+        route = "view comments",
+    )
 }
 
 @Composable
@@ -93,26 +119,31 @@ fun SocialScreen(
     val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.Main)
 //    val dummyUserId = "Q0vMYa9VSh7tyFdLTPgX" // eric shang
 //    val dummyUsername = "Eric Shang"
-    val dummyUserId = "U47K9DYLoJLJlXHZrU7l"
-    val dummyUsername = "Dylan Xiao"
+//    val dummyUserId = "U47K9DYLoJLJlXHZrU7l"
+//    val dummyUsername = "Dylan Xiao"
 //    val dummyUserId = "XQIfyBwIwQKyAfiIDKggy"
 //    val dummyUsername = "Simhon Chourasia"
 
-    var currUserId = dummyUserId
-    var currUsername = dummyUsername
+//    var currUserId = dummyUserId
+//    var currUsername = dummyUsername
 //    var currUser = SessionInfo.currentUser
 //    if (currUser != null) {
 //        currUserId = currUser.id
 //    }
+    var currentPostId = remember { mutableStateOf("") }
+
     val feedItems = viewModel
-        .getFeedForUser(currUserId)
+        .getFeedForUser(SessionInfo.currentUserID)
     val myPostItems = viewModel
-        .getUsersPosts(currUserId)
+        .getUsersPosts(SessionInfo.currentUserID)
     val pendingFriendReqItems = viewModel
-        .getPendingFriendReqs(currUserId)
+        .getPendingFriendReqs(SessionInfo.currentUserID)
         .observeAsState()
     val friendItems = viewModel
-        .getFriendsForUser(currUserId)
+        .getFriendsForUser(SessionInfo.currentUserID)
+        .observeAsState()
+    val fetchComments = viewModel
+        .getCommentsForPost(currentPostId.value)
         .observeAsState()
 
     val navController = rememberNavController()
@@ -130,30 +161,49 @@ fun SocialScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Row(
-                        modifier = Modifier.padding(16.dp),
-                        horizontalArrangement = Arrangement.spacedBy(10.dp),
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Button(
+                        IconButton(
                             onClick = {
                                 navController.navigate(SocialNavigationItem.CreatePost.route)
                             },
                         ) {
-                            Text("Create Post")
+                            Icon(
+                                imageVector = Icons.Outlined.Add,
+                                contentDescription = "Create Post",
+                            )
                         }
-                        Button(
+                        IconButton(
                             onClick = {
                                 navController.navigate(SocialNavigationItem.FriendList.route)
                             },
                         ) {
-                            Text("My Friends")
+                            Icon(
+                                imageVector = ImageVector.vectorResource(R.drawable.baseline_group_24),
+                                contentDescription = "Friend List",
+                            )
                         }
-                        Button(
+                        IconButton(
+                            onClick = {
+                                navController.navigate(SocialNavigationItem.MyProfile.route)
+                            },
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.Person,
+                                contentDescription = "My Profile"
+                            )
+                        }
+                        IconButton(
                             onClick = { coroutineScope.launch {
                                 viewModel.onSignOutClick()
                             }},
                         ) {
-                            Text(text = "Sign Out")
+                            Icon(
+                                imageVector = Icons.Outlined.Lock,
+                                contentDescription = "Sign Out"
+                            )
                         }
                     }
                     LazyColumn(
@@ -162,7 +212,7 @@ fun SocialScreen(
                         var posts =  feedItems
                         if (posts != null) {
                             items(posts.size) {
-                                SocialPost(posts[it])
+                                SocialPost(posts[it], navController, currentPostId)
                             }
                         }
                     }
@@ -170,6 +220,9 @@ fun SocialScreen(
                         Text("No posts found... try adding some friends")
                     }
                 }
+            }
+            composable(SocialNavigationItem.MyProfile.route) {
+                ProfileScreen()
             }
             composable(SocialNavigationItem.MyPosts.route) {
                 Column(
@@ -201,7 +254,7 @@ fun SocialScreen(
                         var myPosts = myPostItems.value
                         if (myPosts != null) {
                             items(myPosts.size) {
-                                SocialPost(myPosts[it])
+                                SocialPost(myPosts[it], navController, currentPostId)
                             }
                         }
                     }
@@ -211,8 +264,8 @@ fun SocialScreen(
                 CreatePostModal(
                     viewModel,
                     navController,
-                    currUserId,
-                    currUsername,
+                    SessionInfo.currentUserID,
+                    SessionInfo.currentUsername,
                 )
             }
             composable(SocialNavigationItem.FriendList.route) {
@@ -254,7 +307,7 @@ fun SocialScreen(
                 }
             }
             composable(SocialNavigationItem.SendFriendReqs.route) {
-                SendFriendReqModal(currUserId, viewModel, navController)
+                SendFriendReqModal(SessionInfo.currentUserID, viewModel, navController)
             }
             composable(SocialNavigationItem.AcceptFriendReqs.route) {
                 Column(
@@ -267,7 +320,7 @@ fun SocialScreen(
                         var pending = pendingFriendReqItems.value
                         if (pending != null) {
                             items(pending.size) {
-                                PendingFriendReqItem(viewModel, currUserId, pending[it])
+                                PendingFriendReqItem(viewModel, SessionInfo.currentUserID, pending[it])
                             }
                         }
                     }
@@ -279,25 +332,67 @@ fun SocialScreen(
                     }
                 }
             }
-        }
-    }
-}
-
-
-@Composable
-private fun Feed(
-    posts: MutableList<Post>?,
-) {
-    LazyColumn(
-
-    ) {
-        if (posts != null) {
-            items(posts.size) {
-                SocialPost(posts[it])
+            composable(SocialNavigationItem.ViewComments.route) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text("Comments")
+                    var textContentState by remember { mutableStateOf("") }
+                    LazyColumn(
+                        modifier = Modifier.weight(0.7f, true)
+                    ) {
+                        // idk if this will make it crash or smth
+                        var comments = fetchComments.value
+                        println("comments: $comments")
+                        if (comments != null) {
+                            items(comments.size) {
+                                CommentText(comments[it])
+                            }
+                        }
+                    }
+                    Row(
+                        modifier = Modifier.weight(0.3f, true)
+                    ) {
+                        TextField(
+                            value = textContentState,
+                            onValueChange = { textContentState = it },
+                            label = { Text("") }
+                        )
+                        Button(
+                            onClick = {
+                                if (textContentState != "") {
+                                    viewModel.makeComment(
+                                        currentPostId.value,
+                                        textContentState,
+                                    )
+                                }
+                                textContentState = ""
+                            }
+                        ) {
+                            Text(text = "Comment")
+                        }
+                    }
+                }
             }
         }
     }
 }
+
+
+//@Composable
+//private fun Feed(
+//    posts: MutableList<Post>?,
+//) {
+//    LazyColumn(
+//
+//    ) {
+//        if (posts != null) {
+//            items(posts.size) {
+//                SocialPost(posts[it])
+//            }
+//        }
+//    }
+//}
 
 private fun getTimeDiffMessage(timestamp: Timestamp): String {
     val timeDiff = (Timestamp.now().seconds - timestamp.seconds) / 60
@@ -327,16 +422,40 @@ private fun getTimeDiffMessage(timestamp: Timestamp): String {
 }
 
 @Composable
-private fun SocialPost(post: Post) {
-    Row(
-        modifier = Modifier.padding(16.dp),
-        horizontalArrangement = Arrangement.spacedBy(10.dp),
-        verticalAlignment = Alignment.CenterVertically
+private fun SocialPost(
+    post: Post,
+    navController: NavHostController,
+    currentPostId: MutableState<String>,
+) {
+    Column(
+
     ) {
         var timeDiffMsg = getTimeDiffMessage(post.timestamp)
 
-        Text("${post.username} posted $timeDiffMsg ago")
-        Text("${post.textContent}")
+        Text(
+            modifier = Modifier.height(20.dp),
+            fontSize = 12.sp,
+            color = Color.Gray,
+            text="${post.username} posted $timeDiffMsg ago"
+        )
+        Text(
+            modifier = Modifier.padding(all = 12.dp),
+            text = "${post.textContent}"
+        )
+        ClickableText(
+            style = TextStyle(
+                color = Color.LightGray,
+            ),
+            text = AnnotatedString("${post.comments.size} comment(s)"),
+            onClick = {
+                currentPostId.value = post.id
+                navController.navigate(SocialNavigationItem.ViewComments.route)
+            }
+        )
+        Divider(
+            thickness = 1.dp,
+            color = Color.Gray,
+        )
     }
 }
 
@@ -506,4 +625,23 @@ fun SendFriendReqModal(
         }
 
     }
+}
+
+@Composable
+private fun CommentText(comment: Comment){
+    var timeDiffMsg = com.example.dingo.model.service.impl.getTimeDiffMessage(comment.timestamp)
+    Text(
+        modifier = Modifier.height(20.dp),
+        fontSize = 10.sp,
+        color = Color.Gray,
+        text="${comment.authorName} posted $timeDiffMsg ago")
+    Text(
+        modifier = Modifier.padding(all = 12.dp),
+        text = "${comment.textContent}"
+    )
+
+    Divider(
+        thickness = 1.dp,
+        color = Color.Gray,
+    )
 }

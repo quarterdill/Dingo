@@ -15,5 +15,5 @@ Social coding | 0 | 0 | 16 | 0 | 0 | 0 | 0
 Classroom coding | 0 | 0 | 8 | 0 | 0 | 0 | 0
 Profile coding | 0 | 0 | 3 | 0 | 0 | 0 | 0
 JSON assets coding | 0 | 0 | 0 | 0 | 0 | 0 | 2
-Design pattern examples | 0 | 0 | 3 | 0 | 0 | 0 | 5
-Total | 15 | 31 | 56 | 23 | 26 | 25 | 42
+Design pattern examples | 0 | 0 | 2 | 0 | 0 | 0 | 3
+Total | 15 | 31 | 55 | 23 | 26 | 25 | 40
