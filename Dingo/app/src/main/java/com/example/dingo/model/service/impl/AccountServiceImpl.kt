@@ -81,6 +81,19 @@ class AccountServiceImpl @Inject constructor(
         Failure(e)
     }
 
+    override suspend fun registerUser(email: String, password: String): Boolean {
+        try {
+            auth.createUserWithEmailAndPassword(email, password).await()
+            Log.e("STATE", "Signup success")
+            return true
+        } catch (e: Exception) {
+            // Authentication failed
+            Log.e("STATE", "Signup failed: ${e.message}")
+            // Handle the authentication failure as needed
+        }
+        return false
+    }
+
 //    override suspend fun registerUser(
 //        email: String, password: String
 //    ) = try {
@@ -90,10 +103,6 @@ class AccountServiceImpl @Inject constructor(
 //    } catch (e: Exception) {
 //        Failure(e)
 //    }
-
-    override suspend fun registerUser(email: String, password: String) {
-        auth.createUserWithEmailAndPassword(email, password).await()
-    }
 
     override suspend fun sendRecoveryEmail(email: String) = try {
         auth.sendPasswordResetEmail(email).await()
@@ -114,19 +123,17 @@ class AccountServiceImpl @Inject constructor(
         Failure(e)
     }
 
-    override suspend fun signOut() {
-//        if (auth.currentUser!!.isAnonymous) {
-//            auth.currentUser!!.delete()
-//        }
-        try {
+    override suspend fun signOut(): Boolean {
+        return try {
             auth.signOut()
-
+            true
             // Handle the logged-in user as needed
         } catch (e: Exception) {
             // Authentication failed
             Log.e("STATE", "Log out failed")
-            // Handle the authentication failure as needed
+            false
         }
+        return false
     }
 
     override suspend fun reloadFirebaseUser() = try {

@@ -1,9 +1,14 @@
 package com.example.dingo.authentication.signup
 
+import android.util.Log
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -12,6 +17,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavHostController
@@ -19,6 +25,12 @@ import com.example.dingo.common.composable.BasicButton
 import com.example.dingo.common.composable.DisplayPasswordField
 import com.example.dingo.common.composable.EmailField
 import com.example.dingo.common.composable.RepeatPasswordField
+import com.example.dingo.navigation.Screen
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 
 @Composable
 fun SignUpScreen(
@@ -26,6 +38,8 @@ fun SignUpScreen(
     navController: NavHostController
 ) {
     val uiState by viewModel.uiState
+    val viewModelJob = Job()
+    val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.Main)
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -34,7 +48,27 @@ fun SignUpScreen(
         EmailField(uiState.email,  viewModel::onEmailChange)
         DisplayPasswordField(uiState.password, viewModel::onPasswordChange)
         RepeatPasswordField(uiState.repeatPassword, viewModel::onRepeatPasswordChange)
-        BasicButton("Sign Up") {viewModel::onSignUpClick}
-//        BasicButton("Sign Up") { navController.navigate("mainScreen") }
+        Button(
+            onClick = { coroutineScope.launch {
+                Log.d("STATE", "in on click")
+                viewModel.onSignUpClick(navController)
+            }},
+            colors =
+            ButtonDefaults.buttonColors(
+                contentColor = MaterialTheme.colorScheme.onPrimary
+            )
+        ) {
+            Text(text = "Sign Up", fontSize = 16.sp)
+        }
+        Row {
+            Text(
+                modifier = Modifier.clickable {
+                    navController.navigate(route = Screen.LoginScreen.route)
+                },
+                text = "Already have an account? Login",
+                fontSize = 15.sp
+            )
+        }
     }
+
 }

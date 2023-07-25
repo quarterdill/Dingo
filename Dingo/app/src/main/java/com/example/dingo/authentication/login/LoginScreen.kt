@@ -1,8 +1,10 @@
 package com.example.dingo.authentication.login
 
 import android.util.Log
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -51,8 +53,7 @@ fun LoginScreen(
         Button(
             onClick = { coroutineScope.launch {
                 Log.d("STATE", "in on click")
-                viewModel.onSignInClick()
-                navController.navigate(route = Screen.MainScreen.route)
+                viewModel.onSignInClick(navController)
             }},
             colors =
             ButtonDefaults.buttonColors(
@@ -61,6 +62,14 @@ fun LoginScreen(
         ) {
             Text(text = "Login", fontSize = 16.sp)
         }
-
+        Row {
+            Text(
+                modifier = Modifier.clickable {
+                    navController.navigate(route = Screen.SignUpScreen.route)
+                },
+                text = "No account? Sign Up",
+                fontSize = 15.sp
+            )
+        }
     }
 }
