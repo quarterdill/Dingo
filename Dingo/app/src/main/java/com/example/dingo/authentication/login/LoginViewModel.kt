@@ -5,8 +5,10 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavHostController
-import com.example.dingo.authentication.signup.SignUpUIState
 import com.example.dingo.common.SessionInfo
+import com.example.dingo.common.StatName
+import com.example.dingo.common.incrementStat
+import com.example.dingo.common.initializeStats
 import com.example.dingo.common.isValidEmail
 import com.example.dingo.common.isValidPassword
 import com.example.dingo.model.service.AccountService
@@ -55,7 +57,10 @@ constructor(
         if (successfulLogin) {
             val user = userService.getUserByEmail(email)
             SessionInfo.currentUser = user
+            initializeStats()
+            incrementStat(StatName.LOGINS)
             navHostController.navigate(route = Screen.MainScreen.route)
+
         }
     }
 

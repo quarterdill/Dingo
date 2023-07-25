@@ -3,6 +3,8 @@ package com.example.dingo
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.dingo.model.Achievement
+import com.example.dingo.model.AchievementListings
 import com.example.dingo.model.DingoDexEntryContent
 import com.example.dingo.model.DingoDexEntryListings
 import com.example.dingo.model.DingoDexScientificToIndex
@@ -32,6 +34,28 @@ constructor(
         viewModelScope.launch {
             userService.getCurrentUser()
         }
+    }
+
+    fun updateUserStats() {
+        viewModelScope.launch {
+            userService.updateStats()
+        }
+    }
+
+    fun setUpAchievements(context: Context) {
+        val jsonString: String
+        try {
+            jsonString = context.assets.open("achievements.json").bufferedReader().use {
+                it.readText()
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+            return
+        }
+
+        val gson = Gson()
+        val listAchievementType = object : TypeToken<List<Achievement>>() {}.type
+        AchievementListings.achievementList = gson.fromJson(jsonString, listAchievementType)
     }
 
     fun setUpDingoDex(context: Context) {

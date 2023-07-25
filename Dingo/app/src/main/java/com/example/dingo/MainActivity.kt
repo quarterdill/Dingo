@@ -42,6 +42,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             viewModel.getUser()
             viewModel.setUpDingoDex(LocalContext.current)
+            viewModel.setUpAchievements(LocalContext.current)
             navController = rememberNavController()
             DingoTheme {
                 // A surface container using the 'background' color from the theme
@@ -53,6 +54,12 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    override fun onStop() {
+        super.onStop()
+
+        viewModel.updateUserStats()
     }
 
     @Composable
