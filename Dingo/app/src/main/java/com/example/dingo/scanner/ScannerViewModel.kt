@@ -43,7 +43,6 @@ constructor(
     }
 
     fun addEntry(entryName: String) {
-
         viewModelScope.launch {
             var result = false
             isLoading.value = true
@@ -51,7 +50,7 @@ constructor(
             if (entries.isEmpty()) {
                 val dingoDex = dingoDexStorageService.findDingoDexItem(entryName)
                 if (dingoDex != null) {
-                    userService.updateDingoDex(dingoDex.id, dingoDex.isFauna)
+                    userService.updateDingoDex(dingoDex.id, dingoDex.is_fauna)
 
                     result = dingoDexEntryService.addNewEntry(dingoDex)
                 }

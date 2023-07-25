@@ -23,6 +23,7 @@ import com.example.dingo.ui.theme.DingoTheme
 import dagger.hilt.android.AndroidEntryPoint
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.platform.LocalContext
 import com.example.dingo.authentication.signup.SignUpScreen
 import com.example.dingo.authentication.signup.SignUpViewModel
 import com.example.dingo.navigation.NavGraph
@@ -40,6 +41,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             viewModel.getUser()
+            viewModel.setUpDingoDex(LocalContext.current)
             navController = rememberNavController()
             DingoTheme {
                 // A surface container using the 'background' color from the theme
@@ -104,7 +106,7 @@ class MainActivity : ComponentActivity() {
                 SignUpScreen(navController = navController)
             }
             composable(route = Screen.MainScreen.route) {
-                MainScreen()
+                MainScreen(navControllerSignOut = navController)
             }
 
         }
@@ -145,7 +147,7 @@ private fun navigationConfiguration(navController: NavHostController) {
             ModeSelectionScreen(navController)
         }
         composable("mainScreen") {
-            MainScreen()
+            MainScreen(navControllerSignOut = navController)
         }
 
     }

@@ -73,7 +73,9 @@ sealed class NavBarItem(
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter") // Suppresses error for not using it: Padding Values
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen() {
+fun MainScreen(
+    navControllerSignOut: NavHostController
+) {
     val navController = rememberNavController()
     val scaffoldState = rememberBottomSheetScaffoldState(
         bottomSheetState =  SheetState(
@@ -120,13 +122,13 @@ fun MainScreen() {
         Scaffold(
             bottomBar = { navBar(navController) }
         ) {
-            navigationConfiguration(navController,
+            navigationConfiguration(navController, navControllerSignOut
             )
         }
     }
 }
 @Composable
-private fun navigationConfiguration(navController: NavHostController) {
+private fun navigationConfiguration(navController: NavHostController, navControllerSignOut: NavHostController) {
     NavHost(navController = navController, startDestination = NavBarItem.Scanner.route) {
         composable(NavBarItem.Trip.route) {
             TripScreen()
@@ -138,7 +140,7 @@ private fun navigationConfiguration(navController: NavHostController) {
             ClassroomScreen()
         }
         composable(NavBarItem.Social.route) {
-            SocialScreen()
+            SocialScreen(navControllerSignOut = navControllerSignOut)
         }
     }
 }

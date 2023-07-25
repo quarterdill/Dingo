@@ -6,10 +6,14 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.example.dingo.MainActivity
+import com.example.dingo.common.SessionInfo
 import com.example.dingo.common.isValidEmail
 import com.example.dingo.model.AccountType
 import com.example.dingo.model.Classroom
+import com.example.dingo.model.Comment
 import com.example.dingo.model.Post
 import com.example.dingo.model.PostComparator
 import com.example.dingo.model.PostType
@@ -19,6 +23,7 @@ import com.example.dingo.model.service.AccountService
 import com.example.dingo.model.service.ClassroomService
 import com.example.dingo.model.service.PostService
 import com.example.dingo.model.service.UserService
+import com.example.dingo.navigation.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -36,9 +41,12 @@ constructor(
     private val accountService: AccountService,
 ) : ViewModel() {
 
-    suspend fun onSignOutClick() {
+    suspend fun onSignOutClick(navController: NavHostController) {
         Log.d("STATE", "signing out")
-        accountService.signOut();
+        val successfulSignOut = accountService.signOut();
+        if (successfulSignOut) {
+            navController.navigate(Screen.LoginScreen.route)
+        }
     }
 
     fun makePost(
@@ -121,6 +129,36 @@ constructor(
         }
 
         return ret
+    }
+
+    fun getCommentsForPost(postId: String): LiveData<MutableList<Comment>?> {
+        return liveData(Dispatchers.IO) {
+            try {
+                if (postId == "") {
+                    emit(mutableListOf<Comment>())
+                } else {
+                    postService.getComments(postId, 50).collect {
+                        if (it != null) {
+                            emit(it)
+                        } else {
+                            emit(null)
+                        }
+                    }
+                }
+            } catch (e: java.lang.Exception) {
+                // Do nothing
+                println("$e")
+            }
+        }
+    }
+
+    fun makeComment(
+        postId: String,
+        textContent: String,
+    ) {
+        viewModelScope.launch {
+            postService.addComment(postId, SessionInfo.currentUsername, textContent)
+        }
     }
 
     fun getUsersPosts(userId: String): LiveData<MutableList<Post>?> {

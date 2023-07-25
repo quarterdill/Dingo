@@ -1,11 +1,14 @@
 package com.example.dingo.authentication.signup
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.navigation.NavController
 import com.example.dingo.common.isValidEmail
 import com.example.dingo.common.isValidPassword
 import com.example.dingo.common.passwordMatches
 import com.example.dingo.model.service.AccountService
+import com.example.dingo.navigation.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -35,21 +38,25 @@ constructor(
         uiState.value = uiState.value.copy(repeatPassword = newValue)
     }
 
-    suspend fun onSignUpClick() {
+    suspend fun onSignUpClick(navController: NavController) {
         if (!email.isValidEmail()) {
             print("Not a valid email")
             return
         }
 
-        if (!password.isValidPassword()) {
-            print("Not a valid password")
-            return
-        }
+//        if (!password.isValidPassword()) {
+//            print("Not a valid password")
+//            return
+//        }
 
         if (!password.passwordMatches(uiState.value.repeatPassword)) {
-            print("passwords don't match")
+            Log.d("STATE", "passwords don't match")
             return
         }
-        accountService.registerUser(email, password);
+        val successfulSignup = accountService.registerUser(email, password)
+
+        if (successfulSignup) {
+            navController.navigate(route = Screen.LoginScreen.route)
+        }
     }
 }

@@ -1,7 +1,7 @@
 [
   {
     "id": 0,
-    "is_fauna": false,
+    "is_fauna": true,
     "name": "Canada Goose",
     "scientific_name": "Branta canadensis",
     "description": "The Canada goose is a large migratory bird with a distinctive black head and neck, white chinstrap, and brown body feathers. Known for its honking call, it adapts to various habitats and undertakes seasonal migrations across North America.",
@@ -9,7 +9,7 @@
   },
   {
     "id": 1,
-    "is_fauna": false,
+    "is_fauna": true,
     "name": "Groundhog",
     "scientific_name": "Marmota monax",
     "description": "The groundhog is a small, rodent-like mammal belonging to the marmot family. Renowned for its weather forecasting abilities, it emerges from hibernation each February 2nd. If it sees its shadow, folklore suggests six more weeks of winter; otherwise, spring is believed to arrive early. They inhabit burrows and enjoy a herbivorous diet.",
@@ -17,16 +17,32 @@
   },
   {
     "id": 2,
-    "is_fauna": false,
+    "is_fauna": true,
     "name": "Skunk",
     "scientific_name": "Mephitis mephitis",
     "description": "The skunk is a distinctive mammal known for its potent defensive spray. With black fur and white stripes, it warns potential threats of its noxious odor. Skunks are omnivores, consuming insects, small mammals, and plants. Though a nuisance to some, they play a vital role in controlling pest populations.",
     "default_picture_name": "images/skunk.jpg"
   },
   {
-    "id": 3,
-    "is_fauna": true,
+    "id": 0,
+    "is_fauna": false,
     "name": "Sugar maple",
+    "scientific_name": "Acer saccharum",
+    "description": "The sugar maple tree is an iconic deciduous tree of North America. Known for its stunning fall foliage, it showcases vibrant shades of red, orange, and yellow. Valued for its sap, it's tapped to produce delicious maple syrup. This majestic tree stands as a symbol of natural beauty and resourcefulness.",
+    "default_picture_name": "images/mapletree.jpg"
+  },
+  {
+    "id": 1,
+    "is_fauna": false,
+    "name": "Sugar maple COPY- TEST",
+    "scientific_name": "Acer saccharum",
+    "description": "The sugar maple tree is an iconic deciduous tree of North America. Known for its stunning fall foliage, it showcases vibrant shades of red, orange, and yellow. Valued for its sap, it's tapped to produce delicious maple syrup. This majestic tree stands as a symbol of natural beauty and resourcefulness.",
+    "default_picture_name": "images/mapletree.jpg"
+  },
+  {
+    "id": 2,
+    "is_fauna": false,
+    "name": "Sugar maple COPY- TEST HEHEHEEHEHEHEH",
     "scientific_name": "Acer saccharum",
     "description": "The sugar maple tree is an iconic deciduous tree of North America. Known for its stunning fall foliage, it showcases vibrant shades of red, orange, and yellow. Valued for its sap, it's tapped to produce delicious maple syrup. This majestic tree stands as a symbol of natural beauty and resourcefulness.",
     "default_picture_name": "images/mapletree.jpg"

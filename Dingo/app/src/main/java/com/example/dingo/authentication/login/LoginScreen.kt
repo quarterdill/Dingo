@@ -3,6 +3,7 @@ package com.example.dingo.authentication.login
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -99,19 +100,25 @@ private fun logInFields(
         EmailField(value = uiState.email, onNewValue = viewModel::onEmailChange)
         DisplayPasswordField(value = uiState.password, onNewValue = viewModel::onPasswordChange)
         Button(
-            onClick = {
-                coroutineScope.launch {
-                    Log.d("STATE", "in on click")
-                    viewModel.onSignInClick()
-                    navController.navigate(route = Screen.MainScreen.route)
-                }
-            },
+            onClick = { coroutineScope.launch {
+                Log.d("STATE", "in on click")
+                viewModel.onSignInClick(navController)
+            }},
             colors =
             ButtonDefaults.buttonColors(
                 contentColor = MaterialTheme.colorScheme.onPrimary
             )
         ) {
             Text(text = "Login", fontSize = 16.sp)
+        }
+        Row {
+            Text(
+                modifier = Modifier.clickable {
+                    navController.navigate(route = Screen.SignUpScreen.route)
+                },
+                text = "No account? Sign Up",
+                fontSize = 15.sp
+            )
         }
     }
 

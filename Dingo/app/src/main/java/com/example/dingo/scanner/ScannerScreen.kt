@@ -55,7 +55,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.dingo.R
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.isGranted
@@ -237,7 +240,7 @@ private fun ScannerPreview(
                 }
             ) {
                 Icon(
-                    Icons.Filled.ShoppingCart,
+                    ImageVector.vectorResource(R.drawable.baseline_camera_alt_24),
                     contentDescription = "Take picture"
                 )
             }

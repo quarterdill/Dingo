@@ -26,6 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -36,13 +37,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.dingo.common.SessionInfo
 import com.example.dingo.model.Comment
 import com.example.dingo.trips.TripScreen
 import com.example.dingo.model.Post
@@ -57,6 +62,10 @@ sealed class ClassroomNavigationItem(
     val name: String,
     val route: String,
 ) {
+    object SelectClassroom : ClassroomNavigationItem(
+        name = "SelectClassroom",
+        route = "selectclassroom",
+    )
     object ClassroomPostFeed : ClassroomNavigationItem(
         name = "ClassroomPostFeed",
         route = "classroompostfeed",
@@ -89,24 +98,48 @@ sealed class ClassroomNavigationItem(
 fun ClassroomScreen(
     viewModel: ClassroomViewModel = hiltViewModel()
 ) {
-    val dummyClassroomId = "cE1sLWEWj31aFO1CxwZB"
+//    val dummyClassroomId = "cE1sLWEWj31aFO1CxwZB"
 //    val dummyUserId = "Q0vMYa9VSh7tyFdLTPgX"
 //    val dummyUsername = "Eric Shang"
-    val dummyUserId = "U47K9DYLoJLJlXHZrU7l"
-    val dummyUsername = "Dylan Xiao"
+//    val dummyUserId = "U47K9DYLoJLJlXHZrU7l"
+//    val dummyUsername = "Dylan Xiao"
+    var classroomId = remember { mutableStateOf("") }
+    var currentPostId = remember { mutableStateOf("") }
 
-    val feedItems = viewModel
-        .getClassroomFeed(dummyClassroomId)
+    val fetchClassrooms = viewModel
+        .getClassrooms()
         .observeAsState()
-    val fetchTeachers = viewModel
-        .getUsersOfType(dummyClassroomId, UserType.TEACHER)
+    var feedItems = viewModel
+        .getClassroomFeed(classroomId.value)
         .observeAsState()
-    val fetchStudents = viewModel
-        .getUsersOfType(dummyClassroomId, UserType.STUDENT)
+    var fetchTeachers = viewModel
+        .getUsersOfType(classroomId.value, UserType.TEACHER)
+        .observeAsState()
+    var fetchStudents = viewModel
+        .getUsersOfType(classroomId.value, UserType.STUDENT)
         .observeAsState()
     var fetchComments = viewModel
-        .getCommentsForPost("")
+        .getCommentsForPost(currentPostId.value)
         .observeAsState()
+
+//    fun updateEverything() {
+//        feedItems = viewModel
+//            .getClassroomFeed(classroomId)
+////            .observeAsState()
+//        fetchTeachers = viewModel
+//            .getUsersOfType(classroomId, UserType.TEACHER)
+////            .observeAsState()
+//        fetchStudents = viewModel
+//            .getUsersOfType(classroomId, UserType.STUDENT)
+////            .observeAsState()
+//    }
+//
+////    @Composable
+//    fun updateComments(postId: String) {
+//        fetchComments = viewModel
+//            .getCommentsForPost(postId)
+////            .observeAsState()
+//    }
 
     val navController = rememberNavController()
 
@@ -114,10 +147,56 @@ fun ClassroomScreen(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        val fetchClassrooms = viewModel
+            .getClassrooms()
+            .observeAsState()
+        var feedItems = viewModel
+            .getClassroomFeed(classroomId.value)
+            .observeAsState()
+        var fetchTeachers = viewModel
+            .getUsersOfType(classroomId.value, UserType.TEACHER)
+            .observeAsState()
+        var fetchStudents = viewModel
+            .getUsersOfType(classroomId.value, UserType.STUDENT)
+            .observeAsState()
+        var fetchComments = viewModel
+            .getCommentsForPost(currentPostId.value)
+            .observeAsState()
         NavHost(
             navController = navController,
-            startDestination = ClassroomNavigationItem.ClassroomPostFeed.route
+            startDestination = ClassroomNavigationItem.SelectClassroom.route
         ) {
+            composable(ClassroomNavigationItem.SelectClassroom.route) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text("Choose a classroom")
+                    LazyColumn(
+                        modifier = Modifier.weight(1.0f, true)
+                    ) {
+                        val classrooms = fetchClassrooms.value
+                        if (classrooms != null) {
+                            println("num classrooms: ${classrooms.size}")
+                            items(classrooms.size) { i ->
+                                println("got classroom: ${classrooms[i]}")
+                                ClickableText(
+                                    style = TextStyle(
+                                        color = Color.LightGray,
+                                        fontSize = 26.sp,
+                                    ),
+                                    text = AnnotatedString(classrooms[i].name),
+                                    onClick = {
+                                        viewModel.classroomId.value = classrooms[i].id
+                                        classroomId.value = classrooms[i].id
+//                                        updateEverything()
+                                        navController.navigate(ClassroomNavigationItem.ClassroomPostFeed.route)
+                                    }
+                                )
+                            }
+                        }
+                    }
+                }
+            }
             composable(ClassroomNavigationItem.ClassroomPostFeed.route) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally
@@ -143,13 +222,13 @@ fun ClassroomScreen(
                         ) {
                             Text("Students/Teachers")
                         }
-                        Button(
-                            onClick = {
-                                navController.navigate(ClassroomNavigationItem.MyProfile.route)
-                            },
-                        ) {
-                            Text("MyProfile")
-                        }
+//                        Button(
+//                            onClick = {
+//                                navController.navigate(ClassroomNavigationItem.MyProfile.route)
+//                            },
+//                        ) {
+//                            Text("MyProfile")
+//                        }
                     }
 //                COMMENT THIS OUT
 //              Button(
@@ -163,10 +242,10 @@ fun ClassroomScreen(
                     LazyColumn(
                         modifier = Modifier.weight(1.0f, true)
                     ) {
-                        var posts =  feedItems.value
+                        var posts = feedItems.value
                         if (posts != null) {
                             items(posts.size) {
-                                ClassroomPost(posts[it], navController, viewModel, fetchComments)
+                                ClassroomPost(posts[it], navController, viewModel, currentPostId)
                                 println("post content: ${posts[it].textContent}")
                             }
                         }
@@ -177,9 +256,9 @@ fun ClassroomScreen(
                 CreatePostModal(
                     viewModel,
                     navController,
-                    dummyClassroomId,
-                    dummyUserId,
-                    dummyUsername
+                    classroomId.value,
+                    SessionInfo.currentUserID,
+                    SessionInfo.currentUsername
                 )
             }
             composable(ClassroomNavigationItem.MemberList.route) {
@@ -204,15 +283,41 @@ fun ClassroomScreen(
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+                    Text("Comments")
+                    var textContentState by remember { mutableStateOf("") }
                     LazyColumn(
-                        modifier = Modifier.weight(1.0f, true)
+                        modifier = Modifier.weight(0.7f, true)
                     ) {
                         // idk if this will make it crash or smth
                         var comments = fetchComments.value
+                        println("comments: $comments")
                         if (comments != null) {
                             items(comments.size) {
                                 CommentText(comments[it])
                             }
+                        }
+                    }
+                    Row(
+                        modifier = Modifier.weight(0.3f, true)
+                    ) {
+                        TextField(
+                            value = textContentState,
+                            onValueChange = { textContentState = it },
+                            label = { Text("") }
+                        )
+                        Button(
+                            onClick = {
+                                if (textContentState != "") {
+                                    viewModel.makeComment(
+                                        classroomId.value,
+                                        currentPostId.value,
+                                        textContentState,
+                                    )
+                                }
+                                textContentState = ""
+                            }
+                        ) {
+                            Text(text = "Comment")
                         }
                     }
                 }
@@ -228,7 +333,9 @@ private fun ClassroomPost(
     post: Post,
     navController: NavHostController,
     viewModel: ClassroomViewModel,
-    fetchComments: State<MutableList<Comment>?>,
+    currentPostId: MutableState<String>,
+//    updateComments: (String) -> Unit,
+//    fetchComments: State<MutableList<Comment>?>,
 ) {
     Row(
         modifier = Modifier.padding(16.dp),
@@ -244,18 +351,19 @@ private fun ClassroomPost(
                 modifier = Modifier.height(20.dp),
                 fontSize = 12.sp,
                 color = Color.Gray,
-                text="${post.username} posted $timeDiffMsg ago")
+                text="${post.username} posted $timeDiffMsg ago"
+            )
             Text(
                 modifier = Modifier.padding(all = 12.dp),
                 text = "${post.textContent}"
             )
             ClickableText(
+                style = TextStyle(
+                    color = Color.LightGray,
+                ),
                 text = AnnotatedString("${post.comments.size} comment(s)"),
                 onClick = {
-                    TODO("figure out how to get the right set of comments")
-//                    fetchComments = viewModel
-//                        .getCommentsForPost("")
-//                        .observeAsState()
+                    currentPostId.value = post.id
                     navController.navigate(ClassroomNavigationItem.ViewComments.route)
                 }
             )
@@ -365,6 +473,15 @@ private fun AddMemberModal(
     navController: NavHostController,
 ) {
     Text("Cannot add new members as a student")
+}
+
+@Composable
+private fun Comments(
+    viewModel: ClassroomViewModel,
+    postId: String
+) {
+    val commentList = viewModel.getCommentsForPost(postId).observeAsState()
+
 }
 
 @Composable
