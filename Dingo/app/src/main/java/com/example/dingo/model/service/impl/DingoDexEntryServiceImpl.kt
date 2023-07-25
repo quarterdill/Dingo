@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import androidx.lifecycle.viewModelScope
 import com.example.dingo.model.DingoDex
 import com.example.dingo.model.DingoDexEntry
+import com.example.dingo.model.DingoDexEntryContent
 import com.example.dingo.model.service.AccountService
 import com.example.dingo.model.service.DingoDexEntryService
 import com.google.firebase.firestore.FirebaseFirestore
@@ -56,17 +57,17 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
             .whereEqualTo(ENTRY_NAME, entryName).get().await().toObjects(DingoDexEntry::class.java)
     }
 
-    override suspend fun addNewEntry(newDingoDexEntry: DingoDex): Boolean {
+    override suspend fun addNewEntry(newDingoDexEntry: DingoDexEntryContent): Boolean {
         // todo: change temp auth yes
         val newEntry = DingoDexEntry(
             userId = "temp",
             dingoDexId = newDingoDexEntry.id,
             name = newDingoDexEntry.name,
-            isFauna = newDingoDexEntry.isFauna,
+            isFauna = newDingoDexEntry.is_fauna,
             numEncounters = 1,
             location = "",
             pictures = emptyList(),
-            displayPicture = newDingoDexEntry.defaultPicture,
+            displayPicture = newDingoDexEntry.default_picture_name,
         )
         return try {
             firestore.collection(DINGO_DEX_ENTRIES).add(newEntry).await()

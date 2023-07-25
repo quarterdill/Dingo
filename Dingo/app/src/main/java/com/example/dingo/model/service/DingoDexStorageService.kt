@@ -1,12 +1,14 @@
 package com.example.dingo.model.service
 
+import android.content.Context
 import com.example.dingo.model.DingoDex
+import com.example.dingo.model.DingoDexEntryContent
 import com.google.firebase.firestore.DocumentSnapshot
 import kotlinx.coroutines.flow.Flow
 
 interface DingoDexStorageService {
-    suspend fun getDingoDexItem(dingoId: String, isFauna: Boolean): DingoDex?
-    suspend fun findDingoDexItem(entryName: String): DingoDex?
+    suspend fun getDingoDexItem(dingoId: Int, isFauna: Boolean): DingoDexEntryContent
+    suspend fun findDingoDexItem(entryName: String): DingoDexEntryContent?
     suspend fun getDingoDex(isFauna: Boolean): MutableList<DingoDex>
     // Dev only
     suspend fun addDummyDingoDex(isFauna: Boolean)

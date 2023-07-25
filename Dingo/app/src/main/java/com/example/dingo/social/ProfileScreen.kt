@@ -23,11 +23,12 @@ import com.example.dingo.model.DingoDexEntryListings
 fun ProfileScreen(
     viewModel: ProfileViewModel = hiltViewModel()
 ) {
-    val numFloraFound = viewModel.getNumFlora()
+
     val numFaunaFound = viewModel.getNumFauna()
     val totalFlora = DingoDexEntryListings.getInstance(LocalContext.current).floraEntryList.size
     val totalFauna = DingoDexEntryListings.getInstance(LocalContext.current).faunaEntryList.size
     val achievements = viewModel.getAchievements(LocalContext.current)
+
 
     Column(
         modifier = Modifier.fillMaxSize(),
