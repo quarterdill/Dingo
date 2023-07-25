@@ -5,6 +5,7 @@ import com.example.dingo.model.Trip
 import com.example.dingo.model.service.AccountService
 import com.example.dingo.model.service.TripService
 import com.google.android.gms.maps.model.LatLng
+import com.google.firebase.Timestamp
 import com.google.firebase.database.GenericTypeIndicator
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.GeoPoint
@@ -24,6 +25,7 @@ data class GeoTrip (
     var username: String = "",
     var locations: List<HashMap<String, Any>> =emptyList(),
     var discoveredEntries: List<String> = emptyList(),
+    var timestamp: Timestamp = Timestamp.now(),
 )
 
 class TripServiceImpl
@@ -41,6 +43,7 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
         trip.userId = userId
         trip.username = username
         trip.locations = locations
+        trip.timestamp = Timestamp.now()
 
 //        Default to empty lists for now
 //        TODO("Fetch locations using Android API and discoveredEntries from Scanner Service")
@@ -82,15 +85,15 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
     fun convertGeoTripsToTrips(geoTrips: List<GeoTrip>): List<Trip> {
         val trips = mutableListOf<Trip>()
         for (geoTrip in geoTrips) {
-            val locations = geoTrip.locations.map { location ->
-                LatLng(location["latitude"] as Double, location["longitude"] as Double)
-            }
             val trip = Trip(
                 id = geoTrip.id,
                 userId = geoTrip.userId,
                 username = geoTrip.username,
-                locations = locations,
-                discoveredEntries = geoTrip.discoveredEntries
+                locations = geoTrip.locations.map { location ->
+                    LatLng(location["latitude"] as Double, location["longitude"] as Double)
+                },
+                discoveredEntries = geoTrip.discoveredEntries,
+                timestamp = geoTrip.timestamp,
             )
             trips.add(trip)
         }
@@ -109,14 +112,6 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
 
             val query = tripCollectionRef.whereEqualTo("userId", userId).limit(limit.toLong())
             Log.d("TripService", "query: $query")
-
-
-
-            val geoTripDeserializer = { snapshot: QueryDocumentSnapshot ->
-                val id = snapshot.id
-                val userId = snapshot.getString("userId") ?: ""
-                val username = snapshot.getString("username") ?: ""
-  }
 
 
             val subscription = query.addSnapshotListener { snapshot, e ->
@@ -140,9 +135,6 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
             awaitClose { subscription.remove() }
         }
     }
-
-
-
 
 
     companion object {

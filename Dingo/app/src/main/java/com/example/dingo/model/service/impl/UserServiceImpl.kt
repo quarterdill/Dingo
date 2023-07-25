@@ -479,6 +479,13 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
         }
     }
 
+    override suspend fun addTripForUser(userId : String, tripId: String) {
+        firestore.collection(USER_COLLECTIONS)
+            .document(userId)
+            .update("trips", FieldValue.arrayUnion(tripId))
+            .await()
+    }
+
     companion object {
         private const val USER_COLLECTIONS = "userCollections"
         private const val POST_COLLECTIONS = "postCollections"
