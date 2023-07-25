@@ -10,6 +10,8 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.example.dingo.MainActivity
 import com.example.dingo.common.SessionInfo
+import com.example.dingo.common.StatName
+import com.example.dingo.common.incrementStat
 import com.example.dingo.common.isValidEmail
 import com.example.dingo.model.AccountType
 import com.example.dingo.model.Classroom
@@ -81,6 +83,7 @@ constructor(
             }
 
         }
+        incrementStat(StatName.NUM_SOCIAL_POSTS)
     }
 
     fun getFeedForUser(userId: String, limit: Int = 10): MutableList<Post> {
@@ -159,6 +162,7 @@ constructor(
         viewModelScope.launch {
             postService.addComment(postId, SessionInfo.currentUsername, textContent)
         }
+        incrementStat(StatName.NUM_COMMENTS)
     }
 
     fun getUsersPosts(userId: String): LiveData<MutableList<Post>?> {
@@ -215,6 +219,7 @@ constructor(
         runBlocking{
             msg = userService.acceptFriendReq(senderId, receiverId)
         }
+        incrementStat(StatName.NUM_FRIENDS_ACCEPTED)
         return msg
     }
 
@@ -223,6 +228,7 @@ constructor(
         runBlocking{
             msg = userService.declineFriendReq(senderId, receiverId)
         }
+        incrementStat(StatName.NUM_FRIENDS_DECLINED)
         return msg
     }
 

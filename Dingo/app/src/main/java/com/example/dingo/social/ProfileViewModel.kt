@@ -45,7 +45,7 @@ constructor(
         if (currUser != null) {
             val achievementIds = currUser.achievements
             for (i in achievementIds) {
-                ret.add(AchievementListings.getInstance(context).achievementList[i])
+                ret.add(AchievementListings.achievementList[i])
             }
         }
 

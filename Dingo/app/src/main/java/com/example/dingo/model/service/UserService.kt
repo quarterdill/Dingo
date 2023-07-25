@@ -28,4 +28,5 @@ interface UserService {
 
     suspend fun getCurrentUser()
     suspend fun getClassrooms(userId: String, limit: Int = 10): Flow<MutableList<Classroom>?>
+    suspend fun updateStats()
 }
