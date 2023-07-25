@@ -41,14 +41,6 @@ constructor(
     private val accountService: AccountService,
 ) : ViewModel() {
 
-    suspend fun onSignOutClick(navController: NavHostController) {
-        Log.d("STATE", "signing out")
-        val successfulSignOut = accountService.signOut();
-        if (successfulSignOut) {
-            navController.navigate(Screen.LoginScreen.route)
-        }
-    }
-
     fun makePost(
         userId: String,
         username: String,
@@ -226,22 +218,6 @@ constructor(
         return msg
     }
 
-    fun getPendingFriendReqs(userId: String): LiveData<MutableList<User>?>{
-        return liveData(Dispatchers.IO) {
-            try {
-                userService.getPendingFriendReqs(userId).collect {
-                    if (it != null) {
-                        val pending = it
-                        emit(pending)
-                    } else {
-                        emit(null)
-                    }
-                }
-            } catch (e: java.lang.Exception) {
-                // Do nothing
-                println("$e")
-            }
-        }
-    }
+
 
 }
