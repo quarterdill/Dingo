@@ -1,6 +1,7 @@
 package com.example.dingo.model.service.impl
 
 import android.util.Log
+import com.example.dingo.common.SessionInfo
 import com.example.dingo.model.GeoTrip
 import com.example.dingo.model.Trip
 import com.example.dingo.model.service.AccountService
@@ -67,6 +68,8 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
         return tripId
     }
 
+
+
     override suspend fun getTrip(tripId: String): Trip? {
         return firestore.collection(TRIP_COLLECTIONS)
             .document(tripId)
@@ -91,7 +94,7 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
                 locations = geoTrip.locations.map { location ->
                     LatLng(location["latitude"] as Double, location["longitude"] as Double)
                 },
-                discoveredEntries = geoTrip.discoveredEntries,
+                discoveredEntries = geoTrip.discoveredEntries.toMutableList(),
                 startTime= geoTrip.startTime,
                 endTime = geoTrip.endTime,
                 timestamp= geoTrip.timestamp,

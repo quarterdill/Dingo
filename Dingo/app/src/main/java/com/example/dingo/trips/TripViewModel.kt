@@ -15,8 +15,10 @@ import android.location.Location
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.example.dingo.common.SessionInfo
+import com.example.dingo.model.service.impl.TripServiceImpl
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.Timestamp
+import kotlinx.coroutines.tasks.await
 
 @HiltViewModel
 class TripViewModel
@@ -27,9 +29,23 @@ constructor(
 ) : ViewModel() {
 
     private val locationListLiveData = MutableLiveData<List<Location>>()
+    val discoveredEntries = mutableListOf<String>()
+    val picturePaths = mutableListOf<String>()
 
+    fun addNewEntry(entryId: String) {
+        if (SessionInfo.currentUser != null && SessionInfo.currentUser!!.activeTrip) {
+            val hasEntry = discoveredEntries.indexOf(entryId) != -1
+            if (!hasEntry) {
+                discoveredEntries.add(entryId)
+            }
+        }
 
+    }
 
+    fun addPicture(picturePath: String) {
+        if (SessionInfo.currentUser != null && SessionInfo.currentUser!!.activeTrip)
+            picturePaths.add(picturePath)
+    }
 
     fun locationTrackingStopped(locationList: MutableList<LatLng>) : List<LatLng> {
 

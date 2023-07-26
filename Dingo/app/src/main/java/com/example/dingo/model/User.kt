@@ -28,6 +28,7 @@ data class User (
     var uncollectedFauna : List<Int> = emptyList(),
     var uncollectedFlora : List<Int> = emptyList(),
     var stats: MutableMap<String, Int> = mutableMapOf(),
-    var achievements: MutableList<Int> = mutableListOf() // list of achievement ids
+    var achievements: MutableList<Int> = mutableListOf(), // list of achievement ids,
+    var activeTrip: Boolean = false
 )
 

@@ -22,7 +22,7 @@ class LoginViewModel
 @Inject
 constructor(
     private val accountService: AccountService,
-    private val     userService: UserService,
+    private val userService: UserService,
 ) : ViewModel() {
     private val _uiState = mutableStateOf(LoginUIState())
     val uiState: State<LoginUIState> = _uiState
