@@ -81,17 +81,34 @@ class AccountServiceImpl @Inject constructor(
         Failure(e)
     }
 
-    override suspend fun registerUser(email: String, password: String): Boolean {
+    override suspend fun registerUser(email: String, password: String): String {
         try {
-            auth.createUserWithEmailAndPassword(email, password).await()
+            println("1")
+            var authId = ""
+            var res = auth.createUserWithEmailAndPassword(email, password)
+                .addOnSuccessListener {
+                    val user = it.user
+                    if (user != null) {
+                        authId = user.uid
+                        println("GOT AUTH ID: $authId")
+                    }
+                }
+
             Log.e("STATE", "Signup success")
-            return true
+            println("2")
+            return authId
+//            if (res.user != null) {
+//                return res.user!!.uid
+//            }
         } catch (e: Exception) {
             // Authentication failed
+            println("uh oh stinky")
             Log.e("STATE", "Signup failed: ${e.message}")
             // Handle the authentication failure as needed
+            return ""
+
         }
-        return false
+        return ""
     }
 
 //    override suspend fun registerUser(

@@ -73,9 +73,9 @@ fun LoginScreen(
             contentDescription = "Placeholder"
         )
         CustomSwitch(
-            Modifier.padding(vertical = MEDIUM_PADDING),
             "Standard",
-            "Education"
+            "Education",
+            Modifier.padding(vertical = MEDIUM_PADDING),
         ) {}
 
         logInFields(navController = navController)
@@ -86,7 +86,7 @@ fun LoginScreen(
 
 
 @Composable
-private fun logInFields(
+fun logInFields(
     viewModel: LoginViewModel = hiltViewModel(),
     navController: NavHostController
 ) {

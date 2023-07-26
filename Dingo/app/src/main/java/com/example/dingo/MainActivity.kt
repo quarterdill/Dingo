@@ -6,6 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -22,10 +23,12 @@ import com.example.dingo.authentication.login.LoginViewModel
 import com.example.dingo.ui.theme.DingoTheme
 import dagger.hilt.android.AndroidEntryPoint
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.platform.LocalContext
 import com.example.dingo.authentication.signup.SignUpScreen
 import com.example.dingo.authentication.signup.SignUpViewModel
+import com.example.dingo.common.SessionInfo
 import com.example.dingo.navigation.NavGraph
 import com.example.dingo.navigation.Screen
 
@@ -40,8 +43,10 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
+            val isLoading = viewModel.isLoading.observeAsState()
             viewModel.getUser()
             viewModel.setUpDingoDex(LocalContext.current)
+            viewModel.setUpAchievements(LocalContext.current)
             navController = rememberNavController()
             DingoTheme {
                 // A surface container using the 'background' color from the theme
@@ -49,10 +54,20 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    navigationConfiguration2(navController)
+                    if (isLoading.value!!) {
+                        CircularProgressIndicator()
+                    } else {
+                        navigationConfiguration2(navController)
+                    }
                 }
             }
         }
+    }
+
+    override fun onStop() {
+        super.onStop()
+
+        viewModel.updateUserStats()
     }
 
     @Composable
@@ -138,7 +153,7 @@ private fun navigationConfiguration(navController: NavHostController) {
     val signUpViewModel: SignUpViewModel = viewModel()
     NavHost(navController = navController, startDestination = modeSelectionScreenRoute) {
         composable(ModeSelectionButton.Standard.route) {
-            LoginScreen(navController)
+            LoginScreen(navController = navController)
         }
         composable(ModeSelectionButton.Education.route) {
             SignUpScreen(navController = navController)

@@ -8,12 +8,12 @@ import java.io.File
 import java.io.IOException
 
 enum class AccountType {
-    STANDARD, EDUCATION
+    STANDARD, EDUCATION, STUDENT, INSTRUCTOR
 }
 
 data class User (
     @DocumentId val id: String = "",
-    val authId: String = "", // from firebase auth
+    var authId: String = "", // from firebase auth
     var username: String = "",
     var email: String = "",
     var accountType: AccountType = AccountType.STANDARD,
@@ -27,6 +27,7 @@ data class User (
     var trips: List<String> = emptyList(),
     var uncollectedFauna : List<Int> = emptyList(),
     var uncollectedFlora : List<Int> = emptyList(),
-    var stats: Map<String, Int> = emptyMap(),
+    var stats: MutableMap<String, Int> = mutableMapOf(),
     var achievements: MutableList<Int> = mutableListOf() // list of achievement ids
 )
+

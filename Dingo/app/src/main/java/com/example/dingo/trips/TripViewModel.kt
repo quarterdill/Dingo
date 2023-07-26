@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
 import com.example.dingo.model.Trip
-import com.example.dingo.model.UserType
 import com.example.dingo.model.service.TripService
 import com.example.dingo.model.service.UserService
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,9 +14,8 @@ import javax.inject.Inject
 import android.location.Location
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
-import com.example.dingo.model.User
+import com.example.dingo.common.SessionInfo
 import com.google.android.gms.maps.model.LatLng
-
 
 @HiltViewModel
 class TripViewModel
@@ -42,7 +40,7 @@ constructor(
         return locationListLiveData
     }
 
-    fun makeTrip(
+    fun createTrip(
         userId: String,
         username: String,
         locations: List<LatLng>
@@ -56,10 +54,9 @@ constructor(
                 locations,
                 discoveredEntries
             )
-            Log.d("TripViewModel making a trip with tripId:", tripId)
+            Log.d("TripViewModel", "createTrip: username:$username userId:$userId tripId:$tripId")
 
-//            classroomService.addPost(classroomId, postId)
-//            userService.addClassroomPost(userId, postId)
+            userService.addTripForUser(userId, tripId)
         }
 
     }
@@ -94,24 +91,15 @@ constructor(
         )
     }
 
-    fun makeDummyTrips(locations: List<LatLng>) {
+    fun makeDummyTrips() {
         viewModelScope.launch {
-            Log.d("TripViewModel", "makeDummyTrips($locations)")
-            val user = userService.getUserByEmail("e2shang@uwaterloo.ca")
-            if (user != null) {
                 val tripId = tripService.createTrip(
-                    user.id,
-                    user.username,
-                    locations = locations,
-                    emptyList(),
-                )
+                    userId=SessionInfo.currentUserID,
+                    username=SessionInfo.currentUsername,
+                    locations = dummyTrip1,
+                    discoveredEntries = emptyList())
+
                 Log.d("TripViewModel", " making a trip with tripId: $tripId")
-            } else {
-                Log.d("TripViewModel", "fail to make trip since no user")
-
-            }
         }
-
     }
-
 }

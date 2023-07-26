@@ -7,6 +7,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
 import com.example.dingo.common.SessionInfo
+import com.example.dingo.common.StatName
+import com.example.dingo.common.incrementStat
 import com.example.dingo.model.AccountType
 import com.example.dingo.model.Classroom
 import com.example.dingo.model.Comment
@@ -50,7 +52,7 @@ constructor(
                 }
             } catch (e: java.lang.Exception) {
                 // Do nothing
-                println("$e")
+                println("error getting classrooms: $e")
             }
         }
     }
@@ -72,7 +74,7 @@ constructor(
                 }
             } catch (e: java.lang.Exception) {
                 // Do nothing
-                println("$e")
+                println("error getting classroom feed: $e")
             }
         }
     }
@@ -89,15 +91,15 @@ constructor(
             Triple("Philip Chen", "p242chen@uwaterloo.ca", UserType.TEACHER)
         )
     }
-    fun addDummyUsers() {
-        val userList = getDummyUsers()
-
-        for (userPair in userList) {
-            viewModelScope.launch {
-                userService.createUser(userPair.first, userPair.second, AccountType.EDUCATION)
-            }
-        }
-    }
+//    fun addDummyUsers() {
+//        val userList = getDummyUsers()
+//
+//        for (userPair in userList) {
+//            viewModelScope.launch {
+//                userService.createUser(userPair.first, userPair.second, AccountType.STUDENT)
+//            }
+//        }
+//    }
 
     fun addDummyUsersToClassroom() {
         val dummyClassroomId = "cE1sLWEWj31aFO1CxwZB"
@@ -138,7 +140,7 @@ constructor(
             classroomService.addPost(classroomId, postId)
             userService.addClassroomPost(userId, postId)
         }
-
+        incrementStat(StatName.NUM_CLASSROOM_POSTS)
     }
 
     fun makeComment(
@@ -149,6 +151,7 @@ constructor(
         viewModelScope.launch {
             postService.addComment(postId, SessionInfo.currentUsername, textContent)
         }
+        incrementStat(StatName.NUM_COMMENTS)
     }
 
 
@@ -232,7 +235,7 @@ constructor(
                 }
             } catch (e: java.lang.Exception) {
                 // Do nothing
-                println("$e")
+                println("error getting users for classroom: $e")
             }
         }
     }
@@ -253,8 +256,20 @@ constructor(
                 }
             } catch (e: java.lang.Exception) {
                 // Do nothing
-                println("$e")
+                println("error getting comments in classroom post: $e")
             }
+        }
+    }
+
+    fun createClassroom(
+        creatorUserId: String,
+        classroomName: String,
+    ) {
+        viewModelScope.launch {
+            var newClassroom: Classroom = Classroom()
+            newClassroom.name = classroomName
+            newClassroom.teachers.add(creatorUserId)
+            classroomService.addNewClassroom(newClassroom)
         }
     }
 
