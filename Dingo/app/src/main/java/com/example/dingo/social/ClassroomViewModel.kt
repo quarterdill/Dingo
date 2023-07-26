@@ -119,6 +119,27 @@ constructor(
         }
     }
 
+    fun addStudent(classroomId: String, studentName: String): Boolean {
+        var studentUser: User? = null
+        var studentId = ""
+        var ok = true
+        runBlocking {
+            studentUser = userService.getUserByUsername(studentName)
+        }
+        if (studentUser == null) {
+            ok = false
+        } else {
+            studentId = studentUser!!.id
+        }
+        if (!ok) {
+            return false
+        }
+        runBlocking {
+            classroomService.addUser(classroomId, studentId, UserType.STUDENT)
+        }
+        return ok
+    }
+
     fun makePost(
         classroomId: String,
         userId: String,

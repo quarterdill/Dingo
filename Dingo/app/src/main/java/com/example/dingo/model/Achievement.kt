@@ -23,28 +23,29 @@ import javax.inject.Inject
 // it will be activated once the condition field has at least the specified value
 // retrieved from the user's stats
 
-data class Achievement
+class Achievement
 @Inject
 constructor(
+    var userService: UserService,
     val achievementId: Int,
     val name: String,
     val description: String,
     val conditionField: String,
     val conditionValue: Int,
-    private val userService: UserService,
 ): IObserver {
     override fun update() {
-        println("got update in achievement!")
+        println("ACHIEVEMENTS: : got update in achievement!")
         val currUser = SessionInfo.currentUser
         if (currUser != null) {
             val currStats = currUser.stats
             if (currStats.containsKey(conditionField)) {
                 val statVal = currStats[conditionField]
-                println("relevant stat value: $conditionField is $statVal")
-                if (statVal != null && statVal >= conditionValue) {
+                println("ACHIEVEMENTS: : relevant stat value: $conditionField is $statVal")
+                if (statVal != null && statVal >= conditionValue && !currUser.achievements.contains(achievementId)) {
                     runBlocking {
                         currUser.achievements.add(achievementId)
                         userService.updateStats()
+                        println("ACHIEVEMENTS: added achievement: $name")
                         userService.addAchievementForUser(currUser, achievementId)
                     }
                 }

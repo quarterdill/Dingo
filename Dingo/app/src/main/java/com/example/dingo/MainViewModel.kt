@@ -15,6 +15,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import java.io.IOException
 import javax.inject.Inject
 
@@ -36,7 +37,9 @@ constructor(
     fun getUser() {
         viewModelScope.launch {
             isLoading.value = true
-            userService.getCurrentUser()
+            runBlocking {
+                userService.getCurrentUser()
+            }
             isLoading.value = false
         }
     }
@@ -61,6 +64,9 @@ constructor(
         val gson = Gson()
         val listAchievementType = object : TypeToken<List<Achievement>>() {}.type
         AchievementListings.achievementList = gson.fromJson(jsonString, listAchievementType)
+        for (i in AchievementListings.achievementList.indices) {
+            AchievementListings.achievementList[i].userService = userService
+        }
     }
 
     fun setUpDingoDex(context: Context) {
