@@ -105,8 +105,7 @@ constructor(
 
                             var trip: Trip? = null
                             val tripId = toAdd.tripId
-                            if (tripId != null) {
-                                println("trying to get trip with id $tripId")
+                            if (tripId != null && tripId != "") {
                                 withContext(Dispatchers.Default) {
                                     trip = tripService.getTrip(tripId)
                                 }

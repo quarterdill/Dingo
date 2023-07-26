@@ -86,7 +86,7 @@ fun SocialFeedScreen(
                 if (posts != null) {
                     println("test rebuild ${posts.size}")
                     items(posts.size) {
-                        SocialPost(posts[it], currentPostId)
+                        SocialPost(posts[it].first, currentPostId)
                     }
                 }
             }
