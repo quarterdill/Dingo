@@ -188,7 +188,7 @@ fun ClassroomScreen(
                                     ClickableText(
                                         modifier = Modifier.padding(UIConstants.SMALL_PADDING),
                                         style = TextStyle(
-                                            color = color_on_secondary,
+                                            color = color_secondary,
                                             fontSize = 26.sp,
                                         ),
                                         text = AnnotatedString(classrooms[i].name),
