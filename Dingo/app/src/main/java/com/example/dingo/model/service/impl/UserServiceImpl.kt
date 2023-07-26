@@ -28,11 +28,15 @@ class UserServiceImpl
 constructor(private val firestore: FirebaseFirestore, private val auth: AccountService) : UserService {
 
     override suspend fun createUser(
-        username: String, email: String, accountType: AccountType
+        username: String,
+        email: String,
+        authId: String,
+        accountType: AccountType
     ): String {
         var user: User = User()
         user.username = username
         user.email = email
+        user.authId = authId
         user.accountType = accountType
 
         var userId = ""
@@ -64,22 +68,8 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
 
     override suspend fun getUserFlow(userId: String): Flow<User?> {
         if (userId == "") {
-            // TODO: Uncomment once auth is implemented
-//            return auth.currentUser.flatMapLatest { user ->
-//                callbackFlow {
-//                    val entries = firestore.collection(USER_COLLECTIONS).document(user.id)
-//                    val subscription = entries.addSnapshotListener { snapshot, _ ->
-//                        if (snapshot == null) {
-//                            trySend(null)
-//                        } else if (snapshot.exists()) {
-//                            trySend(snapshot.toObject(User::class.java))
-//                        }
-//                    }
-//                    awaitClose { subscription.remove() }
-//                }
-//            }
             return callbackFlow {
-                    val entries = firestore.collection(USER_COLLECTIONS).document("temp")
+                    val entries = firestore.collection(USER_COLLECTIONS).document(SessionInfo.currentUserID)
                     val subscription = entries.addSnapshotListener { snapshot, _ ->
                         if (snapshot == null) {
                             trySend(null)
@@ -349,44 +339,6 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
                                 break
                             }
 
-                        }
-                    }
-                    trySend(ret)
-                }
-            }
-            awaitClose { subscription.remove() }
-        }
-    }
-
-    override suspend fun getFriends(userId: String, limit: Int): Flow<MutableList<User>?> {
-        return callbackFlow {
-            val userCollection = firestore.collection(USER_COLLECTIONS).document(userId)
-
-            val subscription = userCollection.addSnapshotListener { snapshot, e ->
-                if (snapshot == null) {
-                    trySend(null)
-                } else if (snapshot!!.exists()) {
-                    var currUser = snapshot.toObject(User::class.java)
-                    var ret: MutableList<User> = mutableListOf<User>()
-
-                    if (currUser != null) {
-                        var numFriends = min(currUser.friends.size, limit)
-                        if (limit == -1) {
-                            numFriends = currUser.friends.size
-                        }
-
-                        // TODO: maybe change the schema to make this more efficient
-                        for (i in 0 until numFriends) {
-                            runBlocking {
-                                val friend = firestore.collection(USER_COLLECTIONS)
-                                    .document(currUser.friends[i])
-                                    .get()
-                                    .await()
-                                    .toObject(User::class.java)
-                                if (friend != null) {
-                                    ret.add(friend)
-                                }
-                            }
                         }
                     }
                     trySend(ret)
