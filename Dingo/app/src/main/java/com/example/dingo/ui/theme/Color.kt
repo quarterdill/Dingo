@@ -9,7 +9,7 @@ val color_secondary = Color(0xFF597C2B)
 val color_on_secondary = Color.White
 val color_background = Color(0xFFd4eabb)
 val color_light_transparent = Color(0x99b8cea1)
-val color_post_background = Color(0x66b97957)
+val color_post_background = Color.White
 
 val Purple40 = Color(0xFF6650a4)
 val PurpleGrey40 = Color(0xFF625b71)
