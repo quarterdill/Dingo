@@ -82,9 +82,8 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
     override suspend fun addPicture(entryName: String, image: Bitmap): String {
         // Create a storage reference from our app
         val storageRef = Firebase.storage.reference
-        // TODO: Change temp to user when auth is done, make imagepath have no spaces
         val dateFormat = SimpleDateFormat("yyyyMMddHHmmss", Locale.getDefault())
-        val imagePath = "${entryName}_$dateFormat.png"
+        val imagePath = "${SessionInfo.currentUserID}/${entryName}_$dateFormat.png"
         // Create a reference to "mountains.jpg"
         val imageRef = storageRef.child(imagePath)
         val baos = ByteArrayOutputStream()
