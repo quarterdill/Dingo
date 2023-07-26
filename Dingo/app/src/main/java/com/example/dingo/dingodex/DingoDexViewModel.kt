@@ -36,10 +36,6 @@ constructor(
     val collectedDingoDexFlora = getDingoDexCollectedItems(false)
     var selectedEntryName = MutableLiveData<String>("")
 
-    fun selectEntry(entryName: String) {
-        selectedEntryName.value = entryName
-    }
-
     fun getEntry(userId: String, entryName: String) : List<DingoDexEntry> {
         return runBlocking {  dingoDexEntryService.getEntry(userId, entryName) }
     }
@@ -67,6 +63,7 @@ constructor(
                                         DingoDexCollectionItem(
                                             id = dingoDexItem.id,
                                             name = dingoDexItem.name,
+                                            scientificName = dingoDexItem.scientific_name,
                                             pictureURL = dingoDexItem.default_picture_name,
                                             isFauna = isFauna,
                                             numEncounters = 0
@@ -104,6 +101,7 @@ constructor(
                             DingoDexCollectionItem(
                                 id = item.dingoDexId,
                                 name = item.name,
+                                scientificName = item.scientificName,
                                 pictureURL = item.displayPicture,
                                 isFauna = isFauna,
                                 numEncounters = item.numEncounters
