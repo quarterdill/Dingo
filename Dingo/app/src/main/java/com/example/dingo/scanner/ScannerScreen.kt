@@ -34,6 +34,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import android.graphics.BitmapFactory
 import androidx.compose.ui.unit.dp
 import android.graphics.Matrix
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -42,14 +43,18 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -60,6 +65,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.dingo.R
+import com.example.dingo.UIConstants
+import com.example.dingo.ui.theme.color_light_transparent
+import com.example.dingo.ui.theme.color_on_primary
+import com.example.dingo.ui.theme.color_on_secondary
+import com.example.dingo.ui.theme.color_primary
+import com.example.dingo.ui.theme.color_secondary
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.isGranted
@@ -113,7 +124,9 @@ private fun CapturedImageBitmapDialog(
             contentAlignment = Alignment.Center
         ){
             if (isLoading.value!!) {
-                CircularProgressIndicator()
+                CircularProgressIndicator(
+                    color = color_secondary
+                )
             } else {
                 Box {
                     var setDefaultPicture by remember { mutableStateOf(true) }
@@ -129,7 +142,9 @@ private fun CapturedImageBitmapDialog(
                     ) {
                         IconButton(
                             modifier = Modifier.size(24.dp),
-                            onClick = onDismissRequest
+                            onClick = onDismissRequest,
+                            colors =
+                                IconButtonDefaults.iconButtonColors(containerColor = color_light_transparent, color_primary)
                         ) {
                             Icon(
                                 Icons.Rounded.Close,
@@ -139,32 +154,59 @@ private fun CapturedImageBitmapDialog(
                     }
                     Column(
                         modifier = Modifier
-                            .align(Alignment.BottomCenter),
+                            .align(Alignment.BottomCenter)
+                            .padding(UIConstants.SMALL_PADDING),
+                        verticalArrangement = Arrangement.spacedBy(UIConstants.SMALL_PADDING),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Row(
+                            modifier = Modifier
+                                .background(
+                                    color = color_light_transparent,
+                                    shape = RoundedCornerShape(5.dp),
+                                )
+                                .padding(horizontal = UIConstants.SMALL_PADDING),
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
-                            Checkbox(checked = setDefaultPicture, onCheckedChange = {
-                                setDefaultPicture = it
-                            })
-                            Text("Set as Default")
+                            Checkbox(
+                                checked = setDefaultPicture,
+                                onCheckedChange = { setDefaultPicture = it },
+                                colors =
+                                CheckboxDefaults.colors(color_primary, checkmarkColor = color_on_primary)
+                            )
+                            Text(
+                                "Set as Default",
+                                color = color_primary
+                            )
                         }
                         Row(
+                            modifier = Modifier
+                                .background(
+                                    color = color_light_transparent,
+                                    shape = RoundedCornerShape(5.dp),
+                                )
+                                .padding(horizontal = UIConstants.SMALL_PADDING),
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
-                            Checkbox(checked = savePicture, onCheckedChange = {
-                                savePicture = it
-                            })
-                            Text("Save Image")
+                            Checkbox(
+                                checked = savePicture,
+                                onCheckedChange = { savePicture = it },
+                                colors =
+                                CheckboxDefaults.colors(color_primary, checkmarkColor = color_on_primary)
+                            )
+                            Text(
+                                "Save Image",
+                                color = color_primary
+                            )
                         }
 
                         Button(
                             onClick = {
                                 viewModel.scanImage(capturedImage, context, setDefaultPicture, savePicture, animalCallback)
                                 onDismissRequest()
-                               // viewModel.savePicture("Dummy_Data", capturedImage, setDefaultPicture, context)
                             },
+                            colors =
+                            ButtonDefaults.buttonColors(containerColor = color_secondary, color_on_secondary)
                         ) {
                             Text(text = "Scan Image")
                         }
@@ -205,6 +247,8 @@ private fun ScannerPreview(
         floatingActionButtonPosition =  FabPosition.Center,
         floatingActionButton = {
             FloatingActionButton (
+                containerColor = color_on_primary,
+                contentColor = color_primary,
                 onClick = {
                     val mainExecutor = ContextCompat.getMainExecutor(context)
                     cameraController.takePicture(mainExecutor, object : ImageCapture.OnImageCapturedCallback() {
@@ -216,7 +260,6 @@ private fun ScannerPreview(
                             image.close()
                         }
                     })
-//                    viewModel.addEntry("Dummy Fauna")
                 }
             ) {
                 Icon(
