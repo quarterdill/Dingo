@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory
 import android.graphics.drawable.Drawable
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,6 +22,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -41,6 +44,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.createBitmap
@@ -56,6 +60,12 @@ import com.example.dingo.model.DingoDexEntryContent
 import com.example.dingo.UIConstants
 import com.example.dingo.model.DingoDexEntryListings
 import com.example.dingo.model.DingoDexScientificToIndex
+import com.example.dingo.ui.theme.color_background
+import com.example.dingo.ui.theme.color_light_transparent
+import com.example.dingo.ui.theme.color_on_primary
+import com.example.dingo.ui.theme.color_on_secondary
+import com.example.dingo.ui.theme.color_primary
+import com.example.dingo.ui.theme.color_secondary
 import com.google.firebase.storage.FirebaseStorage
 import java.io.File
 import java.io.FileInputStream
@@ -85,7 +95,7 @@ fun DingoDexScreen(
     val selected = remember { mutableStateOf("")}
     viewModel.getEntries(userId)
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().background(color = color_background),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         NavHost(
@@ -101,6 +111,7 @@ fun DingoDexScreen(
                         modifier = Modifier.padding(UIConstants.MEDIUM_PADDING),
                         fontSize = UIConstants.TITLE_TEXT,
                         text = "DingoDex",
+                        color = color_primary,
                     )
 
                     val collectedFaunaDingoDex = viewModel.collectedDingoDexFauna.observeAsState() //getDingoDexCollectedItems(true, userId).observeAsState()
@@ -139,6 +150,7 @@ fun DingoDexScreen(
                     ) {
                         Button(
                             onClick = { showFaunaDingoDex = true },
+                            colors = ButtonDefaults.buttonColors(containerColor = color_secondary, color_on_secondary)
                         ) {
                             Text(text = "Fauna")
                         }
@@ -149,7 +161,8 @@ fun DingoDexScreen(
                             color = Color.Gray,
                         )
                         Button(
-                            onClick = { showFaunaDingoDex = false }
+                            onClick = { showFaunaDingoDex = false },
+                            colors = ButtonDefaults.buttonColors(containerColor = color_secondary, color_on_secondary)
                         ) {
                             Text(text = "Flora")
                         }
@@ -168,21 +181,23 @@ fun DingoDexScreen(
                     //println("DingoDex entry image, ${selected.value} could not be found in json assets!")
                 }
                 val dingodexEntryContent = DingoDexEntryListings.dingoDexEntryList[index!!]
-                var bitmap = BitmapFactory.decodeStream(assetManager.open(dingodexEntryContent.default_picture_name))
-
+                var bitmap = remember{ mutableStateOf(BitmapFactory.decodeStream(assetManager.open(dingodexEntryContent.default_picture_name))) }
                 val dingodexEntry: List<DingoDexEntry> = viewModel.getEntry(userId = SessionInfo.currentUserID, entryName = selected.value!!)
                 if (dingodexEntry.size == 1 && dingodexEntry[0].displayPicture != "default") {
-                    val storageRef = FirebaseStorage.getInstance().reference.child("temp/${selected.value}.jpg")
-                    storageRef.getBytes(1000000).addOnSuccessListener {
-                        bitmap = BitmapFactory.decodeByteArray(it, 0, it.size)
+                    val storageRef = FirebaseStorage.getInstance().reference.child(dingodexEntry[0].displayPicture)
+                    storageRef.getBytes(1500000000).addOnSuccessListener {
+                        bitmap.value = BitmapFactory.decodeByteArray(it, 0, it.size)
                     }.addOnFailureListener {
                         println("Error occurred when downloading user's DingoDex image from Firebase $it")
                     }
                 }
+
+
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.verticalScroll(rememberScrollState()),
                 ) {
+
                     Row(
                         modifier = Modifier.padding(16.dp),
                         horizontalArrangement = Arrangement.spacedBy(10.dp),
@@ -191,7 +206,8 @@ fun DingoDexScreen(
                         Text(
                             modifier = Modifier.padding(4.dp),
                             fontSize = 16.sp,
-                            text = "${dingodexEntryContent.name} | ${dingodexEntryContent.scientific_name}"
+                            text = "${dingodexEntryContent.name} | ${dingodexEntryContent.scientific_name}",
+                            color = Color.Black
                         )
                     }
                     Row(
@@ -199,18 +215,21 @@ fun DingoDexScreen(
                         horizontalArrangement = Arrangement.spacedBy(10.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
+
                         Image(
-                            bitmap = bitmap.asImageBitmap(),
+                            bitmap = bitmap.value.asImageBitmap(),
                             contentDescription = if (dingodexEntryContent.is_fauna) "Fauna" else "Flora",
                             contentScale = ContentScale.Inside,
                             alignment = Alignment.CenterStart,
                         )
+
                     }
                     Text(
                         textAlign = TextAlign.Left,
                         modifier = Modifier.width(300.dp),
                         fontSize = 16.sp,
-                        text = dingodexEntryContent.description.trimIndent()
+                        text = dingodexEntryContent.description.trimIndent(),
+                        color = Color.Black
                     )
                     Row(
                         modifier = Modifier.padding(16.dp),
@@ -221,11 +240,13 @@ fun DingoDexScreen(
                             onClick = {
                                 navController.navigate(DingoDexNavItem.DingoDex.route)
                             },
+                            colors = ButtonDefaults.buttonColors(containerColor = color_secondary, color_on_secondary),
                         ) {
                             Text(
                                 modifier = Modifier.padding(4.dp),
                                 fontSize = 16.sp,
                                 text = "Back",
+                                color = Color.Black
                             )
                         }
                     }
@@ -240,7 +261,6 @@ private fun DingoDexItem(
     item: DingoDexCollectionItem,
     navController: NavHostController,
     selected: MutableState<String>,
-    viewModel: DingoDexViewModel = hiltViewModel()
 ) {
     val currentContext = LocalContext.current
     val assetManager: AssetManager = currentContext.assets
@@ -251,11 +271,13 @@ private fun DingoDexItem(
         selected.value = item.scientificName
         navController.navigate(DingoDexNavItem.Description.route)
         },
+        modifier = Modifier.padding(3.dp),
+        colors = ButtonDefaults.buttonColors(containerColor = color_secondary, color_on_secondary),
         enabled = item.numEncounters != 0
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.Center,
         ) {
             Box() {
                 Image(
@@ -266,7 +288,7 @@ private fun DingoDexItem(
                         .size(64.dp)
                         .clip(CircleShape)  // clip to the circle shape
                         .border(2.dp, Color.Gray, CircleShape),
-                    alpha = if(item.numEncounters == 0) 0.2F else 0.0F
+                    alpha = if(item.numEncounters == 0) 0.2F else 1.0F
                 )
                 Box(
                     contentAlignment = Alignment.Center
@@ -274,13 +296,17 @@ private fun DingoDexItem(
                     Canvas(modifier = Modifier.size(25.dp), onDraw = {
                         drawCircle(color = Color.LightGray)
                     })
-                    Text(text = "${item.numEncounters}", color = Color.White)
+                    Text(text = "${item.numEncounters}", color = Color.Black)
                 }
             }
             Text(
                 modifier = Modifier.width(72.dp),
                 text = item.name,
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
+                fontSize = 12.sp,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+                color = Color.Black
             )
         }
     }

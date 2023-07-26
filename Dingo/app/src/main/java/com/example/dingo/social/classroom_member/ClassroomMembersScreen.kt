@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -35,6 +36,9 @@ import com.example.dingo.model.AccountType
 import com.example.dingo.model.User
 import com.example.dingo.model.UserType
 import com.example.dingo.ui.theme.color_primary
+import com.example.dingo.ui.theme.color_on_secondary
+import com.example.dingo.ui.theme.color_primary
+import com.example.dingo.ui.theme.color_secondary
 
 @Composable
 fun ClassroomMembersScreen(
@@ -66,7 +70,8 @@ fun ClassroomMembersScreen(
                 Button(
                     onClick = {
                         addNewMemberDialog.value = true
-                    }
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = color_secondary, color_on_secondary),
                 ) {
                     Text("Add Students", color = color_primary)
                 }
@@ -132,6 +137,7 @@ private fun AddMemberDialog(
             val currentContext = LocalContext.current
             Text(text = "Add Student",
                 fontSize = UIConstants.SUBTITLE1_TEXT,
+                color = color_primary
             )
             TextField(
                 modifier = Modifier
@@ -162,12 +168,14 @@ private fun AddMemberDialog(
                                 Toast.LENGTH_SHORT,
                             ).show()
                         }
-                    }
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = color_secondary, color_on_secondary),
                 ) {
                     Text(text = "Add", color=color_primary)
                 }
                 Button(
-                    onClick = onDismissRequest
+                    onClick = onDismissRequest,
+                    colors = ButtonDefaults.buttonColors(containerColor = color_secondary, color_on_secondary),
                 ) {
                     Text(text = "Cancel", color=color_primary)
                 }

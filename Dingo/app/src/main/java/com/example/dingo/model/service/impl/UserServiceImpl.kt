@@ -305,7 +305,7 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
             UNCOLLECTED_FLORA
         }
         val user = firestore.collection(USER_COLLECTIONS)
-            .document("temp").get().await().toObject(User::class.java)
+            .document(SessionInfo.currentUserID).get().await().toObject(User::class.java)
         if (user != null) {
             val collection = if (isFauna) {
                 user.uncollectedFauna.toMutableList()
@@ -314,10 +314,8 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
             }
             collection.remove(newEntryId)
 
-            // TODO: change temp once auth is done
-            firestore.collection(USER_COLLECTIONS).document("temp").update(field, collection)
+            firestore.collection(USER_COLLECTIONS).document(SessionInfo.currentUserID).update(field, collection)
         }
-
     }
 
     // This is for social posts

@@ -18,6 +18,7 @@ import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -66,6 +67,10 @@ fun SocialFeedScreen(
     var currentPostId = remember { mutableStateOf("") }
     val feedItems = viewModel.userFeed.observeAsState()
     var createNewPost = remember { mutableStateOf(false) }
+
+    val isLoading = viewModel.isLoading.observeAsState()
+
+
     if (createNewPost.value) {
         CreatePostModal(
             viewModel,
@@ -81,7 +86,12 @@ fun SocialFeedScreen(
         contentAlignment = Alignment.Center,
     ) {
         if (feedItems.value.isNullOrEmpty()) {
-            Text("No posts found... try adding some friends")
+
+            if (isLoading.value!!) {
+                CircularProgressIndicator()
+            } else {
+                Text("No posts found... try adding some friends")
+            }
         } else {
             LazyColumn(
                 modifier = Modifier.fillMaxHeight()
@@ -126,14 +136,16 @@ private fun SocialPost(
     Column {
         var timeDiffMsg = getTimeDiffMessage(post.timestamp)
 
-        if (trip != null) {
-            tripMap(points = trip.locations, fullSize = false )
+        if (trip != null && trip.locations.isNotEmpty()) {
+            tripMap(trip = trip, fullSize = false )
         }
         Text(
             modifier = Modifier.height(20.dp),
             fontSize = 12.sp,
             color = Color.Gray,
-            text="${post.username} posted $timeDiffMsg ago with tripId: ${post.tripId ?: "none"}"
+            overflow= TextOverflow.Ellipsis,
+            text="${post.username} posted ${trip?.title ?: ""} $timeDiffMsg ago with tripId: ${post.tripId ?: "none"}"
+
         )
         Text(
             modifier = Modifier.padding(all = 12.dp),
@@ -267,6 +279,8 @@ private fun CommentsDialog(
     val fetchComments = viewModel
         .getCommentsForPost(currentPostId.value)
         .observeAsState()
+
+    val isLoading = viewModel.isLoading.observeAsState()
     CustomDialog(
         onDismissRequest = onDismissRequest
     ) {
@@ -285,10 +299,14 @@ private fun CommentsDialog(
                 contentAlignment = Alignment.Center,
             ) {
                 if (fetchComments.value.isNullOrEmpty()) {
-                    Text(
-                        "No comments yet. Be the first to comment!",
-                        textAlign = TextAlign.Center,
-                    )
+                    if (isLoading.value!!) {
+                        CircularProgressIndicator()
+                    } else {
+                        Text(
+                            "No comments yet. Be the first to comment!",
+                            textAlign = TextAlign.Center,
+                        )
+                    }
                 } else {
                     LazyColumn(
                         modifier = Modifier.fillMaxHeight()

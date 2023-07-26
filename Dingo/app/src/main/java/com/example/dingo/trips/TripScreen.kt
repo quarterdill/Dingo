@@ -1,64 +1,93 @@
 package com.example.dingo.trips
-
-import android.content.Intent
-import android.content.pm.PackageManager
-import android.util.Log
-import androidx.compose.runtime.Composable
-import com.google.android.gms.maps.model.LatLng
-import com.google.maps.android.compose.rememberCameraPositionState
-import com.google.android.gms.maps.model.CameraPosition
-import com.google.maps.android.compose.GoogleMap
-import androidx.compose.ui.Modifier
-import androidx.compose.foundation.layout.fillMaxSize
-import com.google.maps.android.compose.Marker
-import com.google.maps.android.compose.MarkerState
-
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Text
-import androidx.compose.material3.Button
+import com.bumptech.glide.Glide
 
 //import androidx.compose.material.Button
 //import androidx.compose.material.MaterialTheme
 //import androidx.compose.material.Text
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.content.res.AssetManager
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Observer
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.dingo.R
 import com.example.dingo.UIConstants
 import com.example.dingo.common.SessionInfo
 import com.example.dingo.model.Trip
 import com.example.dingo.model.service.impl.getTimeDiffMessage
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
+import com.google.android.gms.maps.model.MarkerOptions
+import com.example.dingo.ui.theme.color_background
+import com.example.dingo.ui.theme.color_on_secondary
+import com.example.dingo.ui.theme.color_primary
+import com.example.dingo.ui.theme.color_secondary
 import com.google.firebase.Timestamp
+import com.google.firebase.storage.FirebaseStorage
+import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.MarkerInfoWindow
+import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.Polyline
+import com.google.maps.android.compose.rememberCameraPositionState
+import java.text.SimpleDateFormat
+import java.util.Date
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -85,10 +114,12 @@ fun TripScreen(
 
     var selectedTrip: Trip? by remember { mutableStateOf(null) }
     var trackedLocations : List<LatLng> by remember { mutableStateOf(emptyList()) }
-    LocationTrackingService().createNotificationChannel(context)
+    viewModel.createNotificationChannel(context)
     LocationTrackingService.locationList.observe(lifeCycleOwner, Observer {
         trackedLocations = it
-        SessionInfo.trip!!.locations = it
+        if (SessionInfo.trip != null) {
+            SessionInfo.trip!!.locations = it
+        }
     })
 
     val permissionState = remember { mutableStateOf(false) }
@@ -113,8 +144,8 @@ fun TripScreen(
     }
 
     Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier = Modifier.fillMaxSize().background(color = color_background),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         NavHost(
             navController = navController,
@@ -128,11 +159,9 @@ fun TripScreen(
                     ) {
                     Text(
                         text = "Trips",
+                        color = color_primary,
                         fontSize = UIConstants.TITLE_TEXT,
                     )
-
-                    Text(text = if (isServiceRunning.value) "false" else "true")
-
 
                     LazyColumn(
                         modifier = Modifier.weight(1.0f, true)
@@ -174,6 +203,8 @@ fun TripScreen(
                                     navController.navigate(TripNavigationItem.CreatePost.route)
                                 }
                             },
+                            colors =
+                            ButtonDefaults.buttonColors(containerColor = color_secondary, color_on_secondary)
                         ) {
                             Text(text = if (isServiceRunning.value) "Stop Tracking Permission Granted: ${permissionState.value}" else "Start Tracking Permission Granted: ${permissionState.value}")
 
@@ -181,43 +212,64 @@ fun TripScreen(
                     }
                 }
             }
-//            composable(TripNavigationItem.TrackTrip.route) {
-//                val dummyTripId = "dummy"
-//                LocationPermissionScreen()
-//                tripMap(trackedLocations, true)
-//                val context = LocalContext.current
-//                Column {
-//                    Button(
-//                        onClick = {
-//                            if (!permissionState.value) {
-//                                requestPermissionLauncher.launch(android.Manifest.permission.ACCESS_FINE_LOCATION)
-//                            }
-//                            isServiceRunning = !isServiceRunning
-//                            if (isServiceRunning) {
-//                                ContextCompat.startForegroundService(
-//                                    context,
-//                                    Intent(context, LocationTrackingService::class.java)
-//                                )
-//                                Log.d("tripScreen", "trackedLocations: $trackedLocations")
-//
-//                                navController.navigate(TripNavigationItem.CreatePost.route)
-//
-//                            } else {
-//                                context.stopService(Intent(context, LocationTrackingService::class.java))
-//                                navController.navigate(TripNavigationItem.CreatePost.route)
-//
-//                            }
-//                        },
-//                        modifier = Modifier.padding(16.dp)
-//                    ) {
-//                        Text(text = if (isServiceRunning) "Stop Tracking Permission Granted: ${permissionState.value}" else "Start Tracking Permission Granted: ${permissionState.value}")
-//                    }
-//                }
-//            }
+
             composable(TripNavigationItem.CreatePost.route) {
-                Log.d("here2", "creating post")
-                tripMap(trackedLocations, true)
-                PostTripModal(navController = navController,  trip = SessionInfo.trip )
+                var textContentState by remember { mutableStateOf("") }
+                if (SessionInfo.trip != null) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.padding(16.dp),
+                    ) {
+
+                                TextField(
+                                    value = textContentState,
+                                    onValueChange = { textContentState = it },
+                                    placeholder = { Text("Name your trip")},
+                                    isError = textContentState.isEmpty()
+                                )
+
+                        Column(modifier = Modifier.weight(6.0f, true)) {
+                            Text(
+                                text = "Description",
+                                modifier = Modifier.padding(16.dp),
+                                fontSize = 16.sp
+                            )
+                            Box(modifier = Modifier.fillMaxSize()) {
+                                if (SessionInfo.trip!!.locations.isNotEmpty()) {
+                                  tripMap(SessionInfo.trip!!, true)
+                                }
+                            }
+                        }
+                        Row(modifier = Modifier.weight(1.0f, true), horizontalArrangement = Arrangement.spacedBy(10.dp),
+                            verticalAlignment = Alignment.CenterVertically) {
+                            Button(
+                                onClick = {
+                                    viewModel.discardTrip()
+                                    navController.navigate(TripNavigationItem.TripPostFeed.route)
+                                }
+                            ) {
+                                Text(text = "Discard Current Trip")
+                            }
+                            Button(
+                                enabled = !textContentState.isEmpty(),
+                                onClick = {
+                                    if (SessionInfo.trip != null) {
+                                        SessionInfo.trip!!.title = textContentState
+                                        SessionInfo.trip!!.username = SessionInfo.currentUsername
+                                        SessionInfo.trip!!.userId = SessionInfo.currentUserID
+
+                                        val tripId = viewModel.createTrip(trip = SessionInfo.trip!!)
+                                    }
+                                    navController.navigate(TripNavigationItem.TripPostFeed.route)
+                                }
+                            ) {
+                                Text(text = "Post Trip")
+                            }
+                        }
+                    }
+                }
+//                    tripMap(trackedLocations, true)
+//                PostTripModal(navController = navController,  trip = SessionInfo.trip )
             }
             composable(TripNavigationItem.TripDetails.route) {
                 Log.d("tripScreen", "Trip Details selectedTrip: $selectedTrip")
@@ -240,35 +292,19 @@ fun TripScreen(
 
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
-                                text = "Description",
+                                text = "You have collected ${trip.discoveredEntries.size} Dingo(s) ${getTimeDiffMessage(trip.timestamp)} ago",
                                 modifier = Modifier.padding(16.dp),
                                 fontSize = 16.sp
                             )
                             Box(modifier = Modifier.fillMaxSize()) {
-                                tripMap(trip.locations, true)
+                                if (trip != null && trip.locations.isNotEmpty()) {
+                                    tripMap(trip, true)
+                                }
                             }
                         }
                     }
-//                    Box(modifier = Modifier.fillMaxSize()) {
-//
-//                    TopAppBar(
-//                        title = { Text(text = "Map Title") },
-//                        navigationIcon = {
-//                            IconButton(onClick = { /* Handle back action here */ }) {
-//                                Icon(Icons.Default.ArrowBack, contentDescription = "Back")
-//                            }
-//                        }
-//                    )
-//                    Column(modifier = Modifier.padding(16.dp)) {
-//                        Text(text = "day, time, km, animals discovered", fontSize = 16.sp)
-//                        Box(modifier = Modifier.fillMaxSize()) {
-//                            tripMap(trip.locations, true)
-//                        }
-//                    }
                 }
             }
-//                TripDetailsModal(navController = navController, tripId = "", userId = "" , username = "", locations = trackedLocations )
-//            }
         }
     }
 }
@@ -319,25 +355,142 @@ fun LocationPermissionScreen() {
 }
 
 @Composable
-fun tripMap(points: List<LatLng>, fullSize: Boolean) {
+fun tripMap(trip : Trip,  fullSize: Boolean) {
+    val currentContext = LocalContext.current
+    val assetManager: AssetManager = currentContext.assets
+
+
+
 
     val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(points.lastOrNull() ?: LatLng(51.52061810406676, -0.12635325270312533), 15f)
+        position = CameraPosition.fromLatLngZoom(trip.locations.lastOrNull() ?: LatLng(51.52061810406676, -0.12635325270312533), 15f)
     }
 
     GoogleMap(
         modifier = Modifier.fillMaxSize(),
         cameraPositionState = cameraPositionState
     ) {
-        if (points.lastOrNull() != null) {
-            Polyline(points = points)
+        if (trip.locations.lastOrNull() != null) {
+            // Convert the timestamp to a Java Date object
+            val startDate: Date = trip.startTime.toDate()
+            val endDate: Date = trip.endTime.toDate()
+
+            // Convert the timestamp to a Java Date object
+            // Create a SimpleDateFormat object with your desired date format
+            val dateFormat = SimpleDateFormat("dd-MM-yyyy HH:mm:ss")
+
+            // Format the date as desired
+
+            val formattedStartTime = dateFormat.format(startDate)
+            val formattedEndTime = dateFormat.format(endDate)
+
+
+
+            Polyline(points = trip.locations)
             Marker(
-                state = MarkerState(position = points.last()),
-                title = "Current Location",
-                snippet = "You are here"
+                state = MarkerState(position = trip.locations.last()),
+                title = "Start",
+                snippet = "Trip Started at ${formattedStartTime}"
             )
+            Marker(
+                state = MarkerState(position = trip.locations.first()),
+                title = "Finish",
+                snippet = "Trip Ended at ${formattedEndTime}"
+            )
+
+            // Assuming you have a list of picture paths and picture locations
+            val picturePaths: List<String> = trip.picturePaths
+            val pictureLocations: List<LatLng> = trip.pictureLocations
+
+//            val icon = bitmapDescriptorFromVector(
+//                LocalContext.current, R.drawable.pin
+//            )
+            // Iterate through the picture paths and picture locations
+            picturePaths.forEachIndexed { index, picturePath ->
+                val pictureLocation = pictureLocations[index]
+                // You can customize the marker icon, if desired
+//                Marker(
+//                    state = MarkerState(position = pictureLocation),
+//                    title = "Picture $index",
+//                    snippet = "Location: ${pictureLocation.latitude}, ${pictureLocation.longitude}",
+//                    icon = BitmapDescriptorFactory.fromResource(R.drawable.fauna_placeholder)
+//                )
+                val storageRef = FirebaseStorage.getInstance().reference.child(picturePath)
+                var bitmap: Bitmap? by remember {mutableStateOf(null)}
+//    var isLoading: MutableLiveData<Boolean?> by remember {mutableStateOf(false)}
+
+                storageRef.getBytes(1500000000).addOnSuccessListener {
+                    println("bitmap")
+//        isLoading.postValue(true)
+                    bitmap = BitmapFactory.decodeByteArray(it, 0, it.size)
+                    println(bitmap)
+                    println("bitmap come")
+//        isLoading.value = false
+                }.addOnFailureListener {
+                    println("Error occurred when downloading user's DingoDex image from Firebase $it")
+//        isLoading.value = false
+                }
+
+                MarkerInfoWindow(
+                    state = MarkerState(position = pictureLocation),
+                    icon = BitmapDescriptorFactory.fromResource(R.drawable.fauna_placeholder),
+                ) { marker ->
+                    Box(
+                        modifier = Modifier
+                            .background(
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                shape = RoundedCornerShape(35.dp, 35.dp, 35.dp, 35.dp)
+                            ),
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(16.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Image(
+                                bitmap = bitmap!!.asImageBitmap(),
+                              contentDescription = null,
+                                contentScale = ContentScale.Fit,
+                                modifier = Modifier
+                                    .height(80.dp)
+                                    .fillMaxWidth(),
+                            )
+                            //.........................Spacer
+                            Spacer(modifier = Modifier.height(24.dp))
+                            //.........................Text: title
+
+                            Text(
+                                text = "${trip.discoveredEntries[index]}",
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier
+                                    .padding(top = 10.dp)
+                                    .fillMaxWidth(),
+                                style = MaterialTheme.typography.headlineSmall,
+                                color = MaterialTheme.colorScheme.primary,
+                            )
+//                            Spacer(modifier = Modifier.height(8.dp))
+                            //.........................Text : description
+                            Text(
+                                text = "Here is more information on your Dingo",
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier
+                                    .padding(top = 10.dp, start = 25.dp, end = 25.dp)
+                                    .fillMaxWidth(),
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.primary,
+                            )
+                            //.........................Spacer
+//                            Spacer(modifier = Modifier.height(24.dp))
+
+                        }
+
+                    }
+
+
+                    // Add the marker to the map
+                }
+                }
+            }
         }
-    }
 }
 
 
@@ -435,11 +588,14 @@ private fun PostTripModal(
         TextField(
             value = textContentState,
             onValueChange = { textContentState = it },
-            label = { Text("")}
+            label = { Text("") }
         )
         Button(
             onClick = {
-                Log.d("tripScreen", "Discard Current Trip Button, trackedLocations: ${trip?.locations}")
+                Log.d(
+                    "tripScreen",
+                    "Discard Current Trip Button, trackedLocations: ${trip?.locations}"
+                )
                 viewModel.discardTrip()
                 navController.navigate(TripNavigationItem.TripPostFeed.route)
             }
@@ -448,13 +604,12 @@ private fun PostTripModal(
         }
         Button(
             onClick = {
-//                viewModel.makeDummyTrips(trackedLocations)
                 if (trip != null) {
                     trip.title = textContentState
                     trip.username = SessionInfo.currentUsername
                     trip.userId = SessionInfo.currentUserID
-//                    val tripId = viewModel.createTrip(trip = trip)
-                    val tripId = viewModel.makeDummyTrip(trip = trip)
+                    val tripId = viewModel.createTrip(trip = trip)
+//                    val tripId = viewModel.makeDummyTrip(trip = trip)
 
                 }
 

@@ -2,6 +2,9 @@ package com.example.dingo.scanner
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.location.Location
+import android.location.LocationManager
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -15,6 +18,8 @@ import com.example.dingo.model.service.DingoDexEntryService
 import com.example.dingo.model.service.DingoDexStorageService
 import com.example.dingo.model.service.ImageInternalStorageService
 import com.example.dingo.model.service.UserService
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -39,7 +44,7 @@ constructor(
 
     fun scanImage(bitmap: Bitmap, context: Context, saveAsDefault: Boolean, saveStorage: Boolean, animal: Boolean, callBack: (String) -> Unit) {
         val animalDetectionModel = AnimalDetectionModel(context)
-        val prediction = animalDetectionModel.run( bitmap , callBack, saveAsDefault, saveStorage, animal, this::savePicture, this::addEntry)
+        val prediction = animalDetectionModel.run( bitmap , callBack, saveAsDefault, saveStorage,animal, SessionInfo.lastLocation, this::savePicture, this::addEntry)
         updateCapturedPhotoState(bitmap)
     }
     fun onPhotoCaptured(bitmap: Bitmap) {
@@ -52,7 +57,6 @@ constructor(
 
     fun addEntry(entryName: String) {
         viewModelScope.launch {
-            var result = false
             isLoading.value = true
             val entries = dingoDexEntryService.getEntry(SessionInfo.currentUserID, entryName)
             addNewEntryToTrip(entryName)
@@ -60,27 +64,26 @@ constructor(
                 val dingoDex = dingoDexStorageService.findDingoDexItem(entryName)
                 if (dingoDex != null) {
                     userService.updateDingoDex(dingoDex.id, dingoDex.is_fauna)
-
-                    result = dingoDexEntryService.addNewEntry(dingoDex)
+                    dingoDexEntryService.addNewEntry(dingoDex)
                 }
             } else {
                 // Should only have 1 entry for each animal/plant
                 var entry = entries[0]
                 entry.numEncounters++
                 // TODO: update location
-                // TODO: change name so doesnt have spaces
-                entry.location = ""
-                result = dingoDexEntryService.updateEntry(entry)
+                entry.location = "Waterloo"
+                dingoDexEntryService.updateEntry(entry)
             }
             isLoading.value = false
         }
     }
 
-    fun savePicture(entryName: String, image: Bitmap, saveAsDefault: Boolean, saveImage: Boolean, context: Context) {
+    fun savePicture(entryName: String, image: Bitmap, saveAsDefault: Boolean, saveImage: Boolean, location: LatLng?, context: Context) {
         viewModelScope.launch {
             if (saveImage) {
                 imageInternalStorageService.saveImage(entryName, image, context)
                 val imagePath = dingoDexEntryService.addPicture(entryName, image)
+                println("savePicture path is $imagePath")
                 var entry: DingoDexEntry? = null
                 if (imagePath != "") {
                     val entries = dingoDexEntryService.getEntry(SessionInfo.currentUserID, entryName)
@@ -93,13 +96,13 @@ constructor(
                 }
                 if (saveAsDefault) {
                     var result = false
-                    addPictureToTrip(imagePath)
+                    addPictureToTrip(imagePath, location)
                     if (imagePath != "" && entry != null) {
                         entry.displayPicture = imagePath
-                        result = dingoDexEntryService.updateEntry(entry)
+                        dingoDexEntryService.updateEntry(entry)
                     }
                 } else if (SessionInfo.trip != null ) {
-                    addPictureToTrip(imagePath)
+                    addPictureToTrip(imagePath, location)
                 }
             }
 
