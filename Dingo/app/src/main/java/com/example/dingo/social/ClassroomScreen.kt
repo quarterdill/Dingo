@@ -112,40 +112,9 @@ fun ClassroomScreen(
     var classroomId = remember { mutableStateOf("") }
     var currentPostId = remember { mutableStateOf("") }
 
-    val fetchClassrooms = viewModel
-        .getClassrooms()
-        .observeAsState()
-    var feedItems = viewModel
-        .getClassroomFeed(classroomId.value)
-        .observeAsState()
-    var fetchTeachers = viewModel
-        .getUsersOfType(classroomId.value, UserType.TEACHER)
-        .observeAsState()
-    var fetchStudents = viewModel
-        .getUsersOfType(classroomId.value, UserType.STUDENT)
-        .observeAsState()
-    var fetchComments = viewModel
-        .getCommentsForPost(currentPostId.value)
-        .observeAsState()
 
-//    fun updateEverything() {
-//        feedItems = viewModel
-//            .getClassroomFeed(classroomId)
-////            .observeAsState()
-//        fetchTeachers = viewModel
-//            .getUsersOfType(classroomId, UserType.TEACHER)
-////            .observeAsState()
-//        fetchStudents = viewModel
-//            .getUsersOfType(classroomId, UserType.STUDENT)
-////            .observeAsState()
-//    }
-//
-////    @Composable
-//    fun updateComments(postId: String) {
-//        fetchComments = viewModel
-//            .getCommentsForPost(postId)
-////            .observeAsState()
-//    }
+
+
 
     val navController = rememberNavController()
 
@@ -156,7 +125,7 @@ fun ClassroomScreen(
         val fetchClassrooms = viewModel
             .getClassrooms()
             .observeAsState()
-        var feedItems = viewModel
+        val feedItems = viewModel
             .getClassroomFeed(classroomId.value)
             .observeAsState()
         var fetchTeachers = viewModel
@@ -174,6 +143,7 @@ fun ClassroomScreen(
         ) {
             composable(ClassroomNavigationItem.SelectClassroom.route) {
                 Column(
+                    modifier = Modifier.fillMaxSize(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     if (SessionInfo.currentUser != null) {
@@ -195,10 +165,10 @@ fun ClassroomScreen(
                         }
                     }
                     val classrooms = fetchClassrooms.value
-                    if (classrooms != null && classrooms.size > 0) {
-                        Text("Choose a classroom")
-                    } else {
+                    if (classrooms.isNullOrEmpty()) {
                         Text("No classrooms available...")
+                    } else {
+                        Text("Choose a classroom")
                     }
 
                     LazyColumn(
@@ -219,6 +189,7 @@ fun ClassroomScreen(
                                         viewModel.classroomId.value = classrooms[i].id
                                         classroomId.value = classrooms[i].id
 //                                        updateEverything()
+                                        println("testseet pressed")
                                         navController.navigate(ClassroomNavigationItem.ClassroomPostFeed.route)
                                     }
                                 )
@@ -231,6 +202,7 @@ fun ClassroomScreen(
                 CreateClassroomModal(viewModel, navController, SessionInfo.currentUserID)
             }
             composable(ClassroomNavigationItem.ClassroomPostFeed.route) {
+                println("testseet ClassroomPostFeed")
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
@@ -255,28 +227,16 @@ fun ClassroomScreen(
                         ) {
                             Text("Students/Teachers")
                         }
-//                        Button(
-//                            onClick = {
-//                                navController.navigate(ClassroomNavigationItem.MyProfile.route)
-//                            },
-//                        ) {
-//                            Text("MyProfile")
-//                        }
+
                     }
-//                COMMENT THIS OUT
-//              Button(
-//              onClick = {
-//                  viewModel.makeDummyPosts()
-//              }
-//              ) {
-//                  Text(text = "add dummy user data")
-//              }
-//              SEE ABOVE
+
                     LazyColumn(
                         modifier = Modifier.weight(0.9f, true)
                     ) {
+                        println("testseet ClassroomPostFeed 22222222")
                         var posts = feedItems.value
                         if (posts != null) {
+                            println("testseet ClassroomPostFeed 33333")
                             items(posts.size) {
                                 ClassroomPost(posts[it], navController, viewModel, currentPostId, classroomId.value)
                                 println("post content: ${posts[it].textContent}")
