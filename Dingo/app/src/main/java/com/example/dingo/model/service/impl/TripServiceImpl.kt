@@ -70,17 +70,28 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
     override suspend fun getTrip(tripId: String): Trip? {
         Log.d("SocialFeedScreen","getTrip($tripId)")
 
-        var geotrip =  listOf(firestore.collection(TRIP_COLLECTIONS)
+        var geoTrip =  firestore.collection(TRIP_COLLECTIONS)
             .document(tripId)
             .get()
             .await()
-            .toObject(GeoTrip::class.java))
+            .toObject(GeoTrip::class.java)
 
-        var trip = convertGeoTripsToTrips(geotrip as List<GeoTrip>)
-        var ret = trip.firstOrNull()
-        Log.d("SocialFeedScreen","getTrip($tripId) = ${ret}")
+        val trip = Trip(
+            id = geoTrip.id,
+            userId = geoTrip.userId,
+            username = geoTrip.username,
+            locations = geoTrip.locations.map { location ->
+                LatLng(location["latitude"] as Double, location["longitude"] as Double)
+            },
+            discoveredEntries = geoTrip.discoveredEntries,
+            startTime= geoTrip.startTime,
+            endTime = geoTrip.endTime,
+            timestamp= geoTrip.timestamp,
+            title = geoTrip.title
+        )
+        Log.d("SocialFeedScreen","getTrip($tripId) = ${trip}")
 
-        return ret
+        return trip
 
     }
 
