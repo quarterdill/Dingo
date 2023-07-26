@@ -1,37 +1,28 @@
 package com.example.dingo.social
 
-import android.se.omapi.Session
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material.icons.rounded.Delete
-import androidx.compose.material3.BottomSheetScaffold
+import androidx.compose.material.icons.rounded.AddCircle
+import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.SheetState
-import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.State
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,20 +37,20 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.dingo.CustomDialog
+import com.example.dingo.CustomSwitch
+import com.example.dingo.UIConstants
 import com.example.dingo.common.SessionInfo
 import com.example.dingo.model.AccountType
-import com.example.dingo.model.Comment
-import com.example.dingo.trips.TripScreen
-import com.example.dingo.model.Post
 import com.example.dingo.model.User
 import com.example.dingo.model.UserType
-import com.example.dingo.model.service.impl.getTimeDiffMessage
+import com.example.dingo.social.classroom_feed.ClassroomFeedScreen
+import com.example.dingo.social.classroom_feed.ClassroomFeedViewModel
+import com.example.dingo.social.classroom_member.ClassroomMembersScreen
 
 
 sealed class ClassroomNavigationItem(
@@ -70,33 +61,13 @@ sealed class ClassroomNavigationItem(
         name = "SelectClassroom",
         route = "selectclassroom",
     )
-    object CreateClassroom : ClassroomNavigationItem(
-        name = "CreateClassroom",
-        route = "createclassroom",
-    )
     object ClassroomPostFeed : ClassroomNavigationItem(
         name = "ClassroomPostFeed",
         route = "classroompostfeed",
     )
-    object CreatePost : ClassroomNavigationItem(
-        name = "CreatePost",
-        route = "createpost",
-    )
     object MemberList : ClassroomNavigationItem(
         name = "MemberList",
         route = "memberlist",
-    )
-    object AddMember : ClassroomNavigationItem(
-        name = "AddMember",
-        route = "addmember",
-    )
-    object ViewComments : ClassroomNavigationItem(
-        name = "ViewComments",
-        route = "viewcomments",
-    )
-    object MyProfile : ClassroomNavigationItem(
-        name = "MyProfile",
-        route = "myprofile",
     )
 }
 
@@ -104,7 +75,7 @@ sealed class ClassroomNavigationItem(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ClassroomScreen(
-    viewModel: ClassroomViewModel = hiltViewModel()
+    viewModel: ClassroomFeedViewModel = hiltViewModel()
 ) {
 //    val dummyClassroomId = "cE1sLWEWj31aFO1CxwZB"
 //    val dummyUserId = "Q0vMYa9VSh7tyFdLTPgX"
@@ -112,45 +83,7 @@ fun ClassroomScreen(
 //    val dummyUserId = "U47K9DYLoJLJlXHZrU7l"
 //    val dummyUsername = "Dylan Xiao"
     var classroomId = remember { mutableStateOf("") }
-    var currentPostId = remember { mutableStateOf("") }
-
-    val fetchClassrooms = viewModel
-        .getClassrooms()
-        .observeAsState()
-    var feedItems = viewModel
-        .getClassroomFeed(classroomId.value)
-        .observeAsState()
-    var fetchTeachers = viewModel
-        .getUsersOfType(classroomId.value, UserType.TEACHER)
-        .observeAsState()
-    var fetchStudents = viewModel
-        .getUsersOfType(classroomId.value, UserType.STUDENT)
-        .observeAsState()
-    var fetchComments = viewModel
-        .getCommentsForPost(currentPostId.value)
-        .observeAsState()
-
-//    fun updateEverything() {
-//        feedItems = viewModel
-//            .getClassroomFeed(classroomId)
-////            .observeAsState()
-//        fetchTeachers = viewModel
-//            .getUsersOfType(classroomId, UserType.TEACHER)
-////            .observeAsState()
-//        fetchStudents = viewModel
-//            .getUsersOfType(classroomId, UserType.STUDENT)
-////            .observeAsState()
-//    }
-//
-////    @Composable
-//    fun updateComments(postId: String) {
-//        fetchComments = viewModel
-//            .getCommentsForPost(postId)
-////            .observeAsState()
-//    }
-
     val navController = rememberNavController()
-
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -158,287 +91,119 @@ fun ClassroomScreen(
         val fetchClassrooms = viewModel
             .getClassrooms()
             .observeAsState()
-        var feedItems = viewModel
-            .getClassroomFeed(classroomId.value)
-            .observeAsState()
-        var fetchTeachers = viewModel
-            .getUsersOfType(classroomId.value, UserType.TEACHER)
-            .observeAsState()
-        var fetchStudents = viewModel
-            .getUsersOfType(classroomId.value, UserType.STUDENT)
-            .observeAsState()
-        var fetchComments = viewModel
-            .getCommentsForPost(currentPostId.value)
-            .observeAsState()
+        Box (
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            if (classroomId.value != "") {
+                IconButton(
+                    onClick = {
+                        classroomId.value = ""
+                        navController.navigate(ClassroomNavigationItem.SelectClassroom.route)
+                    },
+                ) {
+                    Icon(imageVector = Icons.Rounded.ArrowBack, contentDescription = "back")
+                }
+            }
+            Text(
+                text = "Classroom",
+                fontSize = UIConstants.TITLE_TEXT,
+                modifier = Modifier.align(Alignment.Center)
+            )
+        }
+
+        if (classroomId.value != "") {
+            CustomSwitch(
+                "Feed", "Members",
+                modifier = Modifier.padding(UIConstants.MEDIUM_PADDING),
+            ) {
+                if (it) {
+                    navController.navigate(ClassroomNavigationItem.MemberList.route)
+                } else {
+                    navController.navigate(ClassroomNavigationItem.ClassroomPostFeed.route)
+                }
+            }
+        }
         NavHost(
             navController = navController,
             startDestination = ClassroomNavigationItem.SelectClassroom.route
         ) {
             composable(ClassroomNavigationItem.SelectClassroom.route) {
                 Column(
+                    modifier = Modifier.fillMaxSize(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+                    val classrooms = fetchClassrooms.value
+                    var createClassroomDialogState = remember { mutableStateOf(false) }
+                    if (createClassroomDialogState.value) {
+                        CreateClassroomDialog(
+                            viewModel, SessionInfo.currentUserID
+                        ) {
+                            createClassroomDialogState.value = false
+                        }
+                    }
+                    Text(
+                        "Choose a classroom",
+                        modifier = Modifier.padding(UIConstants.MEDIUM_PADDING),
+                        fontSize = UIConstants.SUBTITLE1_TEXT,
+                    )
                     if (SessionInfo.currentUser != null) {
                         if (SessionInfo.currentUser!!.accountType == AccountType.INSTRUCTOR) {
                             Button(
                                 onClick = {
-                                    navController.navigate(ClassroomNavigationItem.CreateClassroom.route)
+                                    createClassroomDialogState.value = true
                                 }
                             ) {
                                 Text("Create new classroom")
                             }
-
-                            Divider(
-                                modifier = Modifier
-                                    .height(3.dp)
-                                    .width(200.dp),
-                                color = Color.Gray,
-                            )
                         }
                     }
-                    val classrooms = fetchClassrooms.value
-                    if (classrooms != null && classrooms.size > 0) {
-                        Text("Choose a classroom")
-                    } else {
-                        Text("No classrooms available...")
-                    }
-
-                    LazyColumn(
-                        modifier = Modifier.weight(1.0f, true)
+                    Box(
+                        modifier = Modifier.weight(1.0f),
+                        contentAlignment = Alignment.Center,
                     ) {
-
-                        if (classrooms != null) {
-                            println("num classrooms: ${classrooms.size}")
-                            items(classrooms.size) { i ->
-                                println("got classroom: ${classrooms[i]}")
-                                ClickableText(
-                                    style = TextStyle(
-                                        color = Color.LightGray,
-                                        fontSize = 26.sp,
-                                    ),
-                                    text = AnnotatedString(classrooms[i].name),
-                                    onClick = {
-                                        viewModel.classroomId.value = classrooms[i].id
-                                        classroomId.value = classrooms[i].id
-//                                        updateEverything()
-                                        navController.navigate(ClassroomNavigationItem.ClassroomPostFeed.route)
-                                    }
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-            composable(ClassroomNavigationItem.CreateClassroom.route) {
-                CreateClassroomModal(viewModel, navController, SessionInfo.currentUserID)
-            }
-            composable(ClassroomNavigationItem.ClassroomPostFeed.route) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Row(
-                        modifier = Modifier.padding(16.dp),
-                        horizontalArrangement = Arrangement.spacedBy(10.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-
-
-                        Button(
-                            onClick = {
-                                navController.navigate(ClassroomNavigationItem.CreatePost.route)
-                            },
-                        ) {
-                            Text("Create Post")
-                        }
-                        Button(
-                            onClick = {
-                                navController.navigate(ClassroomNavigationItem.MemberList.route)
-                            },
-                        ) {
-                            Text("Students/Teachers")
-                        }
-//                        Button(
-//                            onClick = {
-//                                navController.navigate(ClassroomNavigationItem.MyProfile.route)
-//                            },
-//                        ) {
-//                            Text("MyProfile")
-//                        }
-                    }
-//                COMMENT THIS OUT
-//              Button(
-//              onClick = {
-//                  viewModel.makeDummyPosts()
-//              }
-//              ) {
-//                  Text(text = "add dummy user data")
-//              }
-//              SEE ABOVE
-                    LazyColumn(
-                        modifier = Modifier.weight(0.9f, true)
-                    ) {
-                        var posts = feedItems.value
-                        if (posts != null) {
-                            items(posts.size) {
-                                ClassroomPost(posts[it], navController, viewModel, currentPostId, classroomId.value)
-                                println("post content: ${posts[it].textContent}")
-                            }
-                        }
-                    }
-                }
-            }
-            composable(ClassroomNavigationItem.CreatePost.route) {
-                CreatePostModal(
-                    viewModel,
-                    navController,
-                    classroomId.value,
-                    SessionInfo.currentUserID,
-                    SessionInfo.currentUsername
-                )
-            }
-            composable(ClassroomNavigationItem.MemberList.route) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
-                )
-                {
-                    if (SessionInfo.currentUser != null) {
-                        if (SessionInfo.currentUser!!.accountType == AccountType.INSTRUCTOR) {
-                            Button(
-                                onClick = {
-                                    navController.navigate(ClassroomNavigationItem.AddMember.route)
-                                }
+                        if (classrooms.isNullOrEmpty()) {
+                            Text("No classrooms available...")
+                        } else {
+                            LazyColumn(
+                                modifier = Modifier.fillMaxSize(),
+                                horizontalAlignment = Alignment.CenterHorizontally,
                             ) {
-                                Text("Add Students")
-                            }
-                        }
-                    }
-                    MemberList(fetchTeachers.value, UserType.TEACHER)
-                    Divider(
-                        modifier = Modifier
-                            .height(3.dp)
-                            .width(200.dp),
-                        color = Color.Gray,
-                    )
-                    MemberList(fetchStudents.value, UserType.STUDENT)
-                }
-            }
-            composable(ClassroomNavigationItem.AddMember.route) {
-                AddMemberModal(viewModel, navController, classroomId.value)
-            }
-            composable(ClassroomNavigationItem.ViewComments.route) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text("Comments")
-                    var textContentState by remember { mutableStateOf("") }
-                    LazyColumn(
-                        modifier = Modifier.weight(0.7f, true)
-                    ) {
-                        // idk if this will make it crash or smth
-                        var comments = fetchComments.value
-                        println("comments: $comments")
-                        if (comments != null) {
-                            items(comments.size) {
-                                CommentText(comments[it], currentPostId.value, viewModel)
-                            }
-                        }
-                    }
-                    Row(
-                        modifier = Modifier.weight(0.3f, true)
-                    ) {
-                        TextField(
-                            value = textContentState,
-                            onValueChange = { textContentState = it },
-                            label = { Text("") }
-                        )
-                        Button(
-                            onClick = {
-                                if (textContentState != "") {
-                                    viewModel.makeComment(
-                                        classroomId.value,
-                                        currentPostId.value,
-                                        textContentState,
+                                println("num classrooms: ${classrooms.size}")
+                                items(classrooms.size) { i ->
+                                    println("got classroom: ${classrooms[i]}")
+                                    ClickableText(
+                                        modifier = Modifier.padding(UIConstants.SMALL_PADDING),
+                                        style = TextStyle(
+                                            color = Color.LightGray,
+                                            fontSize = 26.sp,
+                                        ),
+                                        text = AnnotatedString(classrooms[i].name),
+                                        onClick = {
+                                            viewModel.classroomId.value = classrooms[i].id
+                                            classroomId.value = classrooms[i].id
+    //                                        updateEverything()
+                                            println("testseet pressed")
+                                            navController.navigate(ClassroomNavigationItem.ClassroomPostFeed.route)
+                                        }
                                     )
                                 }
-                                textContentState = ""
                             }
-                        ) {
-                            Text(text = "Comment")
                         }
                     }
                 }
             }
-        }
-    }
-
-}
-
-
-@Composable
-private fun ClassroomPost(
-    post: Post,
-    navController: NavHostController,
-    viewModel: ClassroomViewModel,
-    currentPostId: MutableState<String>,
-    classroomId: String,
-//    updateComments: (String) -> Unit,
-//    fetchComments: State<MutableList<Comment>?>,
-) {
-    var currUserType = AccountType.STUDENT
-    val currUser = SessionInfo.currentUser
-    if (currUser != null) {
-        currUserType = currUser.accountType
-    }
-    Row(
-        modifier = Modifier.padding(16.dp),
-        horizontalArrangement = Arrangement.spacedBy(10.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        var timeDiffMsg = getTimeDiffMessage(post.timestamp)
-
-        Column(
-
-        ) {
-            Text(
-                modifier = Modifier.height(20.dp),
-                fontSize = 12.sp,
-                color = Color.Gray,
-                text="${post.username} posted $timeDiffMsg ago"
-            )
-            Text(
-                modifier = Modifier.padding(all = 12.dp),
-                text = "${post.textContent}"
-            )
-            ClickableText(
-                style = TextStyle(
-                    color = Color.LightGray,
-                ),
-                text = AnnotatedString("${post.comments.size} comment(s)"),
-                onClick = {
-                    currentPostId.value = post.id
-                    navController.navigate(ClassroomNavigationItem.ViewComments.route)
-                }
-            )
-            if (currUserType == AccountType.INSTRUCTOR) {
-                IconButton(
-                    onClick = {
-                        viewModel.removePost(classroomId, post.id)
-                    }
-                ) {
-                    Icon(
-                        imageVector = Icons.Rounded.Delete,
-                        contentDescription = "Delete Post",
-                    )
-                }
+            composable(ClassroomNavigationItem.ClassroomPostFeed.route) {
+                ClassroomFeedScreen(classroomId)
             }
-            Divider(
-                thickness = 1.dp,
-                color = Color.Gray,
-            )
-
+            composable(ClassroomNavigationItem.MemberList.route) {
+                ClassroomMembersScreen(classroomId)
+            }
         }
     }
+
 }
+
+
 
 @Composable
 private fun MemberList(
@@ -487,92 +252,59 @@ private fun ClassroomMemberItem(
 }
 
 @Composable
-private fun CreatePostModal(
-    viewModel: ClassroomViewModel = hiltViewModel(),
-    navController: NavHostController,
-    classroomId: String,
-    userId: String,
-    username: String,
-) {
-    var textContentState by remember { mutableStateOf("") }
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-    ) {
-        Text(text = "Post to Classroom")
-        TextField(
-            value = textContentState,
-            onValueChange = { textContentState = it },
-            label = { Text("")}
-        )
-        Button(
-            onClick = {
-                navController.navigate(ClassroomNavigationItem.ClassroomPostFeed.route)
-            }
-        ) {
-            Text(text = "Cancel")
-        }
-        Button(
-            onClick = {
-                viewModel.makePost(
-                    classroomId,
-                    userId,
-                    username,
-                    textContentState,
-                    mutableListOf<String>(),
-                    null,
-                )
-                navController.navigate(ClassroomNavigationItem.ClassroomPostFeed.route)
-            }
-        ) {
-            Text(text = "Create Post")
-        }
-    }
-}
-
-@Composable
-private fun CreateClassroomModal(
-    viewModel: ClassroomViewModel = hiltViewModel(),
-    navController: NavHostController,
+private fun CreateClassroomDialog (
+    viewModel: ClassroomFeedViewModel = hiltViewModel(),
     creatorUserId: String,
+    onDismissRequest : () -> Unit,
 ) {
     var textContentState by remember { mutableStateOf("") }
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-    ) {
-        Text(text = "Create classroom")
-        TextField(
-            value = textContentState,
-            onValueChange = { textContentState = it },
-            label = { Text("")}
-        )
-        Button(
-            onClick = {
-                viewModel.createClassroom(
-                    creatorUserId,
-                    textContentState,
-                )
-                navController.navigate(ClassroomNavigationItem.SelectClassroom.route)
-            }
+    CustomDialog(onDismissRequest = onDismissRequest) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
         ) {
-            Text(text = "Create Classroom")
-        }
-        Button(
-            onClick = {
-                navController.navigate(ClassroomNavigationItem.SelectClassroom.route)
+            Text(
+                text = "Create classroom",
+                fontSize = UIConstants.SUBTITLE2_TEXT
+            )
+            TextField(
+                modifier = Modifier
+                    .padding(vertical = UIConstants.MEDIUM_PADDING),
+                value = textContentState,
+                singleLine = true,
+                onValueChange = { textContentState = it },
+                label = { Text("") }
+            )
+            Row (
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                Button(
+                    onClick = {
+                        viewModel.createClassroom(
+                            creatorUserId,
+                            textContentState,
+                        )
+                        onDismissRequest()
+                    }
+                ) {
+                    Text(text = "Create Classroom")
+                }
+                Button(
+                    onClick = {
+                        onDismissRequest()
+                    }
+                ) {
+                    Text(text = "Cancel")
+                }
             }
-        ) {
-            Text(text = "Cancel")
         }
     }
 }
 
 @Composable
 private fun AddMemberModal(
-    viewModel: ClassroomViewModel = hiltViewModel(),
+    viewModel: ClassroomFeedViewModel = hiltViewModel(),
     navController: NavHostController,
     classroomId: String
 ) {
@@ -612,49 +344,3 @@ private fun AddMemberModal(
     }
 }
 
-@Composable
-private fun Comments(
-    viewModel: ClassroomViewModel,
-    postId: String
-) {
-    val commentList = viewModel.getCommentsForPost(postId).observeAsState()
-
-}
-
-@Composable
-private fun CommentText(
-    comment: Comment,
-    postId: String,
-    viewModel: ClassroomViewModel,
-    currAccountType: AccountType = AccountType.INSTRUCTOR,
-){
-    var timeDiffMsg = getTimeDiffMessage(comment.timestamp)
-    Text(
-        modifier = Modifier.height(20.dp),
-        fontSize = 10.sp,
-        color = Color.Gray,
-        text="${comment.authorName} posted $timeDiffMsg ago")
-    Text(
-        modifier = Modifier.padding(all = 12.dp),
-        text = "${comment.textContent}"
-    )
-
-    if (currAccountType == AccountType.INSTRUCTOR) {
-        IconButton(
-            onClick = {
-                viewModel.removeComment(postId, comment.id)
-            }
-        ) {
-            Icon(
-                imageVector = Icons.Rounded.Delete,
-                contentDescription = "Delete Post",
-            )
-        }
-    }
-
-    Divider(
-        thickness = 1.dp,
-        color = Color.Gray,
-    )
-
-}

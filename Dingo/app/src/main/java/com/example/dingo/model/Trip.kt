@@ -26,7 +26,7 @@ data class GeoTrip (
     var userId: String = "",
     var username: String = "",
     var locations: List<HashMap<String, Any>> =emptyList(),
-    var discoveredEntries: List<String> = emptyList(),
+    var discoveredEntries: MutableList<String> = mutableListOf(),
     var startTime: Timestamp = Timestamp.now(),
     var endTime: Timestamp = Timestamp.now(),
     var timestamp : Timestamp = Timestamp.now(),

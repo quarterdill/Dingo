@@ -131,7 +131,7 @@
     "id": 16,
     "is_fauna": true,
     "name": "Wild Turkey",
-    "scientific_name": "Turdus migratorius",
+    "scientific_name": "Meleagris gallopavo",
     "description": "The Wild Turkey (Meleagris gallopavo) is a large bird native to North America. Males, or toms, display distinctive plumage, including iridescent feathers and a fan-like tail. Known for their gobbling calls during mating season, they inhabit forests and grasslands, foraging for seeds, insects, and fruits. Once nearly extinct, conservation efforts have helped restore their populations.",
     "default_picture_name": "images/wild_turkey.jpg"
   },
@@ -203,7 +203,7 @@
     "id": 25,
     "is_fauna": true,
     "name": "Eastern Milk Snake",
-    "scientific_name": "Turdus migratorius",
+    "scientific_name": "Lampropeltis triangulum",
     "description": "The Eastern Milk Snake (Lampropeltis triangulum) is a non-venomous snake native to eastern North America. It has a distinctive pattern of reddish-brown or grayish-brown bands bordered by black on a light-colored background, resembling the colors of milk spilled on the ground. These secretive and nocturnal snakes are excellent climbers and feed on small rodents, birds, and eggs. They play a crucial role in maintaining ecological balance by controlling rodent populations.",
     "default_picture_name": "images/eastern_milk_snake.jpg"
   },
@@ -235,7 +235,7 @@
     "id": 29,
     "is_fauna": true,
     "name": "Eastern Newt",
-    "scientific_name": "Turdus migratorius",
+    "scientific_name": "Notophthalmus viridescens",
     "description": "The Eastern Newt (Notophthalmus viridescens) is a small salamander native to eastern North America. It has a unique life cycle, starting as an aquatic larva (eft) with bright orange coloration, then transitioning into a terrestrial juvenile with greenish-brown skin, and finally becoming an aquatic adult with olive-brown or yellow markings. Eastern newts inhabit freshwater ponds, lakes, and streams and are essential components of the aquatic ecosystems, serving as both predator and prey.",
     "default_picture_name": "images/eastern_newt.jpg"
   },
@@ -315,7 +315,7 @@
     "id": 39,
     "is_fauna": true,
     "name": "Black-capped Chickadee",
-    "scientific_name": "Turdus migratorius",
+    "scientific_name": "Poecile atricapillus",
     "description": "The Black-capped Chickadee (Poecile atricapillus) is a small, charismatic bird native to North America. Recognized by its black cap and bib, white cheeks, and grayish back, it's a familiar sight in woodlands and backyards. Chickadees are social, forming flocks during the colder months. They have a cheerful, distinctive \"chick-a-dee-dee-dee\" call and feed on seeds, insects, and berries. Known for their acrobatic skills, they are a delightful addition to any birdwatching experience.",
     "default_picture_name": "images/black_capped_chickadee.jpg"
   },
@@ -323,7 +323,7 @@
     "id": 40,
     "is_fauna": true,
     "name": "American Woodcock",
-    "scientific_name": "Turdus migratorius",
+    "scientific_name": "Scolopax minor",
     "description": "The American Woodcock (Scolopax minor) is a unique and elusive bird found in eastern North America. With its plump body, long bill, and large eyes positioned high on its head, it has adapted to feeding on insects in soft soil. Woodcocks are known for their mesmerizing courtship display, performing aerial spirals and making unique \"peent\" calls. These birds are most active at dusk and dawn, adding a touch of magic to springtime wetlands and forests.",
     "default_picture_name": "images/american_woodcock.jpg"
   },
@@ -355,7 +355,7 @@
     "id": 44,
     "is_fauna": true,
     "name": "White-throated Sparrow",
-    "scientific_name": "Turdus migratorius",
+    "scientific_name": "Zonotrichia albicollis",
     "description": "The White-throated Sparrow (Zonotrichia albicollis) is a medium-sized bird native to North America. With its striking black and white head stripes, yellow patches above the eyes, and a white throat, it's easily identifiable. White-throated sparrows are commonly found in forests and shrubby areas. They forage for seeds, insects, and fruits on the ground, and their distinctive and melodious song adds a beautiful, whistling element to their woodland habitats.",
     "default_picture_name": "images/white_throated_sparrow.jpg"
   },
@@ -363,7 +363,7 @@
     "id": 45,
     "is_fauna": true,
     "name": "American Toad",
-    "scientific_name": "Turdus migratorius",
+    "scientific_name": "Anaxyrus americanus",
     "description": "The American Toad (Anaxyrus americanus) is a medium-sized, terrestrial toad native to North America. It has dry, warty skin and can be various shades of brown, gray, or olive with lighter spots. These toads are commonly found in woodlands, gardens, and near water sources. They are nocturnal and feed on insects and other small invertebrates. During breeding season, their high-pitched trill can be heard in wetland areas, contributing to the chorus of springtime sounds.",
     "default_picture_name": "images/american_toad.jpg"
   },

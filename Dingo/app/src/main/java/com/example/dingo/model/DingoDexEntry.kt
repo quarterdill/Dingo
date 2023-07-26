@@ -10,7 +10,7 @@ data class DingoDexEntry (
     val isFauna: Boolean = true,
     var numEncounters: Int = 0,
     var location: String = "",
-    var pictures: List<String> = emptyList(),
+    var pictures: MutableList<String> = mutableListOf(),
     var displayPicture: String = "",
     var scientificName: String = "",
 )
