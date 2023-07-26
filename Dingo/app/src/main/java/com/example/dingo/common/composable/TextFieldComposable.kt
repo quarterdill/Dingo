@@ -34,10 +34,12 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import com.example.dingo.R
 import com.example.dingo.ui.theme.color_background
+import com.example.dingo.ui.theme.color_text_field
 
 @Composable
 fun EmailField(value: String, onNewValue: (String) -> Unit) {
     OutlinedTextField(
+        modifier = Modifier.background(color = color_text_field),
         singleLine = true,
         value = value,
         onValueChange = { onNewValue(it) },
@@ -61,6 +63,7 @@ fun EmailField(value: String, onNewValue: (String) -> Unit) {
 @Composable
 fun UsernameField(value: String, onNewValue: (String) -> Unit) {
     OutlinedTextField(
+        modifier = Modifier.background(color = color_text_field),
         singleLine = true,
         value = value,
         onValueChange = { onNewValue(it) },
@@ -114,6 +117,7 @@ private fun PasswordField(
         if (isVisible) VisualTransformation.None else PasswordVisualTransformation()
 
     OutlinedTextField(
+        modifier = Modifier.background(color = color_text_field),
         value = value,
         onValueChange = { onNewValue(it) },
         placeholder = { Text(text = placeholder) },
