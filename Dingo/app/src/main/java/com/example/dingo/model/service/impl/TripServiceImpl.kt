@@ -92,11 +92,12 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
                 locations = geoTrip.locations.map { location ->
                     LatLng(location["latitude"] as Double, location["longitude"] as Double)
                 },
-                discoveredEntries = geoTrip.discoveredEntries.toMutableList(),
+                discoveredEntries = geoTrip.discoveredEntries,
                 startTime= geoTrip.startTime,
                 endTime = geoTrip.endTime,
                 timestamp= geoTrip.timestamp,
-                title = geoTrip.title
+                title = geoTrip.title,
+                picturePaths = geoTrip.picturePaths
             )
             trips.add(trip)
         }
