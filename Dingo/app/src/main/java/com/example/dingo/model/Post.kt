@@ -21,7 +21,7 @@ data class Post constructor(
     @DocumentId val id: String = "",
     var userId: String = "",
     var username: String = "",
-    var entryIds: List<String> = emptyList(),
+    var entryId: String = "",
     var tripId: String? = null,
     var textContent: String = "",
     var comments: List<String> = emptyList(),

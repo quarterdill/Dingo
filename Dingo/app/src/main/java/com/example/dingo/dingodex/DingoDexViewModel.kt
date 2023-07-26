@@ -114,7 +114,8 @@ constructor(
                             scientificName = item.scientificName,
                             pictureURL = item.displayPicture,
                             isFauna = isFauna,
-                            numEncounters = item.numEncounters
+                            numEncounters = item.numEncounters,
+                            pictures = item.pictures,
                         )
                         )
                     }
@@ -124,6 +125,39 @@ constructor(
             } catch (e: Exception) {
                 emit(dingoDexItems)
             }
+        }
+    }
+
+    fun getEntryById(entryId: String): DingoDexEntry? {
+        var ret: DingoDexEntry?
+        runBlocking {
+            ret = dingoDexEntryService.getEntryById(entryId)
+        }
+        return ret
+    }
+
+    //important: this gives DingoDexEntry, not DingoDexEntryContent
+    fun getDingoDexCollectedEntries(
+        isFauna: Boolean,
+        userId: String,
+    ): LiveData<List<DingoDexEntry>> {
+        return liveData(Dispatchers.IO) {
+            val ret = mutableListOf<DingoDexEntry>()
+//            try {
+                    val collectedDingoDex = if (isFauna) {
+                        dingoDexEntryService.getDingoDexFaunaEntries(userId)
+                    } else {
+                        dingoDexEntryService.getDingoDexFloraEntries(userId)
+                    }
+
+                    collectedDingoDex.collect {
+                        print("GOT DINGO DEX COLLECTED ENTRIES for user id $userId: $it")
+                        emit(it)
+                    }
+//            } catch (e: Exception) {
+//                println("error in getting dingo dex collected entries for user: $e")
+//                emit(ret)
+//            }
         }
     }
 }

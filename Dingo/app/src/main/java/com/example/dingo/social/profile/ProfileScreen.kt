@@ -47,6 +47,7 @@ import com.example.dingo.model.User
 import com.example.dingo.ui.theme.color_background
 import com.example.dingo.ui.theme.color_on_secondary
 import com.example.dingo.ui.theme.color_secondary
+import com.example.dingo.social.SocialNavigationItem
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -55,7 +56,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun ProfileScreen(
     viewModel: ProfileViewModel = hiltViewModel(),
-
+    navController: NavHostController,
     navControllerSignOut: NavHostController
 
 ) {
@@ -74,6 +75,11 @@ fun ProfileScreen(
             "${SessionInfo.currentUsername ?: "Test"}'s Profile",
             fontSize = UIConstants.SUBTITLE1_TEXT,
         )
+//        Button(onClick = {
+//            navController.navigate(SocialNavigationItem.MyDingoDex.route)
+//        }) {
+//            Text("See DingoDex")
+//        }
         Button(onClick = {
             coroutineScope.launch {
                 viewModel.onSignOutClick(navControllerSignOut)

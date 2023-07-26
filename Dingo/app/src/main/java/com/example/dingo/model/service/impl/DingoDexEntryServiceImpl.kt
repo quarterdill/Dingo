@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import com.example.dingo.common.SessionInfo
 import com.example.dingo.model.DingoDexEntry
 import com.example.dingo.model.DingoDexEntryContent
+import com.example.dingo.model.User
 import com.example.dingo.model.service.AccountService
 import com.example.dingo.model.service.DingoDexEntryService
 import com.google.firebase.firestore.FirebaseFirestore
@@ -43,12 +44,20 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
             .whereEqualTo(ENTRY_NAME, entryName).get().await().toObjects(DingoDexEntry::class.java)
     }
 
+    override suspend fun getEntryById(entryId: String): DingoDexEntry? {
+        return firestore.collection(DINGO_DEX_ENTRIES)
+            .document(entryId)
+            .get()
+            .await()
+            .toObject(DingoDexEntry::class.java)
+    }
+
     override suspend fun addNewEntry(newDingoDexEntry: DingoDexEntryContent): Boolean {
         val newEntry = DingoDexEntry(
             userId = SessionInfo.currentUserID,
             dingoDexId = newDingoDexEntry.id,
             name = newDingoDexEntry.name,
-            isFauna = newDingoDexEntry.is_fauna,
+            fauna = newDingoDexEntry.is_fauna,
             numEncounters = 1,
             location = "",
             pictures = mutableListOf(),
