@@ -184,18 +184,13 @@ fun DingoDexScreen(
                 var bitmap = remember{ mutableStateOf(BitmapFactory.decodeStream(assetManager.open(dingodexEntryContent.default_picture_name))) }
                 val dingodexEntry: List<DingoDexEntry> = viewModel.getEntry(userId = SessionInfo.currentUserID, entryName = selected.value!!)
                 if (dingodexEntry.size == 1 && dingodexEntry[0].displayPicture != "default") {
-                    println("HIIII, ${dingodexEntry[0].displayPicture}")
                     val storageRef = FirebaseStorage.getInstance().reference.child(dingodexEntry[0].displayPicture)
                     storageRef.getBytes(1500000000).addOnSuccessListener {
-                        println("bitmap")
                         bitmap.value = BitmapFactory.decodeByteArray(it, 0, it.size)
-                        println(bitmap.value)
-                        println("bitmap come")
                     }.addOnFailureListener {
                         println("Error occurred when downloading user's DingoDex image from Firebase $it")
                     }
                 }
-                println("tesetestset")
 
 
                 Column(
@@ -211,7 +206,8 @@ fun DingoDexScreen(
                         Text(
                             modifier = Modifier.padding(4.dp),
                             fontSize = 16.sp,
-                            text = "${dingodexEntryContent.name} | ${dingodexEntryContent.scientific_name}"
+                            text = "${dingodexEntryContent.name} | ${dingodexEntryContent.scientific_name}",
+                            color = Color.Black
                         )
                     }
                     Row(
@@ -219,8 +215,6 @@ fun DingoDexScreen(
                         horizontalArrangement = Arrangement.spacedBy(10.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-
-                        println("penis cock")
 
                         Image(
                             bitmap = bitmap.value.asImageBitmap(),
@@ -234,7 +228,8 @@ fun DingoDexScreen(
                         textAlign = TextAlign.Left,
                         modifier = Modifier.width(300.dp),
                         fontSize = 16.sp,
-                        text = dingodexEntryContent.description.trimIndent()
+                        text = dingodexEntryContent.description.trimIndent(),
+                        color = Color.Black
                     )
                     Row(
                         modifier = Modifier.padding(16.dp),
@@ -251,7 +246,7 @@ fun DingoDexScreen(
                                 modifier = Modifier.padding(4.dp),
                                 fontSize = 16.sp,
                                 text = "Back",
-
+                                color = Color.Black
                             )
                         }
                     }
@@ -278,7 +273,7 @@ private fun DingoDexItem(
         },
         modifier = Modifier.padding(3.dp),
         colors = ButtonDefaults.buttonColors(containerColor = color_secondary, color_on_secondary),
-        enabled = item.numEncounters == 0
+        enabled = item.numEncounters != 0
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -301,7 +296,7 @@ private fun DingoDexItem(
                     Canvas(modifier = Modifier.size(25.dp), onDraw = {
                         drawCircle(color = Color.LightGray)
                     })
-                    Text(text = "${item.numEncounters}", color = Color.White)
+                    Text(text = "${item.numEncounters}", color = Color.Black)
                 }
             }
             Text(
@@ -310,7 +305,8 @@ private fun DingoDexItem(
                 textAlign = TextAlign.Center,
                 fontSize = 12.sp,
                 maxLines = 2,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
+                color = Color.Black
             )
         }
     }
