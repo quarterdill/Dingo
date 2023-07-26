@@ -154,6 +154,24 @@ constructor(
         incrementStat(StatName.NUM_COMMENTS)
     }
 
+    fun removePost(
+        classroomId: String,
+        postId: String,
+    ) {
+        viewModelScope.launch {
+            classroomService.deletePost(classroomId, postId)
+        }
+    }
+
+    fun removeComment(
+        postId: String,
+        commentId: String,
+    ) {
+        viewModelScope.launch {
+            postService.deleteComment(postId, commentId)
+        }
+    }
+
 
     fun makeDummyPosts() {
         val dummyClassroomId = "cE1sLWEWj31aFO1CxwZB"
@@ -268,8 +286,13 @@ constructor(
         viewModelScope.launch {
             var newClassroom: Classroom = Classroom()
             newClassroom.name = classroomName
-            newClassroom.teachers.add(creatorUserId)
-            classroomService.addNewClassroom(newClassroom)
+            var classroomId = ""
+            var job = launch {
+                classroomId = classroomService.addNewClassroom(newClassroom)
+            }
+            job.join()
+            classroomService.addUser(classroomId, creatorUserId, UserType.TEACHER)
+
         }
     }
 
