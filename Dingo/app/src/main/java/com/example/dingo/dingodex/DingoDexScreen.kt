@@ -22,6 +22,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -34,6 +35,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -244,10 +246,13 @@ private fun DingoDexItem(
     val assetManager: AssetManager = currentContext.assets
     val index = if (item.isFauna) DingoDexScientificToIndex.dingoDexFaunaScientificToIndex[item.scientificName] else DingoDexScientificToIndex.dingoDexFloraScientificToIndex[item.scientificName]
     val bitmap = BitmapFactory.decodeStream(assetManager.open(DingoDexEntryListings.dingoDexEntryList[index!!].default_picture_name))
-    Button(onClick = {
+    Button(
+        onClick = {
         selected.value = item.scientificName
         navController.navigate(DingoDexNavItem.Description.route)
-    }) {
+        },
+        enabled = item.numEncounters != 0
+    ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
@@ -260,7 +265,8 @@ private fun DingoDexItem(
                     modifier = Modifier
                         .size(64.dp)
                         .clip(CircleShape)  // clip to the circle shape
-                        .border(2.dp, Color.Gray, CircleShape)
+                        .border(2.dp, Color.Gray, CircleShape),
+                    alpha = if(item.numEncounters == 0) 0.2F else 0.0F
                 )
                 Box(
                     contentAlignment = Alignment.Center
