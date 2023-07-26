@@ -133,7 +133,7 @@ private fun SocialPost(
         var timeDiffMsg = getTimeDiffMessage(post.timestamp)
 
         if (trip != null && trip.locations.isNotEmpty()) {
-            tripMap(points = trip.locations, fullSize = false )
+            tripMap(trip = trip, fullSize = false )
         }
         Text(
             modifier = Modifier.height(20.dp),

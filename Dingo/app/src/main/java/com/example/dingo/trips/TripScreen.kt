@@ -1,53 +1,44 @@
 package com.example.dingo.trips
 
-import android.content.Intent
-import android.content.pm.PackageManager
-import android.util.Log
-import androidx.compose.runtime.Composable
-import com.google.android.gms.maps.model.LatLng
-import com.google.maps.android.compose.rememberCameraPositionState
-import com.google.android.gms.maps.model.CameraPosition
-import com.google.maps.android.compose.GoogleMap
-import androidx.compose.ui.Modifier
-import androidx.compose.foundation.layout.fillMaxSize
-import com.google.maps.android.compose.Marker
-import com.google.maps.android.compose.MarkerState
-
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Text
-import androidx.compose.material3.Button
-
 //import androidx.compose.material.Button
 //import androidx.compose.material.MaterialTheme
 //import androidx.compose.material.Text
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Observer
 import androidx.navigation.NavHostController
@@ -58,8 +49,16 @@ import com.example.dingo.UIConstants
 import com.example.dingo.common.SessionInfo
 import com.example.dingo.model.Trip
 import com.example.dingo.model.service.impl.getTimeDiffMessage
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.Timestamp
+import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.Polyline
+import com.google.maps.android.compose.rememberCameraPositionState
+import java.text.SimpleDateFormat
+import java.util.Date
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -185,8 +184,10 @@ fun TripScreen(
             composable(TripNavigationItem.CreatePost.route) {
                 var textContentState by remember { mutableStateOf("") }
                 if (SessionInfo.trip != null) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.padding(16.dp),) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.padding(16.dp),
+                    ) {
 
                                 TextField(
                                     value = textContentState,
@@ -203,7 +204,7 @@ fun TripScreen(
                             )
                             Box(modifier = Modifier.fillMaxSize()) {
                                 if (SessionInfo.trip!!.locations.isNotEmpty()) {
-                                  tripMap(SessionInfo.trip!!.locations, true)
+                                  tripMap(SessionInfo.trip!!, true)
                                 }
                             }
                         }
@@ -265,7 +266,7 @@ fun TripScreen(
                             )
                             Box(modifier = Modifier.fillMaxSize()) {
                                 if (trip != null && trip.locations.isNotEmpty()) {
-                                    tripMap(trip.locations, true)
+                                    tripMap(trip, true)
                                 }
                             }
                         }
@@ -322,27 +323,43 @@ fun LocationPermissionScreen() {
 }
 
 @Composable
-fun tripMap(points: List<LatLng>,  fullSize: Boolean) {
+fun tripMap(trip : Trip,  fullSize: Boolean) {
 
     val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(points.lastOrNull() ?: LatLng(51.52061810406676, -0.12635325270312533), 15f)
+        position = CameraPosition.fromLatLngZoom(trip.locations.lastOrNull() ?: LatLng(51.52061810406676, -0.12635325270312533), 15f)
     }
 
     GoogleMap(
         modifier = Modifier.fillMaxSize(),
         cameraPositionState = cameraPositionState
     ) {
-        if (points.lastOrNull() != null) {
-            Polyline(points = points)
+        if (trip.locations.lastOrNull() != null) {
+
+
+            // Convert the timestamp to a Java Date object
+            val startDate: Date = trip.startTime.toDate()
+            val endDate: Date = trip.endTime.toDate()
+
+// Convert the timestamp to a Java Date object
+// Create a SimpleDateFormat object with your desired date format
+            val dateFormat = SimpleDateFormat("dd-MM-yyyy HH:mm:ss")
+
+// Format the date as desired
+
+            val formattedStartTime = dateFormat.format(startDate)
+            val formattedEndTime = dateFormat.format(endDate)
+
+
+            Polyline(points = trip.locations)
             Marker(
-                state = MarkerState(position = points.last()),
+                state = MarkerState(position = trip.locations.last()),
                 title = "Start",
-                snippet = "Trip Started at"
+                snippet = "Trip Started at ${formattedStartTime}"
             )
             Marker(
-                state = MarkerState(position = points.first()),
+                state = MarkerState(position = trip.locations.first()),
                 title = "Finish",
-                snippet = "You are here"
+                snippet = "Trip Ended at ${formattedEndTime}"
             )
         }
     }
