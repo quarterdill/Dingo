@@ -23,6 +23,7 @@ import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.FloatingActionButton
@@ -61,7 +62,9 @@ import com.example.dingo.model.Trip
 import com.example.dingo.trips.TripViewModel
 import com.example.dingo.trips.tripMap
 import com.example.dingo.ui.theme.color_on_primary
+import com.example.dingo.ui.theme.color_on_secondary
 import com.example.dingo.ui.theme.color_primary
+import com.example.dingo.ui.theme.color_secondary
 import com.google.firebase.Timestamp
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.runBlocking
@@ -399,12 +402,14 @@ private fun CreatePostModal(
                             selectedTrip?.id ?: null,
                         )
                         onDismissRequest()
-                    }
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = color_secondary, color_on_secondary)
                 ) {
                     Text(text = "Create Post")
                 }
                 Button(
-                    onClick = onDismissRequest
+                    onClick = onDismissRequest,
+                    colors = ButtonDefaults.buttonColors(containerColor = color_secondary, color_on_secondary)
                 ) {
                     Text(text = "Cancel")
                 }
