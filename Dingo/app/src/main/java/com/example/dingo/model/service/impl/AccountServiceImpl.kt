@@ -19,6 +19,7 @@ import com.google.rpc.context.AttributeContext.Resource
 import kotlinx.coroutines.CoroutineScope
 import javax.inject.Inject
 import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.callbackFlow
@@ -81,34 +82,25 @@ class AccountServiceImpl @Inject constructor(
         Failure(e)
     }
 
-    override suspend fun registerUser(email: String, password: String): String {
+    override suspend fun registerUser(
+        email: String,
+        password: String,
+        callback: (Boolean, String) -> Unit
+    ) {
         try {
-            println("1")
-            var authId = ""
-            var res = auth.createUserWithEmailAndPassword(email, password)
+            auth.createUserWithEmailAndPassword(email, password)
                 .addOnSuccessListener {
                     val user = it.user
                     if (user != null) {
-                        authId = user.uid
-                        println("GOT AUTH ID: $authId")
+                        callback(true, user.uid)
                     }
                 }
-
-            Log.e("STATE", "Signup success")
-            println("2")
-            return authId
-//            if (res.user != null) {
-//                return res.user!!.uid
-//            }
+                .addOnFailureListener {
+                    callback(false, "")
+                }
         } catch (e: Exception) {
-            // Authentication failed
-            println("uh oh stinky")
-            Log.e("STATE", "Signup failed: ${e.message}")
-            // Handle the authentication failure as needed
-            return ""
-
+            callback(false, "")
         }
-        return ""
     }
 
 //    override suspend fun registerUser(

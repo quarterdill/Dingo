@@ -5,6 +5,8 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -24,6 +26,7 @@ import com.example.dingo.ui.theme.DingoTheme
 import dagger.hilt.android.AndroidEntryPoint
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.platform.LocalContext
 import com.example.dingo.authentication.signup.SignUpScreen
@@ -31,6 +34,7 @@ import com.example.dingo.authentication.signup.SignUpViewModel
 import com.example.dingo.common.SessionInfo
 import com.example.dingo.navigation.NavGraph
 import com.example.dingo.navigation.Screen
+import com.example.dingo.ui.theme.Purple80
 
 
 @AndroidEntryPoint
@@ -54,10 +58,17 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    if (isLoading.value!!) {
-                        CircularProgressIndicator()
-                    } else {
-                        navigationConfiguration2(navController)
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(color = Purple80),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        if (isLoading.value!!) {
+                            CircularProgressIndicator()
+                        } else {
+                            navigationConfiguration2(navController)
+                        }
                     }
                 }
             }

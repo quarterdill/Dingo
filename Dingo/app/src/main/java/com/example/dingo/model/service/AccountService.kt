@@ -21,9 +21,7 @@ interface AccountService {
     val hasUser: Boolean
     val currentUser: FirebaseUser?
 
-    //val currentUser: Flow<User>
-
-    suspend fun registerUser(email: String, password: String): String
+    suspend fun registerUser(email: String, password: String, callback: (Boolean, String) -> Unit)
     suspend fun loginUser(email: String, password: String): Boolean
     suspend fun sendEmailVerification(): SendEmailVerificationResponse
     suspend fun sendRecoveryEmail(email: String): SendRecoveryResponse
