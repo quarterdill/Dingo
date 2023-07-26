@@ -9,6 +9,7 @@ import com.example.dingo.common.SessionInfo
 import com.example.dingo.AnimalDetectionModel
 import com.example.dingo.common.addNewEntryToTrip
 import com.example.dingo.common.addPictureToTrip
+import com.example.dingo.model.DingoDexEntry
 import com.example.dingo.model.service.AccountService
 import com.example.dingo.model.service.DingoDexEntryService
 import com.example.dingo.model.service.DingoDexStorageService
@@ -79,21 +80,25 @@ constructor(
         viewModelScope.launch {
             if (saveImage) {
                 imageInternalStorageService.saveImage(entryName, image, context)
+                val imagePath = dingoDexEntryService.addPicture(entryName, image)
+                var entry: DingoDexEntry? = null
+                if (imagePath != "") {
+                    val entries = dingoDexEntryService.getEntry(SessionInfo.currentUserID, entryName)
+                    if (entries.isNotEmpty()) {
+                        // Should only have 1 entry for each animal/plant
+                        entry = entries[0]
+                        entry.pictures.add(imagePath)
+                        dingoDexEntryService.updateEntry(entry)
+                    }
+                }
                 if (saveAsDefault) {
                     var result = false
-                    val imagePath = dingoDexEntryService.addPicture(entryName, image)
                     addPictureToTrip(imagePath)
-                    if (imagePath != "") {
-                        val entries = dingoDexEntryService.getEntry(SessionInfo.currentUserID, entryName)
-                        if (entries.isNotEmpty()) {
-                            // Should only have 1 entry for each animal/plant
-                            var entry = entries[0]
-                            entry.displayPicture = imagePath
-                            result = dingoDexEntryService.updateEntry(entry)
-                        }
+                    if (imagePath != "" && entry != null) {
+                        entry.displayPicture = imagePath
+                        result = dingoDexEntryService.updateEntry(entry)
                     }
                 } else if (SessionInfo.trip != null ) {
-                    val imagePath = dingoDexEntryService.addPicture(entryName, image)
                     addPictureToTrip(imagePath)
                 }
             }
