@@ -22,6 +22,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -45,9 +46,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.dingo.R
+import com.example.dingo.common.SessionInfo
+import com.example.dingo.model.DingoDexEntry
+import com.example.dingo.model.DingoDexEntryContent
 import com.example.dingo.UIConstants
 import com.example.dingo.model.DingoDexEntryListings
 import com.example.dingo.model.DingoDexScientificToIndex
+import com.google.firebase.storage.FirebaseStorage
 import java.io.File
 import java.io.FileInputStream
 
@@ -59,11 +64,7 @@ sealed class DingoDexNavItem(
     object Description : DingoDexNavItem(
         name = "Description",
         route = "description",
-    )
-    object Main : DingoDexNavItem(
-        name = "Main",
-        route = "main",
-    )
+     )
     object DingoDex : DingoDexNavItem(
         name = "DingoDex",
         route = "dingodex"
@@ -76,6 +77,7 @@ fun DingoDexScreen(
     viewModel: DingoDexViewModel = hiltViewModel()
 ) {
     val navController = rememberNavController()
+    val selected = remember { mutableStateOf("")}
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -85,7 +87,6 @@ fun DingoDexScreen(
             startDestination = DingoDexNavItem.DingoDex.route
         ) {
             composable(DingoDexNavItem.DingoDex.route) {
-
                 Column(
                     modifier = Modifier.fillMaxSize(),
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -119,7 +120,7 @@ fun DingoDexScreen(
                             columns = GridCells.Fixed(3),
                         ) {
                             items(items.size) {
-                                DingoDexItem(items[it], navController)
+                                DingoDexItem(items[it], navController, selected)
                             }
                         }
                     } else {
@@ -150,6 +151,28 @@ fun DingoDexScreen(
                 }
             }
             composable(DingoDexNavItem.Description.route) {
+                val currentContext = LocalContext.current
+                val assetManager: AssetManager = currentContext.assets
+                var index = DingoDexScientificToIndex.dingoDexFaunaScientificToIndex[selected.value]
+
+                if (index == null) {
+                    index = DingoDexScientificToIndex.dingoDexFloraScientificToIndex[selected.value]
+                }
+                if (index == null) {
+                    println("DingoDex entry image, ${selected.value} could not be found in json assets!")
+                }
+                val dingodexEntryContent = DingoDexEntryListings.dingoDexEntryList[index!!]
+                var bitmap = BitmapFactory.decodeStream(assetManager.open(dingodexEntryContent.default_picture_name))
+
+                val dingodexEntry: List<DingoDexEntry> = viewModel.getEntry(userId = SessionInfo.currentUserID, entryName = selected.value!!)
+                if (dingodexEntry.size == 1 && dingodexEntry[0].displayPicture != "default") {
+                    val storageRef = FirebaseStorage.getInstance().reference.child("temp/${selected.value}.jpg")
+                    storageRef.getBytes(1000000).addOnSuccessListener {
+                        bitmap = BitmapFactory.decodeByteArray(it, 0, it.size)
+                    }.addOnFailureListener {
+                        println("Error occurred when downloading user's DingoDex image from Firebase $it")
+                    }
+                }
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
@@ -170,10 +193,21 @@ fun DingoDexScreen(
                             )
                         }
                     }
+                    Row(
+                        modifier = Modifier.padding(16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(10.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            modifier = Modifier.padding(4.dp),
+                            fontSize = 16.sp,
+                            text = "${dingodexEntryContent.name} | ${dingodexEntryContent.scientific_name}"
+                        )
+                    }
                     Row() {
                         Image(
-                            painter = painterResource(R.drawable.fauna_placeholder),
-                            contentDescription = "Fauna",
+                            bitmap = bitmap.asImageBitmap(),
+                            contentDescription = if (dingodexEntryContent.is_fauna) "Fauna" else "Flora",
                             contentScale = ContentScale.Inside,
                             alignment = Alignment.CenterStart,
                         )
@@ -181,14 +215,7 @@ fun DingoDexScreen(
                             textAlign = TextAlign.Left,
                             modifier = Modifier.width(200.dp),
                             fontSize = 16.sp,
-                            text = """
-                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod 
-                                    tempor incididunt ut labore et dolore magna aliqua. Ac auctor augue mauris 
-                                    augue neque gravida in fermentum et. Id faucibus nisl tincidunt eget nullam 
-                                    non nisi est sit. Aliquam faucibus purus in massa tempor nec feugiat. Mollis 
-                                    nunc sed id semper risus in hendrerit gravida. Felis eget velit aliquet 
-                                    sagittis id consectetur purus ut. 
-                                   """.trimIndent()
+                            text = dingodexEntryContent.description.trimIndent()
                         )
                     }
                 }
@@ -201,37 +228,31 @@ fun DingoDexScreen(
 private fun DingoDexItem(
     item: DingoDexCollectionItem,
     navController: NavHostController,
+    selected: MutableState<String>,
+    viewModel: DingoDexViewModel = hiltViewModel()
 ) {
     val currentContext = LocalContext.current
     val assetManager: AssetManager = currentContext.assets
-    // TODO: Implement for flora
-    val index = DingoDexScientificToIndex.dingoDexFaunaScientificToIndex[item.name]
-    val bitmap = BitmapFactory.decodeStream(currentContext.assets.open(DingoDexEntryListings.dingoDexEntryList[0].default_picture_name))
-    //Bitmap bit = BitmapFactory.decodeFile( DingoDexEntryListings.getInstance(currentContext).dingoDexEntryList[0].default_picture_name)
-    Button(onClick = {navController.navigate(DingoDexNavItem.Description.route)}) {
+    val index = if (item.isFauna) DingoDexScientificToIndex.dingoDexFaunaScientificToIndex[item.scientificName] else DingoDexScientificToIndex.dingoDexFloraScientificToIndex[item.scientificName]
+    val bitmap = BitmapFactory.decodeStream(assetManager.open(DingoDexEntryListings.dingoDexEntryList[index!!].default_picture_name))
+    Button(onClick = {
+        selected.value = item.scientificName
+        navController.navigate(DingoDexNavItem.Description.route)
+    }) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
             Box() {
-                if (item.pictureURL == "") {
-                    Image(
-                        bitmap = bitmap.asImageBitmap(),
-//                        painter = if (item.isFauna) {
-//                            painterResource(Drawable.createFromPath(DingoDexEntryListings.getInstance(currentContext).dingoDexEntryList[0].default_picture_name))
-//                            //painterResource(R.drawable.fauna_placeholder)
-//                        } else {
-//                            painterResource(R.drawable.flore_placeholder)
-//                        },
-                        contentDescription = if (item.isFauna) "Fauna" else "Flora",
-                        contentScale = ContentScale.Inside,
-                        modifier = Modifier
-                            .size(64.dp)
-                            .clip(CircleShape)  // clip to the circle shape
-                            .border(2.dp, Color.Gray, CircleShape)
-                    )
-                }
-                // TODO: Actual images
+                Image(
+                    bitmap = bitmap.asImageBitmap(),
+                    contentDescription = if (item.isFauna) "Fauna" else "Flora",
+                    contentScale = ContentScale.Inside,
+                    modifier = Modifier
+                        .size(64.dp)
+                        .clip(CircleShape)  // clip to the circle shape
+                        .border(2.dp, Color.Gray, CircleShape)
+                )
                 Box(
                     contentAlignment = Alignment.Center
                 ) {
