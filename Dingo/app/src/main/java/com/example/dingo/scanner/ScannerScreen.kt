@@ -1,6 +1,7 @@
 package com.example.dingo.scanner
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
 import androidx.compose.runtime.Composable
 import android.graphics.Bitmap
@@ -34,6 +35,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import android.graphics.BitmapFactory
 import androidx.compose.ui.unit.dp
 import android.graphics.Matrix
+import android.location.Location
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -64,6 +66,9 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
+import com.google.android.gms.location.LocationServices
+import com.google.type.LatLng
+import kotlinx.coroutines.tasks.await
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -93,6 +98,7 @@ fun ScannerScreen(
 
 }
 
+@SuppressLint("MissingPermission")
 @Composable
 private fun CapturedImageBitmapDialog(
     capturedImage: Bitmap,
@@ -103,6 +109,8 @@ private fun CapturedImageBitmapDialog(
     val capturedImageBitmap: ImageBitmap = remember { capturedImage.asImageBitmap() }
     val isLoading = viewModel.isLoading.observeAsState()
     val context = LocalContext.current
+    val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
+
     //viewModel.addEntry("Dummy Data")
     Dialog(
         onDismissRequest = onDismissRequest,
@@ -161,7 +169,15 @@ private fun CapturedImageBitmapDialog(
 
                         Button(
                             onClick = {
-                                viewModel.scanImage(capturedImage, context, setDefaultPicture, savePicture, animalCallback)
+                                val location = fusedLocationClient.getCurrentLocation(1, null)
+//                                    .addOnSuccessListener { location : Location? ->
+                                        // Got last known location. In some rare situations this can be null.
+//                                    }
+                                val coords = com.google.android.gms.maps.model.LatLng(
+                                    location.result.latitude,
+                                    location.result.longitude
+                                )
+                                viewModel.scanImage(capturedImage, context, setDefaultPicture, savePicture, animalCallback, coords)
                                 onDismissRequest()
                                // viewModel.savePicture("Dummy_Data", capturedImage, setDefaultPicture, context)
                             },

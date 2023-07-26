@@ -5,6 +5,7 @@ import com.example.dingo.model.AchievementListings
 import com.example.dingo.model.Trip
 import com.example.dingo.model.User
 import com.example.dingo.model.service.UserService
+import com.google.android.gms.maps.model.LatLng
 
 class Stat constructor (statName: String): IObservable {
     val name: String = statName
@@ -44,10 +45,11 @@ fun addNewEntryToTrip(entryId: String) {
 
 }
 
-fun addPictureToTrip(picturePath: String) {
+fun addPictureToTrip(picturePath: String, location: LatLng) {
     if (SessionInfo.trip != null) {
         var trip = SessionInfo.trip!!
         trip.picturePaths.add(picturePath)
+        trip.pictureLocations.add(location)
     }
 }
 

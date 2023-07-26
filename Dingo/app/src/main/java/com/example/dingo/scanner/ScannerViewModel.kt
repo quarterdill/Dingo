@@ -2,6 +2,9 @@ package com.example.dingo.scanner
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.location.Location
+import android.location.LocationManager
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -14,6 +17,8 @@ import com.example.dingo.model.service.DingoDexEntryService
 import com.example.dingo.model.service.DingoDexStorageService
 import com.example.dingo.model.service.ImageInternalStorageService
 import com.example.dingo.model.service.UserService
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -36,9 +41,9 @@ constructor(
     val state = _state.asStateFlow()
     var isLoading = MutableLiveData<Boolean>(false)
 
-    fun scanImage(bitmap: Bitmap, context: Context, saveAsDefault: Boolean, saveStorage: Boolean, callBack: (String) -> Unit) {
+    fun scanImage(bitmap: Bitmap, context: Context, saveAsDefault: Boolean, saveStorage: Boolean, callBack: (String) -> Unit, location: LatLng) {
         val animalDetectionModel = AnimalDetectionModel(context)
-        val prediction = animalDetectionModel.run( bitmap , callBack, saveAsDefault, saveStorage, this::savePicture, this::addEntry)
+        val prediction = animalDetectionModel.run( bitmap , callBack, saveAsDefault, saveStorage, location, this::savePicture, this::addEntry)
         updateCapturedPhotoState(bitmap)
     }
     fun onPhotoCaptured(bitmap: Bitmap) {
@@ -75,14 +80,15 @@ constructor(
         }
     }
 
-    fun savePicture(entryName: String, image: Bitmap, saveAsDefault: Boolean, saveImage: Boolean, context: Context) {
+    fun savePicture(entryName: String, image: Bitmap, saveAsDefault: Boolean, saveImage: Boolean, location: LatLng, context: Context) {
         viewModelScope.launch {
             if (saveImage) {
                 imageInternalStorageService.saveImage(entryName, image, context)
                 if (saveAsDefault) {
                     var result = false
                     val imagePath = dingoDexEntryService.addPicture(entryName, image)
-                    addPictureToTrip(imagePath)
+
+                    addPictureToTrip(imagePath, location)
                     if (imagePath != "") {
                         val entries = dingoDexEntryService.getEntry(SessionInfo.currentUserID, entryName)
                         if (entries.isNotEmpty()) {
@@ -94,7 +100,7 @@ constructor(
                     }
                 } else if (SessionInfo.trip != null ) {
                     val imagePath = dingoDexEntryService.addPicture(entryName, image)
-                    addPictureToTrip(imagePath)
+                    addPictureToTrip(imagePath, location)
                 }
             }
 

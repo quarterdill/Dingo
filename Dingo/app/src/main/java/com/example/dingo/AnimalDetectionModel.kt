@@ -2,6 +2,7 @@ package com.example.dingo
 
 import android.content.Context
 import android.graphics.Bitmap
+import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.GlobalScope
 import okhttp3.MediaType.Companion.toMediaType
@@ -31,8 +32,8 @@ class AnimalDetectionModel(context : Context) {
         return outputStream.toByteArray()
     }
 
-    public fun run (input : Bitmap, callback: (String) -> Unit, saveAsDefault: Boolean, saveStorage: Boolean,
-                    savePicture: (entryName: String, image: Bitmap, saveAsDefault: Boolean, saveImage: Boolean, context: Context) -> Unit,
+    public fun run (input : Bitmap, callback: (String) -> Unit, saveAsDefault: Boolean, saveStorage: Boolean, location: LatLng,
+                    savePicture: (entryName: String, image: Bitmap, saveAsDefault: Boolean, saveImage: Boolean, location: LatLng, context: Context) -> Unit,
                     addEntry: (entryName: String) -> Unit) : IntArray {
         val mutableCopy: Bitmap = input.copy(input.config, true)
         val refitImage = Bitmap.createScaledBitmap(input, modelInputImageDim, modelInputImageDim, false)
@@ -49,7 +50,7 @@ class AnimalDetectionModel(context : Context) {
                 val processedImageValue = name.getString("processed_image")
                 if( processedImageValue != "not found") {
                     addEntry(processedImageValue)
-                    savePicture(processedImageValue, mutableCopy, saveAsDefault, saveStorage, context)
+                    savePicture(processedImageValue, mutableCopy, saveAsDefault, saveStorage, location, context)
                 }
                 callback(processedImageValue)
 
