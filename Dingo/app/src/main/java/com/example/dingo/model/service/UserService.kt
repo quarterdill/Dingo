@@ -21,7 +21,6 @@ interface UserService {
     suspend fun updateDingoDex(newEntryId: Int, isFauna: Boolean)
     suspend fun setPostHeadForUser(userId: String, postId: String, postType: PostType)
     suspend fun addClassroomPost(userId: String, postId: String)
-    suspend fun getFriends(userId: String, limit: Int = 10): Flow<MutableList<User>?>
     suspend fun getPendingFriendReqs(userId: String): Flow<MutableList<User>?>
     suspend fun getUsersPosts(userId: String): Flow<MutableList<Post>?>
     suspend fun addAchievementForUser(user: User, achievementId: Int)
