@@ -438,8 +438,6 @@ fun tripMap(trip : Trip,  fullSize: Boolean) {
                             modifier = Modifier.padding(16.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-
-
                             Image(
                                 bitmap = bitmap!!.asImageBitmap(),
                               contentDescription = null,
@@ -453,7 +451,7 @@ fun tripMap(trip : Trip,  fullSize: Boolean) {
                             //.........................Text: title
 
                             Text(
-                                text = "",
+                                text = "${trip.discoveredEntries[index]}",
                                 textAlign = TextAlign.Center,
                                 modifier = Modifier
                                     .padding(top = 10.dp)
@@ -461,10 +459,10 @@ fun tripMap(trip : Trip,  fullSize: Boolean) {
                                 style = MaterialTheme.typography.headlineSmall,
                                 color = MaterialTheme.colorScheme.primary,
                             )
-                            Spacer(modifier = Modifier.height(8.dp))
+//                            Spacer(modifier = Modifier.height(8.dp))
                             //.........................Text : description
                             Text(
-                                text = "",
+                                text = "Here is more information on your Dingo",
                                 textAlign = TextAlign.Center,
                                 modifier = Modifier
                                     .padding(top = 10.dp, start = 25.dp, end = 25.dp)
@@ -473,7 +471,7 @@ fun tripMap(trip : Trip,  fullSize: Boolean) {
                                 color = MaterialTheme.colorScheme.primary,
                             )
                             //.........................Spacer
-                            Spacer(modifier = Modifier.height(24.dp))
+//                            Spacer(modifier = Modifier.height(24.dp))
 
                         }
 
