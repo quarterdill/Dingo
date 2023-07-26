@@ -36,9 +36,9 @@ constructor(
     val state = _state.asStateFlow()
     var isLoading = MutableLiveData<Boolean>(false)
 
-    fun scanImage(bitmap: Bitmap, context: Context, saveAsDefault: Boolean, saveStorage: Boolean, callBack: (String) -> Unit) {
+    fun scanImage(bitmap: Bitmap, context: Context, saveAsDefault: Boolean, saveStorage: Boolean, animal: Boolean, callBack: (String) -> Unit) {
         val animalDetectionModel = AnimalDetectionModel(context)
-        val prediction = animalDetectionModel.run( bitmap , callBack, saveAsDefault, saveStorage, this::savePicture, this::addEntry)
+        val prediction = animalDetectionModel.run( bitmap , callBack, saveAsDefault, saveStorage, animal, this::savePicture, this::addEntry)
         updateCapturedPhotoState(bitmap)
     }
     fun onPhotoCaptured(bitmap: Bitmap) {
