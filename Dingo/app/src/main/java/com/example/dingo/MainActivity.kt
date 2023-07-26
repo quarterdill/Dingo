@@ -35,7 +35,6 @@ import com.example.dingo.common.SessionInfo
 import com.example.dingo.common.initializeStats
 import com.example.dingo.navigation.NavGraph
 import com.example.dingo.navigation.Screen
-import com.example.dingo.ui.theme.Purple80
 
 
 @AndroidEntryPoint
@@ -63,8 +62,8 @@ class MainActivity : ComponentActivity() {
                 ) {
                     Box(
                         modifier = Modifier
-                            .fillMaxSize()
-                            .background(color = Purple80),
+                            .fillMaxSize(),
+                            //.background(color = Purple80),
                         contentAlignment = Alignment.Center,
                     ) {
                         if (isLoading.value!!) {
