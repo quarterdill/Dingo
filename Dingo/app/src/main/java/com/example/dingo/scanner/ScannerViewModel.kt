@@ -7,7 +7,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.dingo.common.SessionInfo
 import com.example.dingo.AnimalDetectionModel
-import com.example.dingo.common.addNewEntry
+import com.example.dingo.common.addNewEntryToTrip
+import com.example.dingo.common.addPictureToTrip
 import com.example.dingo.model.service.AccountService
 import com.example.dingo.model.service.DingoDexEntryService
 import com.example.dingo.model.service.DingoDexStorageService
@@ -53,7 +54,7 @@ constructor(
             var result = false
             isLoading.value = true
             val entries = dingoDexEntryService.getEntry(SessionInfo.currentUserID, entryName)
-            addNewEntry(entryName)
+            addNewEntryToTrip(entryName)
             if (entries.isEmpty()) {
                 val dingoDex = dingoDexStorageService.findDingoDexItem(entryName)
                 if (dingoDex != null) {
@@ -78,10 +79,10 @@ constructor(
         viewModelScope.launch {
             if (saveImage) {
                 imageInternalStorageService.saveImage(entryName, image, context)
-            }
-            if (saveAsDefault) {
+                if (saveAsDefault) {
                     var result = false
                     val imagePath = dingoDexEntryService.addPicture(entryName, image)
+                    addPictureToTrip(imagePath)
                     if (imagePath != "") {
                         val entries = dingoDexEntryService.getEntry(SessionInfo.currentUserID, entryName)
                         if (entries.isNotEmpty()) {
@@ -91,7 +92,12 @@ constructor(
                             result = dingoDexEntryService.updateEntry(entry)
                         }
                     }
+                } else if (SessionInfo.trip != null ) {
+                    val imagePath = dingoDexEntryService.addPicture(entryName, image)
+                    addPictureToTrip(imagePath)
                 }
+            }
+
         }
     }
 

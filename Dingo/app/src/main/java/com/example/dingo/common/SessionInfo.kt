@@ -34,18 +34,17 @@ fun newTrip() {
     SessionInfo.trip = Trip()
 }
 
-fun addNewEntry(entryId: String) {
+fun addNewEntryToTrip(entryId: String) {
     if (SessionInfo.trip != null) {
         var trip = SessionInfo.trip!!
-        val hasEntry = trip.discoveredEntries.indexOf(entryId) != -1
-        if (!hasEntry) {
+        if (trip.discoveredEntries.indexOf(entryId) == -1) {
             trip.discoveredEntries.add(entryId)
         }
     }
 
 }
 
-fun addPicture(picturePath: String) {
+fun addPictureToTrip(picturePath: String) {
     if (SessionInfo.trip != null) {
         var trip = SessionInfo.trip!!
         trip.picturePaths.add(picturePath)
