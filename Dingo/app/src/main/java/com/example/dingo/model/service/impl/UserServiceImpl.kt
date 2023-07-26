@@ -1,8 +1,10 @@
 package com.example.dingo.model.service.impl
 
+import androidx.core.util.rangeTo
 import com.example.dingo.common.SessionInfo
 import com.example.dingo.model.AccountType
 import com.example.dingo.model.Classroom
+import com.example.dingo.model.DingoDexEntryListings
 import com.example.dingo.model.Post
 import com.example.dingo.model.PostType
 import com.example.dingo.model.User
@@ -39,6 +41,18 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
         user.authId = authId
         user.accountType = accountType
 
+        var uncollectedFauna = mutableListOf<Int>()
+        for (i in DingoDexEntryListings.faunaEntryList) {
+            uncollectedFauna.add(i.id)
+        }
+        user.uncollectedFauna = uncollectedFauna
+
+        var uncollectedFlora = mutableListOf<Int>()
+        for (i in DingoDexEntryListings.floraEntryList) {
+            uncollectedFlora.add(i.id)
+        }
+        user.uncollectedFlora = uncollectedFlora
+
         var userId = ""
         firestore.collection(USER_COLLECTIONS)
             .add(user)
@@ -68,8 +82,27 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
 
     override suspend fun getUserFlow(userId: String): Flow<User?> {
         if (userId == "") {
+            if (auth.currentUserId.isNotEmpty()) {
+                val querySnapshot = firestore.collection(USER_COLLECTIONS)
+                    .whereEqualTo("authId", auth.currentUserId)
+                    .get()
+                    .await()
+
+                if (!querySnapshot.isEmpty) {
+                    val documentSnapshot = querySnapshot.documents[0]
+                    val currUser = documentSnapshot.toObject(User::class.java)
+                    SessionInfo.currentUser = currUser
+                    if (currUser != null) {
+                        SessionInfo.currentUserID = currUser.id
+                        SessionInfo.currentUsername = currUser.username
+                    }
+
+                }
+            }
             return callbackFlow {
-                    val entries = firestore.collection(USER_COLLECTIONS).document(SessionInfo.currentUserID)
+                println("getting user flow when current user is: ${SessionInfo.currentUserID}")
+                    val entries = firestore.collection(USER_COLLECTIONS)
+                        .document(SessionInfo.currentUserID)
                     val subscription = entries.addSnapshotListener { snapshot, _ ->
                         if (snapshot == null) {
                             trySend(null)

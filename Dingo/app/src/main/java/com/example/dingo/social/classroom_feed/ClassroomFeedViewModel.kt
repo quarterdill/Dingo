@@ -1,6 +1,5 @@
-package com.example.dingo.social
+package com.example.dingo.social.classroom_feed
 
-import android.se.omapi.Session
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -9,7 +8,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.dingo.common.SessionInfo
 import com.example.dingo.common.StatName
 import com.example.dingo.common.incrementStat
-import com.example.dingo.model.AccountType
 import com.example.dingo.model.Classroom
 import com.example.dingo.model.Comment
 import com.example.dingo.model.Post
@@ -22,11 +20,10 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
-class ClassroomViewModel
+class ClassroomFeedViewModel
 @Inject
 constructor(
     private val classroomService: ClassroomService,
@@ -119,6 +116,27 @@ constructor(
         }
     }
 
+    fun addStudent(classroomId: String, studentName: String): Boolean {
+        var studentUser: User? = null
+        var studentId = ""
+        var ok = true
+        runBlocking {
+            studentUser = userService.getUserByUsername(studentName)
+        }
+        if (studentUser == null) {
+            ok = false
+        } else {
+            studentId = studentUser!!.id
+        }
+        if (!ok) {
+            return false
+        }
+        runBlocking {
+            classroomService.addUser(classroomId, studentId, UserType.STUDENT)
+        }
+        return ok
+    }
+
     fun makePost(
         classroomId: String,
         userId: String,
@@ -152,6 +170,24 @@ constructor(
             postService.addComment(postId, SessionInfo.currentUsername, textContent)
         }
         incrementStat(StatName.NUM_COMMENTS)
+    }
+
+    fun removePost(
+        classroomId: String,
+        postId: String,
+    ) {
+        viewModelScope.launch {
+            classroomService.deletePost(classroomId, postId)
+        }
+    }
+
+    fun removeComment(
+        postId: String,
+        commentId: String,
+    ) {
+        viewModelScope.launch {
+            postService.deleteComment(postId, commentId)
+        }
     }
 
 
@@ -268,10 +304,13 @@ constructor(
         viewModelScope.launch {
             var newClassroom: Classroom = Classroom()
             newClassroom.name = classroomName
-            newClassroom.teachers.add(creatorUserId)
-            classroomService.addNewClassroom(newClassroom)
+            var classroomId = ""
+            var job = launch {
+                classroomId = classroomService.addNewClassroom(newClassroom)
+            }
+            job.join()
+            classroomService.addUser(classroomId, creatorUserId, UserType.TEACHER)
+
         }
     }
-
-
 }

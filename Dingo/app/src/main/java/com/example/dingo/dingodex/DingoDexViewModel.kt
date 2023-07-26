@@ -16,6 +16,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.ChannelResult
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 import kotlin.random.Random
 
@@ -28,27 +29,38 @@ constructor(
     private val dingoDexStorageService: DingoDexStorageService,
 ) : ViewModel() {
 
+    var uncollectedDingoDexFauna = getDingoDexUncollectedItems(true, "")
+    var uncollectedDingoDexFlora = getDingoDexUncollectedItems(false, "")
+    var collectedDingoDexFauna = getDingoDexCollectedItems(true, "")
+    var collectedDingoDexFlora = getDingoDexCollectedItems(false, "")
 
-    val uncollectedDingoDexFauna = getDingoDexUncollectedItems(true)
-    val uncollectedDingoDexFlora = getDingoDexUncollectedItems(false)
-    val collectedDingoDexFauna = getDingoDexCollectedItems(true)
-    val collectedDingoDexFlora = getDingoDexCollectedItems(false)
 
-    private fun getDingoDexUncollectedItems(
-        isFauna: Boolean
+    fun getEntry(userId: String, entryName: String) : List<DingoDexEntry> {
+        return runBlocking {  dingoDexEntryService.getEntry(userId, entryName) }
+    }
+
+    fun getEntries(userId: String) {
+        uncollectedDingoDexFauna = getDingoDexUncollectedItems(true, userId)
+        uncollectedDingoDexFlora = getDingoDexUncollectedItems(false, userId)
+        collectedDingoDexFauna = getDingoDexCollectedItems(true, userId)
+        collectedDingoDexFlora = getDingoDexCollectedItems(false, userId)
+    }
+    fun getDingoDexUncollectedItems(
+        isFauna: Boolean,
+        userId: String = ""
     ): LiveData<MutableList<DingoDexCollectionItem>> {
         return liveData(Dispatchers.IO) {
             val dingoDexItems = mutableListOf<DingoDexCollectionItem>()
             try {
-                userService.getUserFlow().collect {
+                userService.getUserFlow(userId).collect {
                     if (it != null) {
-
                         val uncollectedDingoDex = if (isFauna) {
                             it.uncollectedFauna
                         } else {
                             it.uncollectedFlora
                         }
                         for (item in uncollectedDingoDex) {
+                            println(item)
                             try {
                                 dingoDexStorageService.getDingoDexItem(item, isFauna)
                                 val dingoDexItem = dingoDexStorageService.getDingoDexItem(item, isFauna)
@@ -57,6 +69,7 @@ constructor(
                                         DingoDexCollectionItem(
                                             id = dingoDexItem.id,
                                             name = dingoDexItem.name,
+                                            scientificName = dingoDexItem.scientific_name,
                                             pictureURL = dingoDexItem.default_picture_name,
                                             isFauna = isFauna,
                                             numEncounters = 0
@@ -77,67 +90,36 @@ constructor(
         }
     }
 
-    private fun getDingoDexCollectedItems(
-        isFauna: Boolean
+    fun getDingoDexCollectedItems(
+        isFauna: Boolean,
+        userId: String = ""
     ): LiveData<MutableList<DingoDexCollectionItem>> {
         return liveData(Dispatchers.IO) {
             val dingoDexItems = mutableListOf<DingoDexCollectionItem>()
             try {
                 val collectedDingoDex = if (isFauna) {
-                    dingoDexEntryService.dingoDexFaunaEntries
+                    dingoDexEntryService.getDingoDexFaunaEntries(userId)
                 } else {
-                    dingoDexEntryService.dingoDexFloraEntries
+                    dingoDexEntryService.getDingoDexFloraEntries(userId)
                 }
                 collectedDingoDex.collect {
                     for (item in it) {
-                        dingoDexItems.add(
-                            DingoDexCollectionItem(
-                                id = item.dingoDexId,
-                                name = item.name,
-                                pictureURL = item.displayPicture,
-                                isFauna = isFauna,
-                                numEncounters = item.numEncounters
-                            )
+                        dingoDexItems.add(DingoDexCollectionItem(
+                            id = item.dingoDexId,
+                            name = item.name,
+                            scientificName = item.scientificName,
+                            pictureURL = item.displayPicture,
+                            isFauna = isFauna,
+                            numEncounters = item.numEncounters
+                        )
                         )
                     }
                     emit(dingoDexItems)
                 }
+
             } catch (e: Exception) {
                 emit(dingoDexItems)
             }
-        }
-    }
-
-    // For testing only
-    fun addDummyDingoDex(isFauna: Boolean) {
-        viewModelScope.launch {
-            dingoDexStorageService.addDummyDingoDex(isFauna)
-        }
-    }
-
-    fun addNewUser() {
-        viewModelScope.launch {
-            // Todo: This implementation is only for demo, need to change for real one where the collectedDingoDexes
-            //    would be empty
-            val dingoDexes = listOf(dingoDexStorageService.getDingoDex(true), dingoDexStorageService.getDingoDex(false))
-
-            var uncollectedDingoDex = listOf(mutableListOf<String>(), mutableListOf<String>())
-            for (i in dingoDexes.indices) {
-                for (j in 0 until dingoDexes[i].size) {
-                    if (j % 2 == 0) {
-                        val temp = DingoDex(
-                            name = "Dummy Data",
-                            isFauna = i == 0
-                        )
-                        //dingoDexEntryService.addNewEntry(temp)
-                    } else {
-                        uncollectedDingoDex[i].add(dingoDexes[i][j].id)
-                    }
-                }
-//                userService.updateDingoDex("temp", uncollectedDingoDex[i], i == 0)
-            }
-
-
         }
     }
 }

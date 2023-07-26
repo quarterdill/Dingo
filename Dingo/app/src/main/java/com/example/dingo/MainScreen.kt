@@ -1,8 +1,10 @@
 package com.example.dingo
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -11,6 +13,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.rounded.AddCircle
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material3.BottomSheetScaffold
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -18,6 +21,7 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.SheetValue
+import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -25,7 +29,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
@@ -34,11 +40,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.dingo.common.SessionInfo
 import com.example.dingo.dingodex.DingoDexScreen
 import com.example.dingo.scanner.ScannerScreen
 import com.example.dingo.social.ClassroomScreen
 import com.example.dingo.social.SocialScreen
+import com.example.dingo.social.profile.SendFriendReqDialog
 import com.example.dingo.trips.TripScreen
+import com.example.dingo.model.AccountType
 import kotlinx.coroutines.launch
 
 sealed class NavBarItem(
@@ -87,9 +96,18 @@ fun MainScreen(
     val scope = rememberCoroutineScope()
     val corner_radius = 16.dp
     var offsetY by remember{ mutableStateOf(0f) }
+    val animalDialogState = remember { mutableStateOf(false) }
+    val entryName = remember { mutableStateOf("") }
+    if (animalDialogState.value) {
+        animalDialog(
+            entryName.value
+        ) {
+            animalDialogState.value = false
+        }
+    }
     BottomSheetScaffold(
         sheetContent = {
-            DingoDexScreen()
+            DingoDexScreen(userId = SessionInfo.currentUserID)
         },
         sheetPeekHeight = 0.dp,
         scaffoldState = scaffoldState,
@@ -123,46 +141,51 @@ fun MainScreen(
             bottomBar = { navBar(navController) }
         ) {
             Box(modifier = Modifier.padding(it)) {
-                navigationConfiguration(navController, navControllerSignOut)
+                NavHost(
+                    navController = navController,
+                    startDestination = NavBarItem.Scanner.route,
+
+                    ) {
+                    composable(NavBarItem.Trip.route) {
+                        TripScreen()
+                    }
+                    composable(NavBarItem.Scanner.route) {
+                        ScannerScreen() {
+                            entryName.value = it
+                            animalDialogState.value = true
+                        }
+                    }
+                    composable(NavBarItem.Classroom.route) {
+                        ClassroomScreen()
+                    }
+                    composable(NavBarItem.Social.route) {
+                        SocialScreen(navControllerSignOut = navControllerSignOut)
+                    }
+                }
             }
         }
     }
 }
-@Composable
-private fun navigationConfiguration(navController: NavHostController, navControllerSignOut: NavHostController) {
-    NavHost(
-        navController = navController,
-        startDestination = NavBarItem.Scanner.route,
 
-    ) {
-        composable(NavBarItem.Trip.route) {
-            TripScreen()
-        }
-        composable(NavBarItem.Scanner.route) {
-            ScannerScreen()
-        }
-        composable(NavBarItem.Classroom.route) {
-            ClassroomScreen()
-        }
-        composable(NavBarItem.Social.route) {
-            SocialScreen(navControllerSignOut = navControllerSignOut)
-        }
-    }
-}
+
 @Composable
 private fun navBar(navController: NavHostController) {
-    val navItems = listOf(NavBarItem.Trip, NavBarItem.Scanner, NavBarItem.Social, NavBarItem.Classroom)
+    var navItems = listOf(NavBarItem.Trip, NavBarItem.Scanner, NavBarItem.Social, NavBarItem.Classroom)
     NavigationBar() {
         val currentRoute = getCurrentRoute(navController = navController)
         navItems.forEach{
             val isSelected =  it.route == currentRoute
+            val currentAccountType = SessionInfo.currentUser!!.accountType
+            if (currentAccountType == AccountType.STANDARD) {
+                navItems = listOf(NavBarItem.Trip, NavBarItem.Scanner, NavBarItem.Social)
+            }
             NavigationBarItem(
                 icon = {
                     Icon(imageVector = it.icon, contentDescription = "temp")
                 },
                 onClick = {
                     if (!isSelected)
-                            navController.navigate(it.route)
+                        navController.navigate(it.route)
                 },
                 selected = isSelected
             )
@@ -174,4 +197,35 @@ private fun navBar(navController: NavHostController) {
 private fun getCurrentRoute(navController: NavHostController): String? {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     return navBackStackEntry?.destination?.route
+}
+
+@Composable
+fun animalDialog(name: String, onDismissRequest: () -> Unit) {
+    println(name)
+    var msg = ""
+    if (name == "not found") {
+        msg = "Sorry, nothing was detected by our scanner. Better luck next time!"
+    } else {
+        msg = "Wow! You scanned a $name. Check it out in the DingoDex!"
+    }
+    CustomDialog(
+            onDismissRequest = onDismissRequest
+        ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                msg,
+//                fontSize = UIConstants.SUBTITLE2_TEXT,
+                color = Color.Black
+            )
+            Button(
+                onClick = {
+                    onDismissRequest()
+                },
+            ) {
+                Text(text = "Got it")
+            }
+        }
+    }
 }

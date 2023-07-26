@@ -32,6 +32,7 @@ import androidx.compose.ui.platform.LocalContext
 import com.example.dingo.authentication.signup.SignUpScreen
 import com.example.dingo.authentication.signup.SignUpViewModel
 import com.example.dingo.common.SessionInfo
+import com.example.dingo.common.initializeStats
 import com.example.dingo.navigation.NavGraph
 import com.example.dingo.navigation.Screen
 
@@ -50,6 +51,8 @@ class MainActivity : ComponentActivity() {
             viewModel.getUser()
             viewModel.setUpDingoDex(LocalContext.current)
             viewModel.setUpAchievements(LocalContext.current)
+            println("ACHIEVEMENTS: : set up with user ${SessionInfo.currentUser}")
+            initializeStats()
             navController = rememberNavController()
             DingoTheme {
                 // A surface container using the 'background' color from the theme
