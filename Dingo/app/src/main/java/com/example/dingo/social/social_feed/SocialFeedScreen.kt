@@ -173,7 +173,7 @@ fun DropdownMenuExample(items: List<Trip>, onTripSelected: (Trip) -> Unit) {
     ) {
         items.forEachIndexed { index, item ->
             DropdownMenuItem(
-                text = {Text("${item.title} with id: ${item.id}")},
+                text = {Text("${item.title} with id: ${item.id} posted ${getTimeDiffMessage(item.timestamp)} ago")},
                 onClick = {
                     selectedIndex = index
                     onTripSelected(item)
