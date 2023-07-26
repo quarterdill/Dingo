@@ -1,5 +1,6 @@
 package com.example.dingo.social.profile
 
+import android.se.omapi.Session
 import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -56,14 +57,13 @@ fun ProfileScreen(
     val numFloraFound = totalFlora - viewModel.getNumUncollectedFlora()
     val numFaunaFound = totalFauna - viewModel.getNumUncollectedFauna()
     val achievements = viewModel.getAchievements(LocalContext.current)
-    val currentUser = SessionInfo.currentUser
-    val currentUsername = currentUser?.username ?: "Eric Shang"
+
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            "${currentUsername}'s Profile",
+            "${SessionInfo.currentUsername ?: "Test"}'s Profile",
             fontSize = UIConstants.SUBTITLE1_TEXT,
         )
         Button(onClick = {
