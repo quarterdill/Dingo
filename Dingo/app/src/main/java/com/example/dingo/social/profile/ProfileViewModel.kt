@@ -14,18 +14,24 @@ import com.example.dingo.model.Achievement
 import com.example.dingo.model.AchievementListings
 import com.example.dingo.model.DingoDexEntryListings
 import com.example.dingo.model.Post
+import com.example.dingo.model.PostComparator
 import com.example.dingo.model.User
 import com.example.dingo.model.service.AccountService
 import com.example.dingo.model.service.ClassroomService
 import com.example.dingo.model.service.PostService
 import com.example.dingo.model.service.UserService
+import com.example.dingo.model.service.impl.UserServiceImpl
 import com.example.dingo.navigation.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 import java.lang.Exception
+import java.util.PriorityQueue
 import javax.inject.Inject
+import kotlin.math.min
 
 @HiltViewModel
 class ProfileViewModel
@@ -46,16 +52,21 @@ constructor(
     fun getFriendsForUser(userId: String): LiveData<MutableList<User>?> {
         return liveData(Dispatchers.IO) {
             try {
-                userService.getFriends(userId).collect {
+                userService.getUserFlow(userId).collect {
+                    val ret = mutableListOf<User>()
                     if (it != null) {
-                        emit(it)
-                    } else {
-                        emit(null)
+                        var numFriends = it.friends.size
+                        for (i in 0 until numFriends) {
+                                val friend = userService.getUser(it.friends[i])
+                                if (friend != null) {
+                                    ret.add(friend)
+                            }
+                        }
                     }
+                    emit(ret)
                 }
-            } catch (e: java.lang.Exception) {
-                // Do nothing
-                println("$e")
+            }  catch (e: Exception) {
+                emit(mutableListOf())
             }
         }
     }

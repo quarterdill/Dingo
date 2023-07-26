@@ -302,10 +302,7 @@ fun PendingFriendRequestDialog(
                 modifier = Modifier.weight(1.0f),
                 contentAlignment = Alignment.Center,
             ) {
-                if (
-                    pendingFriendReqItems.value == null ||
-                    pendingFriendReqItems.value!!.size == 0
-                ) {
+                if (pendingFriendReqItems.value.isNullOrEmpty()) {
                     Text(
                         "No pending friend requests. You're all caught up!",
                         textAlign = TextAlign.Center,
