@@ -1,6 +1,7 @@
 package com.example.dingo.social
 
 import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -51,6 +52,7 @@ import com.example.dingo.model.UserType
 import com.example.dingo.social.classroom_feed.ClassroomFeedScreen
 import com.example.dingo.social.classroom_feed.ClassroomFeedViewModel
 import com.example.dingo.social.classroom_member.ClassroomMembersScreen
+import com.example.dingo.ui.theme.color_text_field
 
 
 sealed class ClassroomNavigationItem(
@@ -85,7 +87,9 @@ fun ClassroomScreen(
     var classroomId = remember { mutableStateOf("") }
     val navController = rememberNavController()
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color_text_field),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         val fetchClassrooms = viewModel

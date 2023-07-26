@@ -34,6 +34,7 @@ import com.example.dingo.common.SessionInfo
 import com.example.dingo.model.AccountType
 import com.example.dingo.model.User
 import com.example.dingo.model.UserType
+import com.example.dingo.ui.theme.color_primary
 
 @Composable
 fun ClassroomMembersScreen(
@@ -67,7 +68,7 @@ fun ClassroomMembersScreen(
                         addNewMemberDialog.value = true
                     }
                 ) {
-                    Text("Add Students")
+                    Text("Add Students", color = color_primary)
                 }
             }
         }
@@ -163,12 +164,12 @@ private fun AddMemberDialog(
                         }
                     }
                 ) {
-                    Text(text = "Add")
+                    Text(text = "Add", color=color_primary)
                 }
                 Button(
                     onClick = onDismissRequest
                 ) {
-                    Text(text = "Cancel")
+                    Text(text = "Cancel", color=color_primary)
                 }
             }
         }
