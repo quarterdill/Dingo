@@ -79,6 +79,7 @@ fun DingoDexScreen(
 ) {
     val navController = rememberNavController()
     val selected = remember { mutableStateOf("")}
+    viewModel.getEntries(userId)
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -88,6 +89,8 @@ fun DingoDexScreen(
             startDestination = DingoDexNavItem.DingoDex.route
         ) {
             composable(DingoDexNavItem.DingoDex.route) {
+
+
                 Column(
                     modifier = Modifier.fillMaxSize(),
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -97,17 +100,20 @@ fun DingoDexScreen(
                         fontSize = UIConstants.TITLE_TEXT,
                         text = "DingoDex",
                     )
+
+                    val collectedFaunaDingoDex = viewModel.collectedDingoDexFauna.observeAsState() //getDingoDexCollectedItems(true, userId).observeAsState()
+                    val uncollectedFaunaDingoDex = viewModel.uncollectedDingoDexFauna.observeAsState() //viewModel.getDingoDexUncollectedItems(true, userId).observeAsState()
+                    val collectedFloraDingoDex = viewModel.collectedDingoDexFlora.observeAsState()//viewModel.getDingoDexCollectedItems(false, userId).observeAsState()
+                    val uncollectedFloraDingoDex = viewModel.uncollectedDingoDexFlora.observeAsState()
                     var showFaunaDingoDex by remember { mutableStateOf(true) }
-                    println(userId)
-                    val collectedFaunaDingoDex = viewModel.getDingoDexCollectedItems(true, userId).observeAsState()
-                    val uncollectedFaunaDingoDex = viewModel.getDingoDexUncollectedItems(true, userId).observeAsState()
-                    val collectedFloraDingoDex = viewModel.getDingoDexCollectedItems(false, userId).observeAsState()
-                    val uncollectedFloraDingoDex = viewModel.getDingoDexUncollectedItems(false, userId).observeAsState()
-                    print("collections are :")
-                    print(collectedFaunaDingoDex)
-                    print(uncollectedFaunaDingoDex)
-                    print(uncollectedFloraDingoDex)
-                    print(collectedFloraDingoDex)
+//                    //viewModel.getDingoDexUncollectedItems(false, userId).observeAsState()
+//                    print("userId: ${userId}, collections are :")
+//                    println("testsetstes ${collectedFaunaDingoDex.value}")
+//                    println("testsetstes ${uncollectedFaunaDingoDex.value}")
+//                    println("testsetstes ${uncollectedFloraDingoDex.value}")
+//                    println("testsetstes ${collectedFloraDingoDex.value}")
+
+
 
                     val isNull = if (showFaunaDingoDex) {
                         collectedFaunaDingoDex.value == null || uncollectedFaunaDingoDex.value == null
@@ -164,7 +170,7 @@ fun DingoDexScreen(
                     index = DingoDexScientificToIndex.dingoDexFloraScientificToIndex[selected.value]
                 }
                 if (index == null) {
-                    println("DingoDex entry image, ${selected.value} could not be found in json assets!")
+                    //println("DingoDex entry image, ${selected.value} could not be found in json assets!")
                 }
                 val dingodexEntryContent = DingoDexEntryListings.dingoDexEntryList[index!!]
                 var bitmap = BitmapFactory.decodeStream(assetManager.open(dingodexEntryContent.default_picture_name))

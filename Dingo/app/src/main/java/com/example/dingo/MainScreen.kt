@@ -106,7 +106,6 @@ fun MainScreen(
     }
     BottomSheetScaffold(
         sheetContent = {
-            println(SessionInfo.currentUserID)
             DingoDexScreen(userId = SessionInfo.currentUserID)
         },
         sheetPeekHeight = 0.dp,

@@ -29,27 +29,38 @@ constructor(
     private val dingoDexStorageService: DingoDexStorageService,
 ) : ViewModel() {
 
+    var uncollectedDingoDexFauna = getDingoDexUncollectedItems(true, "")
+    var uncollectedDingoDexFlora = getDingoDexUncollectedItems(false, "")
+    var collectedDingoDexFauna = getDingoDexCollectedItems(true, "")
+    var collectedDingoDexFlora = getDingoDexCollectedItems(false, "")
+
+
     fun getEntry(userId: String, entryName: String) : List<DingoDexEntry> {
         return runBlocking {  dingoDexEntryService.getEntry(userId, entryName) }
     }
 
+    fun getEntries(userId: String) {
+        uncollectedDingoDexFauna = getDingoDexUncollectedItems(true, userId)
+        uncollectedDingoDexFlora = getDingoDexUncollectedItems(false, userId)
+        collectedDingoDexFauna = getDingoDexCollectedItems(true, userId)
+        collectedDingoDexFlora = getDingoDexCollectedItems(false, userId)
+    }
     fun getDingoDexUncollectedItems(
         isFauna: Boolean,
-        userId: String
+        userId: String = ""
     ): LiveData<MutableList<DingoDexCollectionItem>> {
         return liveData(Dispatchers.IO) {
-            println(userId)
             val dingoDexItems = mutableListOf<DingoDexCollectionItem>()
             try {
                 userService.getUserFlow(userId).collect {
                     if (it != null) {
-
                         val uncollectedDingoDex = if (isFauna) {
                             it.uncollectedFauna
                         } else {
                             it.uncollectedFlora
                         }
                         for (item in uncollectedDingoDex) {
+                            println(item)
                             try {
                                 dingoDexStorageService.getDingoDexItem(item, isFauna)
                                 val dingoDexItem = dingoDexStorageService.getDingoDexItem(item, isFauna)
@@ -81,9 +92,8 @@ constructor(
 
     fun getDingoDexCollectedItems(
         isFauna: Boolean,
-        userId: String
+        userId: String = ""
     ): LiveData<MutableList<DingoDexCollectionItem>> {
-        println(userId)
         var dingoDexIdToCollectedItems = mutableMapOf<Int, DingoDexCollectionItem>()
         return liveData(Dispatchers.IO) {
             val dingoDexItems = mutableListOf<DingoDexCollectionItem>()
@@ -95,7 +105,7 @@ constructor(
                 }
                 collectedDingoDex.collect {
                     for (item in it) {
-                        dingoDexIdToCollectedItems[item.dingoDexId] = DingoDexCollectionItem(
+                        dingoDexItems.add(DingoDexCollectionItem(
                             id = item.dingoDexId,
                             name = item.name,
                             scientificName = item.scientificName,
@@ -103,29 +113,34 @@ constructor(
                             isFauna = isFauna,
                             numEncounters = item.numEncounters
                         )
+                        )
                     }
+                    emit(dingoDexItems)
                 }
-                userService.getUserFlow(userId).collect {
-                    if (it != null) {
-                        val uncollectedDingoDex = if (isFauna) {
-                            it.uncollectedFauna
-                        } else {
-                            it.uncollectedFlora
-                        }
-                        for (item in uncollectedDingoDex) {
-                            try {
-                                dingoDexStorageService.getDingoDexItem(item, isFauna)
-                                val dingoDexItem = dingoDexStorageService.getDingoDexItem(item, isFauna)
-                                if (dingoDexItem != null && dingoDexIdToCollectedItems.containsKey(dingoDexItem.id)) {
-                                    dingoDexIdToCollectedItems.remove(dingoDexItem.id)
-                                }
-                            } catch (e: java.lang.Exception) {
-                                // Do nothing
-                            }
-                        }
-                    }
-                }
-                emit(dingoDexIdToCollectedItems.values.toMutableList())
+
+//                userService.getUserFlow(userId).collect {
+//                    if (it != null) {
+//                        val uncollectedDingoDex = if (isFauna) {
+//                            it.uncollectedFauna
+//                        } else {
+//                            it.uncollectedFlora
+//                        }
+//                        for (item in uncollectedDingoDex) {
+//                            try {
+//                                dingoDexStorageService.getDingoDexItem(item, isFauna)
+//                                val dingoDexItem = dingoDexStorageService.getDingoDexItem(item, isFauna)
+//                                if (dingoDexItem != null && dingoDexIdToCollectedItems.containsKey(dingoDexItem.id)) {
+//                                    dingoDexIdToCollectedItems.remove(dingoDexItem.id)
+//                                }
+//                            } catch (e: java.lang.Exception) {
+//                                println("ottttttttt ")
+//                                emit(dingoDexItems)
+//                            }
+//                        }
+//                    }
+//                }
+//                println("oajfoajsdfoi ${dingoDexIdToCollectedItems.values.toMutableList()}")
+//                emit(dingoDexIdToCollectedItems.values.toMutableList())
             } catch (e: Exception) {
                 emit(dingoDexItems)
             }
