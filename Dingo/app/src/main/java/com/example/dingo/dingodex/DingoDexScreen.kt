@@ -120,7 +120,7 @@ fun DingoDexScreen(
                             columns = GridCells.Fixed(3),
                         ) {
                             items(items.size) {
-                                DingoDexItem(items[it], navController, selected)
+//                                DingoDexItem(items[it], navController, selected)
                             }
                         }
                     } else {
