@@ -225,6 +225,7 @@ private fun TripPost(trip: Trip, navController: NavHostController, onTripSelecte
             onClick = {
                 onTripSelected(trip)
                 navController.navigate(TripNavigationItem.TripDetails.route)
+//
             }
         )
 
