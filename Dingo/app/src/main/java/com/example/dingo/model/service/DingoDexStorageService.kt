@@ -1,6 +1,7 @@
 package com.example.dingo.model.service
 
 import android.content.Context
+import android.graphics.Bitmap
 import com.example.dingo.model.DingoDex
 import com.example.dingo.model.DingoDexEntryContent
 import com.google.firebase.firestore.DocumentSnapshot

@@ -46,7 +46,7 @@ class AnimalDetectionModel(context : Context) {
                 val responseData = response.body?.string()
                 println(responseData)
                 // add to entry to dingodex
-                val name = JSONObject(responseData)
+                val name = JSONObject(responseData.toString())
                 val processedImageValue = name.getString("processed_image")
                 if( processedImageValue != "not found") {
                     addEntry(processedImageValue)

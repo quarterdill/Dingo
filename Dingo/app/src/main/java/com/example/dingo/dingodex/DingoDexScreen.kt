@@ -21,6 +21,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -168,21 +169,28 @@ fun DingoDexScreen(
                     //println("DingoDex entry image, ${selected.value} could not be found in json assets!")
                 }
                 val dingodexEntryContent = DingoDexEntryListings.dingoDexEntryList[index!!]
-                var bitmap = BitmapFactory.decodeStream(assetManager.open(dingodexEntryContent.default_picture_name))
-
+                var bitmap = remember{ mutableStateOf(BitmapFactory.decodeStream(assetManager.open(dingodexEntryContent.default_picture_name))) }
                 val dingodexEntry: List<DingoDexEntry> = viewModel.getEntry(userId = SessionInfo.currentUserID, entryName = selected.value!!)
                 if (dingodexEntry.size == 1 && dingodexEntry[0].displayPicture != "default") {
-                    val storageRef = FirebaseStorage.getInstance().reference.child("temp/${selected.value}.jpg")
-                    storageRef.getBytes(1000000).addOnSuccessListener {
-                        bitmap = BitmapFactory.decodeByteArray(it, 0, it.size)
+                    println("HIIII, ${dingodexEntry[0].displayPicture}")
+                    val storageRef = FirebaseStorage.getInstance().reference.child(dingodexEntry[0].displayPicture)
+                    storageRef.getBytes(1500000000).addOnSuccessListener {
+                        println("bitmap")
+                        bitmap.value = BitmapFactory.decodeByteArray(it, 0, it.size)
+                        println(bitmap.value)
+                        println("bitmap come")
                     }.addOnFailureListener {
                         println("Error occurred when downloading user's DingoDex image from Firebase $it")
                     }
                 }
+                println("tesetestset")
+
+
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.verticalScroll(rememberScrollState()),
                 ) {
+
                     Row(
                         modifier = Modifier.padding(16.dp),
                         horizontalArrangement = Arrangement.spacedBy(10.dp),
@@ -199,12 +207,16 @@ fun DingoDexScreen(
                         horizontalArrangement = Arrangement.spacedBy(10.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
+
+                        println("penis cock")
+
                         Image(
-                            bitmap = bitmap.asImageBitmap(),
+                            bitmap = bitmap.value.asImageBitmap(),
                             contentDescription = if (dingodexEntryContent.is_fauna) "Fauna" else "Flora",
                             contentScale = ContentScale.Inside,
                             alignment = Alignment.CenterStart,
                         )
+
                     }
                     Text(
                         textAlign = TextAlign.Left,
@@ -266,7 +278,7 @@ private fun DingoDexItem(
                         .size(64.dp)
                         .clip(CircleShape)  // clip to the circle shape
                         .border(2.dp, Color.Gray, CircleShape),
-                    alpha = if(item.numEncounters == 0) 0.2F else 0.0F
+                    alpha = if(item.numEncounters == 0) 0.2F else 1.0F
                 )
                 Box(
                     contentAlignment = Alignment.Center

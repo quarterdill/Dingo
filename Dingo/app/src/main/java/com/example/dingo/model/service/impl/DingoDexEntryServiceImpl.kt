@@ -80,9 +80,10 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
         // Create a storage reference from our app
         val storageRef = Firebase.storage.reference
         val dateFormat = SimpleDateFormat("yyyyMMddHHmmss", Locale.getDefault())
-        val imagePath = "${SessionInfo.currentUserID}/${entryName}_${dateFormat.format(Date())}.png"
+        val imagePath = "${SessionInfo.currentUserID}/${entryName}_${dateFormat.format(Date())}.jpg"
         // Create a reference to "mountains.jpg"
         val imageRef = storageRef.child(imagePath)
+        println("add picture path is $imagePath")
         val baos = ByteArrayOutputStream()
         image.compress(Bitmap.CompressFormat.JPEG, 100, baos)
         val data = baos.toByteArray()
@@ -99,7 +100,6 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
         private const val DINGO_DEX_ENTRIES = "dingoDexEntries"
         private const val USER_ID_FIELD = "userId"
         private const val IS_FAUNA_FIELD = "fauna"
-        private const val ENTRY_NAME = "name"
-
+        private const val ENTRY_NAME = "scientificName"
     }
 }
