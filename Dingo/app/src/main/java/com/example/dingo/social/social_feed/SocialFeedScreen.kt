@@ -46,6 +46,7 @@ import com.example.dingo.CustomDialog
 import com.example.dingo.UIConstants
 import com.example.dingo.common.SessionInfo
 import com.example.dingo.model.Comment
+import com.example.dingo.model.DingoDexEntry
 import com.example.dingo.model.Post
 import com.example.dingo.model.Trip
 import com.example.dingo.trips.TripViewModel
@@ -62,6 +63,7 @@ fun SocialFeedScreen(
     val tripFeedItems = tripViewModel
         .getTripFeed(currentUserId)
         .observeAsState()
+    val myDingoDexItems = mutableListOf<DingoDexEntry>()
     var currentPostId = remember { mutableStateOf("") }
     val feedItems = viewModel.userFeed.observeAsState()
     var createNewPost = remember { mutableStateOf(false) }
@@ -74,7 +76,8 @@ fun SocialFeedScreen(
             viewModel,
             SessionInfo.currentUserID,
             SessionInfo.currentUsername,
-            tripFeedItems = tripFeedItems.value as List<Trip>
+            tripFeedItems = tripFeedItems.value as List<Trip>,
+            myDingoDexItems as List<DingoDexEntry>,
         ) {
             createNewPost.value = false
         }
@@ -200,6 +203,35 @@ fun DropdownMenuExample(items: List<Trip>, onTripSelected: (Trip) -> Unit) {
     }
 }
 
+@Composable
+fun DropdownEntryMenu(items: List<DingoDexEntry>, onEntrySelected: (DingoDexEntry) -> Unit) {
+    var expanded by remember { mutableStateOf(false) }
+    var selectedIndex by remember { mutableStateOf(0) }
+    Text(
+        text = items[selectedIndex].name,
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = { expanded = true })
+            .background(Color.Gray)
+    )
+    DropdownMenu(
+        expanded = expanded,
+        onDismissRequest = { expanded = false },
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        items.forEachIndexed { index, item ->
+            DropdownMenuItem(
+                text = {Text("${item.name}")},
+                onClick = {
+                    selectedIndex = index
+                    onEntrySelected(item)
+                    expanded = false
+                }
+            )
+        }
+    }
+}
+
 
 @Composable
 private fun CreatePostModal(
@@ -207,9 +239,11 @@ private fun CreatePostModal(
     userId: String,
     username: String,
     tripFeedItems:List<Trip>,
+    myDingoDexItems: List<DingoDexEntry>,
     onDismissRequest : () -> Unit,
 ) {
     var selectedTrip : Trip? by remember { mutableStateOf(null) } // Initialize with -1 to indicate no trip is selected
+    var selectedEntry : DingoDexEntry? by remember { mutableStateOf(null) }
 
     CustomDialog(onDismissRequest = onDismissRequest) {
         var textContentState by remember { mutableStateOf("") }
@@ -228,6 +262,19 @@ private fun CreatePostModal(
                 onValueChange = { textContentState = it },
                 label = { Text("") }
             )
+
+            DropdownMenuExample(tripFeedItems, onTripSelected = { newValue ->
+                selectedTrip = newValue
+            })
+            if (selectedTrip == null) {
+                DropdownEntryMenu(myDingoDexItems, onEntrySelected  = { newValue ->
+                    selectedEntry = newValue
+                })
+            }
+
+            //   SELECT trip
+//            Get trip feed names
+//            clickable
             Row (
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
