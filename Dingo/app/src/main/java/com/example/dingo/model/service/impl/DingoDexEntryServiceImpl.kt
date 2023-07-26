@@ -50,6 +50,7 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
             numEncounters = 1,
             location = "",
             pictures = emptyList(),
+            scientificName = newDingoDexEntry.scientific_name,
             displayPicture = "default",
         )
         return try {
