@@ -16,6 +16,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.dingo.CustomSwitch
 import com.example.dingo.UIConstants
+import com.example.dingo.common.SessionInfo
+import com.example.dingo.model.AccountType
 import com.example.dingo.social.profile.ProfileScreen
 import com.example.dingo.social.social_feed.SocialFeedScreen
 
@@ -61,15 +63,19 @@ fun SocialScreen(
                 text = "Socials",
                 fontSize = UIConstants.TITLE_TEXT,
             )
-            CustomSwitch(
-                "Feed", "Profile",
-                modifier = Modifier.padding(UIConstants.MEDIUM_PADDING),
-            ) {
-                if (it) {
-                    navController.navigate(SocialNavigationItem.MyProfile.route)
-                } else {
-                    navController.navigate(SocialNavigationItem.SocialFeed.route)
+            if (SessionInfo.currentUser!!.accountType == AccountType.STANDARD) {
+                CustomSwitch(
+                    "Feed", "Profile",
+                    modifier = Modifier.padding(UIConstants.MEDIUM_PADDING),
+                ) {
+                    if (it) {
+                        navController.navigate(SocialNavigationItem.MyProfile.route)
+                    } else {
+                        navController.navigate(SocialNavigationItem.SocialFeed.route)
+                    }
                 }
+            } else {
+                ProfileScreen(navControllerSignOut = navControllerSignOut)
             }
             NavHost(
                 navController = navController,

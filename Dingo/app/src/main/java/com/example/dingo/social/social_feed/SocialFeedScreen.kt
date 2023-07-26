@@ -47,6 +47,7 @@ import com.example.dingo.model.Comment
 import com.example.dingo.model.Post
 import com.example.dingo.model.Trip
 import com.example.dingo.trips.TripViewModel
+import com.example.dingo.trips.tripMap
 import com.google.firebase.Timestamp
 
 @Composable
@@ -86,7 +87,9 @@ fun SocialFeedScreen(
                 if (posts != null) {
                     println("test rebuild ${posts.size}")
                     items(posts.size) {
-                        SocialPost(posts[it].first, currentPostId)
+                        val post = posts[it].first
+                        val trip = posts[it].second
+                        SocialPost(post,trip, currentPostId)
                     }
                 }
             }
@@ -106,6 +109,7 @@ fun SocialFeedScreen(
 @Composable
 private fun SocialPost(
     post: Post,
+    trip: Trip?,
     currentPostId: MutableState<String>,
 ) {
     var commentDialogState = remember { mutableStateOf(false) }
@@ -117,6 +121,9 @@ private fun SocialPost(
     Column {
         var timeDiffMsg = getTimeDiffMessage(post.timestamp)
 
+        if (trip != null) {
+            tripMap(points = trip.locations, fullSize = false )
+        }
         Text(
             modifier = Modifier.height(20.dp),
             fontSize = 12.sp,
@@ -166,7 +173,7 @@ fun DropdownMenuExample(items: List<Trip>, onTripSelected: (Trip) -> Unit) {
     ) {
         items.forEachIndexed { index, item ->
             DropdownMenuItem(
-                text = {Text("${item.title}")},
+                text = {Text("${item.title} with id: ${item.id}")},
                 onClick = {
                     selectedIndex = index
                     onTripSelected(item)
