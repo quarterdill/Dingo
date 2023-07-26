@@ -83,7 +83,9 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
     override suspend fun getUserFlow(userId: String): Flow<User?> {
         if (userId == "") {
             return callbackFlow {
-                    val entries = firestore.collection(USER_COLLECTIONS).document(SessionInfo.currentUserID)
+                println("getting user flow when current user is: ${SessionInfo.currentUserID}")
+                    val entries = firestore.collection(USER_COLLECTIONS)
+                        .document(SessionInfo.currentUserID)
                     val subscription = entries.addSnapshotListener { snapshot, _ ->
                         if (snapshot == null) {
                             trySend(null)
