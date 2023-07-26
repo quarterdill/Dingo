@@ -76,23 +76,29 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
             .get()
             .await()
             .toObject(GeoTrip::class.java)
+        if (geoTrip != null) {
+            val trip = Trip(
+                id = geoTrip.id,
+                userId = geoTrip.userId,
+                username = geoTrip.username,
+                locations = geoTrip.locations.map { location ->
+                    LatLng(location["latitude"] as Double, location["longitude"] as Double)
+                },
+                discoveredEntries = geoTrip.discoveredEntries as MutableList<String>,
+                startTime= geoTrip.startTime,
+                endTime = geoTrip.endTime,
+                timestamp= geoTrip.timestamp,
+                title = geoTrip.title,
+                picturePaths = geoTrip.picturePaths as MutableList<String>)
 
-        val trip = Trip(
-            id = geoTrip.id,
-            userId = geoTrip.userId,
-            username = geoTrip.username,
-            locations = geoTrip.locations.map { location ->
-                LatLng(location["latitude"] as Double, location["longitude"] as Double)
-            },
-            discoveredEntries = geoTrip.discoveredEntries,
-            startTime= geoTrip.startTime,
-            endTime = geoTrip.endTime,
-            timestamp= geoTrip.timestamp,
-            title = geoTrip.title
-        )
-        Log.d("SocialFeedScreen","getTrip($tripId) = ${trip}")
+            Log.d("SocialFeedScreen","getTrip($tripId) = ${trip}")
+            return trip
+        }
 
-        return trip
+        return null
+
+
+
 
     }
 

@@ -31,5 +31,7 @@ data class GeoTrip (
     var startTime: Timestamp = Timestamp.now(),
     var endTime: Timestamp = Timestamp.now(),
     var timestamp : Timestamp = Timestamp.now(),
-    var title : String = "Your Trip"
+    var title : String = "Your Trip",
+    var picturePaths: List<String> = emptyList(),
+
 )
