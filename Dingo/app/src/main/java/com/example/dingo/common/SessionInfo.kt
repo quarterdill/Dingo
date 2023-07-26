@@ -2,7 +2,9 @@ package com.example.dingo.common
 
 import com.example.dingo.model.Achievement
 import com.example.dingo.model.AchievementListings
+import com.example.dingo.model.Trip
 import com.example.dingo.model.User
+import com.example.dingo.model.service.UserService
 
 class Stat constructor (statName: String): IObservable {
     val name: String = statName
@@ -15,6 +17,7 @@ object SessionInfo {
     var currentUserID: String = ""
     var currentUsername: String = ""
     var nameToStat: MutableMap<String, Stat> = mutableMapOf()
+    var trip: Trip? = null
 }
 
 // each stat is an observable and has a list of corresponding achievements
@@ -27,29 +30,52 @@ enum class StatName {
     NUM_COMMENTS, NUM_FRIENDS_ACCEPTED, NUM_FRIENDS_DECLINED,
 }
 
-fun initializeStats() {
-    val currUser = SessionInfo.currentUser
-    if (currUser == null) {
-        println("Can't initialize stats with invalid user!")
-    } else {
-        for (stat in StatName.values()) {
-            val currStat = Stat(stat.name)
-            for (achievement in AchievementListings.achievementList) {
-                if (achievement.conditionField == stat.name) {
-                    currStat.add(achievement)
-                }
-            }
-            SessionInfo.nameToStat[stat.name] = currStat
+fun newTrip() {
+    SessionInfo.trip = Trip()
+}
+
+fun addNewEntryToTrip(entryId: String) {
+    if (SessionInfo.trip != null) {
+        var trip = SessionInfo.trip!!
+        if (trip.discoveredEntries.indexOf(entryId) == -1) {
+            trip.discoveredEntries.add(entryId)
         }
     }
 
 }
 
-fun incrementStat(statName: StatName) {
+fun addPictureToTrip(picturePath: String) {
+    if (SessionInfo.trip != null) {
+        var trip = SessionInfo.trip!!
+        trip.picturePaths.add(picturePath)
+    }
+}
+
+fun initializeStats() {
+    val currUser = SessionInfo.currentUser
+    println("ACHIEVEMENTS: : initializing stats...")
+    if (currUser == null) {
+        println("ACHIEVEMENTS: : Can't initialize stats with invalid user!")
+    } else {
+        for (stat in StatName.values()) {
+            println("ACHIEVEMENTS: : initializing stat: ${stat.name}")
+            val currStat = Stat(stat.name)
+            SessionInfo.nameToStat[stat.name] = currStat
+        }
+        for (achievement in AchievementListings.achievementList) {
+            println("ACHIEVEMENTS: : trying to sort out achievement: ${achievement.name} with condition field ${achievement.conditionField}")
+            SessionInfo.nameToStat[achievement.conditionField]!!.add(achievement)
+        }
+    }
+
+}
+
+fun incrementStat(statName: StatName, increment: Int = 1) {
     if (SessionInfo.currentUser != null) {
         val statValue = SessionInfo.currentUser!!.stats.getOrDefault(statName.name, 0)
         SessionInfo.currentUser!!.stats[statName.name]
-        SessionInfo.currentUser!!.stats[statName.name] = statValue + 1
+        SessionInfo.currentUser!!.stats[statName.name] = statValue + increment
         SessionInfo.nameToStat[statName.name]?.sendUpdate()
+        println("ACHIEVEMENTS: : : incremented stat ${statName.name}")
     }
 }

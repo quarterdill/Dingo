@@ -37,6 +37,7 @@ import androidx.navigation.NavHostController
 import com.example.dingo.CustomDialog
 import com.example.dingo.UIConstants
 import com.example.dingo.common.SessionInfo
+import com.example.dingo.model.AccountType
 import com.example.dingo.model.DingoDexEntryListings
 import com.example.dingo.model.User
 import kotlinx.coroutines.CoroutineScope
@@ -73,8 +74,9 @@ fun ProfileScreen(
         }) {
             Text("Sign out")
         }
-
-        FriendSection()
+        if (SessionInfo.currentUser!!.accountType == AccountType.STANDARD) {
+            FriendSection()
+        }
 
 
 //      Text(
@@ -90,7 +92,7 @@ fun ProfileScreen(
                     modifier = Modifier.height(20.dp),
                     fontSize = 12.sp,
                     color = Color.Gray,
-                    text ="${achievements[it].name})",
+                    text ="${achievements[it].name}",
                 )
                 Text(
                     modifier = Modifier.padding(all = 12.dp),
