@@ -83,6 +83,7 @@ constructor(
         val listDingoDexEntryType = object : TypeToken<List<DingoDexEntryContent>>() {}.type
         DingoDexEntryListings.dingoDexEntryList = gson.fromJson(jsonString, listDingoDexEntryType)
         DingoDexEntryListings.dingoDexEntryList.forEach {
+            println(it)
             if (it.is_fauna) {
                 DingoDexEntryListings.faunaEntryList.add(it)
                 DingoDexScientificToIndex.dingoDexFaunaScientificToIndex[it.scientific_name] = it.id
@@ -92,7 +93,4 @@ constructor(
             }
         }
     }
-
-    val isEmailVerified get() = repo.currentUser?.isEmailVerified ?: false
-
 }

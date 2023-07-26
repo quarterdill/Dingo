@@ -101,11 +101,9 @@ fun DingoDexScreen(
                     )
                     var showFaunaDingoDex by remember { mutableStateOf(true) }
                     val collectedFaunaDingoDex = viewModel.collectedDingoDexFauna.observeAsState()
-                    val uncollectedFaunaDingoDex =
-                        viewModel.uncollectedDingoDexFauna.observeAsState()
+                    val uncollectedFaunaDingoDex = viewModel.uncollectedDingoDexFauna.observeAsState()
                     val collectedFloraDingoDex = viewModel.collectedDingoDexFlora.observeAsState()
-                    val uncollectedFloraDingoDex =
-                        viewModel.uncollectedDingoDexFlora.observeAsState()
+                    val uncollectedFloraDingoDex = viewModel.uncollectedDingoDexFlora.observeAsState()
 
                     val isNull = if (showFaunaDingoDex) {
                         collectedFaunaDingoDex.value == null || uncollectedFaunaDingoDex.value == null
