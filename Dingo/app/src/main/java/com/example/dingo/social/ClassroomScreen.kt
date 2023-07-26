@@ -220,7 +220,7 @@ fun ClassroomScreen(
                 }
             }
             composable(ClassroomNavigationItem.CreateClassroom.route) {
-
+                CreateClassroomModal(viewModel, navController, SessionInfo.currentUserID)
             }
             composable(ClassroomNavigationItem.ClassroomPostFeed.route) {
                 Column(
@@ -508,7 +508,6 @@ private fun CreateClassroomModal(
     viewModel: ClassroomViewModel = hiltViewModel(),
     navController: NavHostController,
     creatorUserId: String,
-    creatorUsername: String,
 ) {
     var textContentState by remember { mutableStateOf("") }
     Column(

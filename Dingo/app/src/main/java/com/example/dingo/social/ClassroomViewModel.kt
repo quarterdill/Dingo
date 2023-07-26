@@ -91,15 +91,15 @@ constructor(
             Triple("Philip Chen", "p242chen@uwaterloo.ca", UserType.TEACHER)
         )
     }
-    fun addDummyUsers() {
-        val userList = getDummyUsers()
-
-        for (userPair in userList) {
-            viewModelScope.launch {
-                userService.createUser(userPair.first, userPair.second, AccountType.STUDENT)
-            }
-        }
-    }
+//    fun addDummyUsers() {
+//        val userList = getDummyUsers()
+//
+//        for (userPair in userList) {
+//            viewModelScope.launch {
+//                userService.createUser(userPair.first, userPair.second, AccountType.STUDENT)
+//            }
+//        }
+//    }
 
     fun addDummyUsersToClassroom() {
         val dummyClassroomId = "cE1sLWEWj31aFO1CxwZB"

@@ -28,11 +28,15 @@ class UserServiceImpl
 constructor(private val firestore: FirebaseFirestore, private val auth: AccountService) : UserService {
 
     override suspend fun createUser(
-        username: String, email: String, accountType: AccountType
+        username: String,
+        email: String,
+        authId: String,
+        accountType: AccountType
     ): String {
         var user: User = User()
         user.username = username
         user.email = email
+        user.authId = authId
         user.accountType = accountType
 
         var userId = ""
