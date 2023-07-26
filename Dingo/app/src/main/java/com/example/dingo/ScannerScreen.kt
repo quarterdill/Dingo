@@ -3,6 +3,7 @@ package com.example.dingo
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import android.annotation.SuppressLint
+import android.content.Context
 import android.graphics.Bitmap
 import android.util.Log
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
@@ -49,7 +50,7 @@ import android.graphics.Matrix
 @Composable
 fun ScannerScreen(
     viewModel: ScannerViewModel = viewModel() ){
-
+    val context = LocalContext.current
     val scannerState: ScannerState by viewModel.state.collectAsStateWithLifecycle()
 
     ScannerPreview(
@@ -117,7 +118,7 @@ fun Bitmap.rotateBitmap(rotationDegrees: Int): Bitmap {
 
 @Composable
 private fun ScannerPreview(
-    onPhotoCaptured: (Bitmap) -> Unit
+    onPhotoCaptured: (Bitmap, Context) -> Unit
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -136,7 +137,7 @@ private fun ScannerPreview(
                         override fun onCaptureSuccess(image: ImageProxy) {
                             val correctedBitmap: Bitmap = image.convertImageToBitmap().rotateBitmap(image.imageInfo.rotationDegrees)
 
-                            onPhotoCaptured(correctedBitmap)
+                            onPhotoCaptured(correctedBitmap, context)
 
                             image.close()
                         }

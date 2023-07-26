@@ -1,21 +1,31 @@
 package com.example.dingo
 
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-
+import android.content.Context
 import android.graphics.Bitmap
+import android.renderscript.Element.DataType
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import org.tensorflow.lite.support.image.ImageProcessor
+import org.tensorflow.lite.support.image.ops.ResizeOp
+import org.tensorflow.lite.support.tensorbuffer.TensorBuffer
+import java.nio.MappedByteBuffer
 
-class ScannerViewModel : ViewModel() {
+
+
+class ScannerViewModel() : ViewModel() {
 
     private val _state = MutableStateFlow(ScannerState())
     val state = _state.asStateFlow()
 
-    fun onPhotoCaptured(bitmap: Bitmap) {
-        // TODO: Process your photo, for example store it in the MediaStore
-        // here we only do a dummy showcase implementation
+
+    fun onPhotoCaptured(bitmap: Bitmap, context: Context) {
+
+        val animalDetectionModel= AnimalDetectionModel(context)
+        val preds = animalDetectionModel.run( bitmap )
+        println(preds)
         updateCapturedPhotoState(bitmap)
     }
 
