@@ -37,19 +37,16 @@ fun newTrip() {
 
 fun addNewEntryToTrip(entryId: String) {
     if (SessionInfo.trip != null) {
-        var trip = SessionInfo.trip!!
-        if (trip.discoveredEntries.indexOf(entryId) == -1) {
-            trip.discoveredEntries.add(entryId)
+        if (SessionInfo.trip!!.discoveredEntries.indexOf(entryId) == -1) {
+            SessionInfo.trip!!.discoveredEntries.add(entryId)
         }
     }
-
 }
 
 fun addPictureToTrip(picturePath: String, location: LatLng) {
     if (SessionInfo.trip != null) {
-        var trip = SessionInfo.trip!!
-        trip.picturePaths.add(picturePath)
-        trip.pictureLocations.add(location)
+        SessionInfo.trip!!.picturePaths.add(picturePath)
+        SessionInfo.trip!!.pictureLocations.add(location)
     }
 }
 
