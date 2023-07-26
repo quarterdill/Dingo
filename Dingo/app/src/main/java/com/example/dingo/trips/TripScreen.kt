@@ -216,7 +216,9 @@ fun TripScreen(
 //            }
             composable(TripNavigationItem.CreatePost.route) {
                 Log.d("here2", "creating post")
-                tripMap(trackedLocations, true)
+                if (trackedLocations.isNotEmpty()) {
+                    tripMap(trackedLocations, true)
+                }
                 PostTripModal(navController = navController,  trip = SessionInfo.trip )
             }
             composable(TripNavigationItem.TripDetails.route) {
@@ -245,7 +247,9 @@ fun TripScreen(
                                 fontSize = 16.sp
                             )
                             Box(modifier = Modifier.fillMaxSize()) {
-                                tripMap(trip.locations, true)
+                                if (trip != null && trip.locations.isNotEmpty()) {
+                                    tripMap(trip.locations, true)
+                                }
                             }
                         }
                     }

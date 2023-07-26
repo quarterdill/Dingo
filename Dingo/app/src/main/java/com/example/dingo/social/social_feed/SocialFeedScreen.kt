@@ -122,7 +122,7 @@ private fun SocialPost(
     Column {
         var timeDiffMsg = getTimeDiffMessage(post.timestamp)
 
-        if (trip != null) {
+        if (trip != null && trip.locations.isNotEmpty()) {
             tripMap(points = trip.locations, fullSize = false )
         }
         Text(
