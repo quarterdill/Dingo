@@ -52,7 +52,7 @@ constructor(
                 }
             } catch (e: java.lang.Exception) {
                 // Do nothing
-                println("$e")
+                println("error getting classrooms: $e")
             }
         }
     }
@@ -74,7 +74,7 @@ constructor(
                 }
             } catch (e: java.lang.Exception) {
                 // Do nothing
-                println("$e")
+                println("error getting classroom feed: $e")
             }
         }
     }
@@ -235,7 +235,7 @@ constructor(
                 }
             } catch (e: java.lang.Exception) {
                 // Do nothing
-                println("$e")
+                println("error getting users for classroom: $e")
             }
         }
     }
@@ -256,8 +256,20 @@ constructor(
                 }
             } catch (e: java.lang.Exception) {
                 // Do nothing
-                println("$e")
+                println("error getting comments in classroom post: $e")
             }
+        }
+    }
+
+    fun createClassroom(
+        creatorUserId: String,
+        classroomName: String,
+    ) {
+        viewModelScope.launch {
+            var newClassroom: Classroom = Classroom()
+            newClassroom.name = classroomName
+            newClassroom.teachers.add(creatorUserId)
+            classroomService.addNewClassroom(newClassroom)
         }
     }
 

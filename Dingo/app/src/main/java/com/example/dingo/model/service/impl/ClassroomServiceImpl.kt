@@ -33,8 +33,23 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
         }
     }
 
-    override suspend fun addNewClassroom(newClassroom: Classroom) {
-        firestore.collection(CLASSROOM_COLLECTIONS).add(newClassroom)
+    override suspend fun addNewClassroom(newClassroom: Classroom): String {
+        var classroomId = ""
+        firestore.collection(CLASSROOM_COLLECTIONS)
+            .add(newClassroom)
+            .addOnSuccessListener {
+                classroomId = it.id
+            }
+            .addOnFailureListener {e ->
+                println("Error adding Classroom document: $e")
+            }
+            .await()
+
+        if (classroomId.isEmpty()) {
+            println("empty classroom id when creating; this should not happen")
+        }
+
+        return classroomId
     }
 
     override suspend fun addUser(classroomId: String, userId: String, userType: UserType) {
@@ -130,8 +145,8 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
         private const val POST_COLLECTIONS = "postCollections"
         private const val USER_COLLECTIONS = "userCollections"
         private val SAMPLE_CLASSROOM = Classroom(
-            teachers = listOf("vf6w8xMVABol0Ex383YG"),
-            students = listOf(),
+            teachers = mutableListOf("vf6w8xMVABol0Ex383YG"),
+            students = mutableListOf(),
             posts = listOf(),
         )
     }
