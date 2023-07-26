@@ -61,7 +61,6 @@ fun SocialFeedScreen(
         .observeAsState()
     var currentPostId = remember { mutableStateOf("") }
     val feedItems = viewModel.userFeed.observeAsState()
-    println("teststes ${feedItems.value}")
     var createNewPost = remember { mutableStateOf(false) }
     if (createNewPost.value) {
         CreatePostModal(
@@ -124,7 +123,7 @@ private fun SocialPost(
             modifier = Modifier.height(20.dp),
             fontSize = 12.sp,
             color = Color.Gray,
-            text="${post.username} posted $timeDiffMsg ago"
+            text="${post.username} posted $timeDiffMsg ago with tripId: ${post.tripId ?: "none"}"
         )
         Text(
             modifier = Modifier.padding(all = 12.dp),
@@ -190,12 +189,10 @@ private fun CreatePostModal(
     onDismissRequest : () -> Unit,
 ) {
     var selectedTrip : Trip? by remember { mutableStateOf(null) } // Initialize with -1 to indicate no trip is selected
-    fun updateSelectedTrip(newValue: Trip?) {
-        selectedTrip = newValue
-    }
+
     CustomDialog(onDismissRequest = onDismissRequest) {
         var textContentState by remember { mutableStateOf("") }
-        Text("selected Trip: $selectedTrip")
+        Text("selectedTrip id:${selectedTrip?.id ?: "none"} title: ${selectedTrip?.title ?: "none"}")
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
@@ -214,7 +211,7 @@ private fun CreatePostModal(
                 label = { Text("") }
             )
             DropdownMenuExample(tripFeedItems, onTripSelected = { newValue ->
-                updateSelectedTrip(newValue)
+                selectedTrip = newValue
             })
 
             //   SELECT trip
@@ -231,7 +228,7 @@ private fun CreatePostModal(
                             username,
                             textContentState,
                             mutableListOf<String>(),
-                            selectedTrip?.id,
+                            selectedTrip?.id ?: null,
                         )
                         onDismissRequest()
                     }

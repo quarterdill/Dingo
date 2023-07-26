@@ -23,7 +23,7 @@ data class Trip (
 
 // This is for converting the Firestore representation of Trips with GeoPoint to the application version of Trips with LatLong
 data class GeoTrip (
-    val id: String = "",
+    @DocumentId val id: String = "",
     var userId: String = "",
     var username: String = "",
     var locations: List<HashMap<String, Any>> =emptyList(),
