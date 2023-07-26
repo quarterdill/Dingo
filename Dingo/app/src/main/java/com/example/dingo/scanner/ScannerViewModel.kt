@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.dingo.common.SessionInfo
 import com.example.dingo.model.service.AccountService
 import com.example.dingo.model.service.DingoDexEntryService
 import com.example.dingo.model.service.DingoDexStorageService
@@ -46,7 +47,7 @@ constructor(
         viewModelScope.launch {
             var result = false
             isLoading.value = true
-            val entries = dingoDexEntryService.getEntry(entryName)
+            val entries = dingoDexEntryService.getEntry(SessionInfo.currentUserID, entryName)
             if (entries.isEmpty()) {
                 val dingoDex = dingoDexStorageService.findDingoDexItem(entryName)
                 if (dingoDex != null) {
@@ -75,7 +76,7 @@ constructor(
                     var result = false
                     val imagePath = dingoDexEntryService.addPicture(entryName, image)
                     if (imagePath != "") {
-                        val entries = dingoDexEntryService.getEntry(entryName)
+                        val entries = dingoDexEntryService.getEntry(SessionInfo.currentUserID, entryName)
                         if (entries.isNotEmpty()) {
                             // Should only have 1 entry for each animal/plant
                             var entry = entries[0]

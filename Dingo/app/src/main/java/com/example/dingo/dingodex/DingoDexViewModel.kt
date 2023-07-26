@@ -16,6 +16,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.ChannelResult
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 import kotlin.random.Random
 
@@ -33,6 +34,15 @@ constructor(
     val uncollectedDingoDexFlora = getDingoDexUncollectedItems(false)
     val collectedDingoDexFauna = getDingoDexCollectedItems(true)
     val collectedDingoDexFlora = getDingoDexCollectedItems(false)
+    var selectedEntryName = MutableLiveData<String>("")
+
+    fun selectEntry(entryName: String) {
+        selectedEntryName.value = entryName
+    }
+
+    fun getEntry(userId: String, entryName: String) : List<DingoDexEntry> {
+        return runBlocking {  dingoDexEntryService.getEntry(userId, entryName) }
+    }
 
     private fun getDingoDexUncollectedItems(
         isFauna: Boolean

@@ -46,5 +46,22 @@
     "scientific_name": "Acer saccharum",
     "description": "The sugar maple tree is an iconic deciduous tree of North America. Known for its stunning fall foliage, it showcases vibrant shades of red, orange, and yellow. Valued for its sap, it's tapped to produce delicious maple syrup. This majestic tree stands as a symbol of natural beauty and resourcefulness.",
     "default_picture_name": "images/mapletree.jpg"
+  },
+  {
+    "id": 3,
+    "is_fauna": false,
+    "name": "DUMMY-Sugar Maple",
+    "scientific_name": "Dummy Fauna",
+    "description": "The sugar maple tree is an iconic deciduous tree of North America. Known for its stunning fall foliage, it showcases vibrant shades of red, orange, and yellow. Valued for its sap, it's tapped to produce delicious maple syrup. This majestic tree stands as a symbol of natural beauty and resourcefulness.",
+    "default_picture_name": "images/mapletree.jpg"
+  }
+,
+  {
+    "id": 3,
+    "is_fauna": true,
+    "name": "DUMMY-Skunk",
+    "scientific_name": "Dummy Data",
+    "description": "The skunk is a distinctive mammal known for its potent defensive spray. With black fur and white stripes, it warns potential threats of its noxious odor. Skunks are omnivores, consuming insects, small mammals, and plants. Though a nuisance to some, they play a vital role in controlling pest populations.",
+    "default_picture_name": "images/skunk.jpg"
   }
 ]

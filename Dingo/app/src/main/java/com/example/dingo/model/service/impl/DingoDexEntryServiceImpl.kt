@@ -2,6 +2,7 @@ package com.example.dingo.model.service.impl
 
 import android.graphics.Bitmap
 import androidx.lifecycle.viewModelScope
+import com.example.dingo.common.SessionInfo
 import com.example.dingo.model.DingoDex
 import com.example.dingo.model.DingoDexEntry
 import com.example.dingo.model.DingoDexEntryContent
@@ -27,47 +28,33 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
     DingoDexEntryService {
 
     override val dingoDexFaunaEntries: Flow<List<DingoDexEntry>>
-        // todo: authentication finish
-//        get() = auth.currentUser.flatMapLatest { user ->
-//    firestore.collection(DINGO_DEX_ENTRIES)
-//    .whereEqualTo(USER_ID_FIELD, "temp")
-//    .whereEqualTo(IS_FAUNA_FIELD, true)
-//    .dataObjects()           }
         get() = firestore.collection(DINGO_DEX_ENTRIES)
-            .whereEqualTo(USER_ID_FIELD, "temp")
+            .whereEqualTo(USER_ID_FIELD, SessionInfo.currentUserID)
             .whereEqualTo(IS_FAUNA_FIELD, true)
             .dataObjects()
 
     override val dingoDexFloraEntries: Flow<List<DingoDexEntry>>
-        // todo: authentication finish
-//        get() = auth.currentUser.flatMapLatest { user ->
-//    firestore.collection(DINGO_DEX_ENTRIES)
-//    .whereEqualTo(USER_ID_FIELD, "temp")
-//    .whereEqualTo(IS_FAUNA_FIELD, false)
-//    .dataObjects()           }
         get() = firestore.collection(DINGO_DEX_ENTRIES)
-            .whereEqualTo(USER_ID_FIELD, "temp")
+            .whereEqualTo(USER_ID_FIELD, SessionInfo.currentUserID)
             .whereEqualTo(IS_FAUNA_FIELD, false)
             .dataObjects()
 
-    override suspend fun getEntry(entryName: String) : List<DingoDexEntry> {
-        // TODO: Change temp to user when auth is done
+    override suspend fun getEntry(userId: String, entryName: String) : List<DingoDexEntry> {
         return firestore.collection(DINGO_DEX_ENTRIES)
-            .whereEqualTo(USER_ID_FIELD, "temp")
+            .whereEqualTo(USER_ID_FIELD, SessionInfo.currentUserID)
             .whereEqualTo(ENTRY_NAME, entryName).get().await().toObjects(DingoDexEntry::class.java)
     }
 
     override suspend fun addNewEntry(newDingoDexEntry: DingoDexEntryContent): Boolean {
-        // todo: change temp auth yes
         val newEntry = DingoDexEntry(
-            userId = "temp",
+            userId = SessionInfo.currentUserID,
             dingoDexId = newDingoDexEntry.id,
             name = newDingoDexEntry.name,
             isFauna = newDingoDexEntry.is_fauna,
             numEncounters = 1,
             location = "",
             pictures = emptyList(),
-            displayPicture = newDingoDexEntry.default_picture_name,
+            displayPicture = "default",
         )
         return try {
             firestore.collection(DINGO_DEX_ENTRIES).add(newEntry).await()
@@ -94,7 +81,7 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
         // Create a storage reference from our app
         val storageRef = Firebase.storage.reference
         // TODO: Change temp to user when auth is done, make imagepath have no spaces
-        val userId = "temp"
+        val userId = SessionInfo.currentUserID
         val imagePath = "$userId/$entryName.jpg"
         // Create a reference to "mountains.jpg"
         val mountainsRef = storageRef.child(imagePath)
