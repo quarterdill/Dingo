@@ -17,6 +17,7 @@ import android.os.Build
 import android.os.Looper
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
+import com.example.dingo.R
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -99,9 +100,9 @@ class LocationTrackingService @Inject constructor(): LifecycleService() {
     private fun createNotification(): Notification {
         // Create a notification for the foreground service
         val notification = NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("Location Tracking")
+            .setContentTitle("Trip in Progess...")
             .setContentText("Tracking your location")
-//            .setSmallIcon(R.drawable.ic_notification)
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
             .build()
 
         return notification

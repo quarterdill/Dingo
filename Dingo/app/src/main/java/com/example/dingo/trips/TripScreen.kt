@@ -88,7 +88,9 @@ fun TripScreen(
     LocationTrackingService().createNotificationChannel(context)
     LocationTrackingService.locationList.observe(lifeCycleOwner, Observer {
         trackedLocations = it
-        SessionInfo.trip!!.locations = it
+        if (SessionInfo.trip != null) {
+            SessionInfo.trip!!.locations = it
+        }
     })
 
     val permissionState = remember { mutableStateOf(false) }
