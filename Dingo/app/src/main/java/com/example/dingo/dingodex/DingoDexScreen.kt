@@ -81,7 +81,6 @@ fun DingoDexScreen(
 ) {
     val navController = rememberNavController()
     val selected = remember { mutableStateOf("")}
-    println(userId)
     viewModel.getEntries(userId)
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -107,6 +106,9 @@ fun DingoDexScreen(
                     val collectedFloraDingoDex = viewModel.collectedDingoDexFlora.observeAsState()//viewModel.getDingoDexCollectedItems(false, userId).observeAsState()
                     val uncollectedFloraDingoDex = viewModel.uncollectedDingoDexFlora.observeAsState()
                     var showFaunaDingoDex by remember { mutableStateOf(true) }
+
+                    println(uncollectedFaunaDingoDex)
+                    println(uncollectedFloraDingoDex)
 
                     val isNull = if (showFaunaDingoDex) {
                         collectedFaunaDingoDex.value == null || uncollectedFaunaDingoDex.value == null

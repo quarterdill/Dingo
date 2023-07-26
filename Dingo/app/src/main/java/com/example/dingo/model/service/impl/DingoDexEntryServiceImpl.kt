@@ -53,8 +53,7 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
             location = "",
             pictures = emptyList(),
             scientificName = newDingoDexEntry.scientific_name,
-            displayPicture = "default",
-            scientificName = newDingoDexEntry.scientific_name
+            displayPicture = "default"
         )
         return try {
             firestore.collection(DINGO_DEX_ENTRIES).add(newEntry).await()
