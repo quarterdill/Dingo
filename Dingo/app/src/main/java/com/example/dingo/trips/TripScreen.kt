@@ -1,4 +1,5 @@
 package com.example.dingo.trips
+import com.bumptech.glide.Glide
 
 //import androidx.compose.material.Button
 //import androidx.compose.material.MaterialTheme
@@ -6,15 +7,23 @@ package com.example.dingo.trips
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -23,6 +32,7 @@ import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -33,9 +43,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
@@ -45,16 +58,21 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.dingo.R
 import com.example.dingo.UIConstants
 import com.example.dingo.common.SessionInfo
 import com.example.dingo.model.Trip
 import com.example.dingo.model.service.impl.getTimeDiffMessage
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.firebase.Timestamp
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.MarkerInfoWindow
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
@@ -365,23 +383,80 @@ fun tripMap(trip : Trip,  fullSize: Boolean) {
             val picturePaths: List<String> = trip.picturePaths
             val pictureLocations: List<LatLng> = trip.pictureLocations
 
+//            val icon = bitmapDescriptorFromVector(
+//                LocalContext.current, R.drawable.pin
+//            )
             // Iterate through the picture paths and picture locations
             picturePaths.forEachIndexed { index, picturePath ->
                 val pictureLocation = pictureLocations[index]
-
                 // You can customize the marker icon, if desired
-                // .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_icon))
-                Marker(
+//                Marker(
+//                    state = MarkerState(position = pictureLocation),
+//                    title = "Picture $index",
+//                    snippet = "Location: ${pictureLocation.latitude}, ${pictureLocation.longitude}",
+//                    icon = BitmapDescriptorFactory.fromResource(R.drawable.fauna_placeholder)
+//                )
+                MarkerInfoWindow(
                     state = MarkerState(position = pictureLocation),
-                    title = "Picture $index",
-                    snippet = "Location: ${pictureLocation.latitude}, ${pictureLocation.longitude}"
-                )
+                    icon = BitmapDescriptorFactory.fromResource(R.drawable.fauna_placeholder),
+                ) { marker ->
+                    Box(
+                        modifier = Modifier
+                            .background(
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                shape = RoundedCornerShape(35.dp, 35.dp, 35.dp, 35.dp)
+                            ),
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(16.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
 
-                // Add the marker to the map
+                            Image(
+                                painter = painterResource(id = R.drawable.fauna_placeholder),
+                                contentDescription = null,
+                                contentScale = ContentScale.Fit,
+                                modifier = Modifier
+                                    .height(80.dp)
+                                    .fillMaxWidth(),
+
+                                )
+                            //.........................Spacer
+                            Spacer(modifier = Modifier.height(24.dp))
+                            //.........................Text: title
+                            Text(
+                                text = "Marker Title",
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier
+                                    .padding(top = 10.dp)
+                                    .fillMaxWidth(),
+                                style = MaterialTheme.typography.headlineSmall,
+                                color = MaterialTheme.colorScheme.primary,
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            //.........................Text : description
+                            Text(
+                                text = "Customizing a marker's info window",
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier
+                                    .padding(top = 10.dp, start = 25.dp, end = 25.dp)
+                                    .fillMaxWidth(),
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.primary,
+                            )
+                            //.........................Spacer
+                            Spacer(modifier = Modifier.height(24.dp))
+
+                        }
+
+                    }
+
+
+                    // Add the marker to the map
+                }
+                }
             }
         }
-    }
-
 }
 
 
@@ -479,11 +554,14 @@ private fun PostTripModal(
         TextField(
             value = textContentState,
             onValueChange = { textContentState = it },
-            label = { Text("")}
+            label = { Text("") }
         )
         Button(
             onClick = {
-                Log.d("tripScreen", "Discard Current Trip Button, trackedLocations: ${trip?.locations}")
+                Log.d(
+                    "tripScreen",
+                    "Discard Current Trip Button, trackedLocations: ${trip?.locations}"
+                )
                 viewModel.discardTrip()
                 navController.navigate(TripNavigationItem.TripPostFeed.route)
             }
