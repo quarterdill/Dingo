@@ -34,17 +34,28 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.ClickableText
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Observer
@@ -58,6 +69,7 @@ import com.example.dingo.model.service.impl.getTimeDiffMessage
 import com.google.maps.android.compose.Polyline
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TripScreen(
     viewModel: TripViewModel = hiltViewModel()
@@ -120,18 +132,18 @@ fun TripScreen(
                                 if (!permissionState.value) {
                                     requestPermissionLauncher.launch(android.Manifest.permission.ACCESS_FINE_LOCATION)
                                 }
-                                    isServiceRunning = !isServiceRunning
-                                    if (isServiceRunning) {
-                                        ContextCompat.startForegroundService(
-                                            context,
-                                            Intent(context, LocationTrackingService::class.java)
-                                        )
-                                        Log.d("tripScreen", "trackedLocations: $trackedLocations")
-                                        navController.navigate(TripNavigationItem.TrackTrip.route)
-                                    } else {
-                                        context.stopService(Intent(context, LocationTrackingService::class.java))
-                                        navController.navigate(TripNavigationItem.TripPostFeed.route)
-                                    }
+                                isServiceRunning = !isServiceRunning
+                                if (isServiceRunning) {
+                                    ContextCompat.startForegroundService(
+                                        context,
+                                        Intent(context, LocationTrackingService::class.java)
+                                    )
+                                    Log.d("tripScreen", "trackedLocations: $trackedLocations")
+                                    navController.navigate(TripNavigationItem.TrackTrip.route)
+                                } else {
+                                    context.stopService(Intent(context, LocationTrackingService::class.java))
+                                    navController.navigate(TripNavigationItem.TripPostFeed.route)
+                                }
                             },
                         ) {
                             Text(text = if (isServiceRunning) "Stop Tracking Permission Granted: ${permissionState.value}" else "Start Tracking Permission Granted: ${permissionState.value}")
@@ -194,16 +206,50 @@ fun TripScreen(
                 Log.d("tripScreen", "Trip Details selectedTrip: $selectedTrip")
                 if (selectedTrip != null) {
                     val trip = selectedTrip as Trip
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Text(text = "Trip", fontWeight = FontWeight.Bold, fontSize = 24.sp)
-                        Text(text = "day, time, km, animals discovered", fontSize = 16.sp)
-                        Box(modifier = Modifier.fillMaxSize()) {
-                            tripMap(trip.locations, true)
+                    Column(modifier = Modifier.fillMaxSize()) {
+
+                        CenterAlignedTopAppBar(
+                            title = { Text(text = "Map Title",
+                            ) },
+
+                            navigationIcon = {
+                                IconButton(onClick = { navController.navigate(TripNavigationItem.TripPostFeed.route) }) {
+                                    Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                                }
+                            },
+                        )
+
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = "Description",
+                                modifier = Modifier.padding(16.dp),
+                                fontSize = 16.sp
+                            )
+                            Box(modifier = Modifier.fillMaxSize()) {
+                                tripMap(trip.locations, true)
+                            }
                         }
                     }
+//                    Box(modifier = Modifier.fillMaxSize()) {
+//
+//                    TopAppBar(
+//                        title = { Text(text = "Map Title") },
+//                        navigationIcon = {
+//                            IconButton(onClick = { /* Handle back action here */ }) {
+//                                Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+//                            }
+//                        }
+//                    )
+//                    Column(modifier = Modifier.padding(16.dp)) {
+//                        Text(text = "day, time, km, animals discovered", fontSize = 16.sp)
+//                        Box(modifier = Modifier.fillMaxSize()) {
+//                            tripMap(trip.locations, true)
+//                        }
+//                    }
                 }
-//                TripDetailsModal(navController = navController, tripId = "", userId = "" , username = "", locations = trackedLocations )
             }
+//                TripDetailsModal(navController = navController, tripId = "", userId = "" , username = "", locations = trackedLocations )
+//            }
         }
     }
 }
