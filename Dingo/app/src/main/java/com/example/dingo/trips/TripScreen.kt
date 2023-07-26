@@ -285,7 +285,7 @@ fun LocationTrackingScreen() {
 fun tripMap(points: List<LatLng>, fullSize: Boolean) {
 
     val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(points.lastOrNull() ?: LatLng(51.52061810406676, -0.12635325270312533), 2f)
+        position = CameraPosition.fromLatLngZoom(points.lastOrNull() ?: LatLng(51.52061810406676, -0.12635325270312533), 15f)
     }
 
     GoogleMap(
