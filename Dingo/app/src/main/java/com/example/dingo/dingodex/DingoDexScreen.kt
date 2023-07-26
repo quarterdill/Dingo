@@ -45,6 +45,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.dingo.R
+import com.example.dingo.UIConstants
 import com.example.dingo.model.DingoDexEntryListings
 import com.example.dingo.model.DingoDexScientificToIndex
 import java.io.File
@@ -90,8 +91,8 @@ fun DingoDexScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Text(
-                        modifier = Modifier.padding(16.dp),
-                        fontSize = 36.sp,
+                        modifier = Modifier.padding(UIConstants.MEDIUM_PADDING),
+                        fontSize = UIConstants.TITLE_TEXT,
                         text = "DingoDex",
                     )
                     var showFaunaDingoDex by remember { mutableStateOf(true) }
@@ -242,7 +243,7 @@ private fun DingoDexItem(
             }
             Text(
                 modifier = Modifier.width(72.dp),
-                text = "${item.name}",
+                text = item.name,
                 textAlign = TextAlign.Center
             )
         }

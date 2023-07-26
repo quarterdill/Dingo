@@ -1,6 +1,7 @@
 package com.example.dingo
 
 import android.content.Context
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.dingo.model.Achievement
@@ -24,6 +25,8 @@ constructor(
     private val repo: AccountService,
     private val userService: UserService
 ): ViewModel() {
+    var isLoading = MutableLiveData<Boolean>(false)
+
     init {
         getAuthState()
     }
@@ -32,7 +35,9 @@ constructor(
 
     fun getUser() {
         viewModelScope.launch {
+            isLoading.value = true
             userService.getCurrentUser()
+            isLoading.value = false
         }
     }
 

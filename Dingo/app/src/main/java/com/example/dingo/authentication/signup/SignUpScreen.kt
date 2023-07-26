@@ -60,17 +60,17 @@ fun SignUpScreen(
 
         ) {
         CustomSwitch(
-            Modifier.padding(vertical = UIConstants.MEDIUM_PADDING),
             "Standard",
             "Education",
+            Modifier.padding(vertical = UIConstants.MEDIUM_PADDING),
             onChanged = viewModel::onButtonToggle
         )
         Log.d("STATE", uiState.accountType.toString())
         if (uiState.accountType) {
             CustomSwitch(
-                Modifier.padding(vertical = UIConstants.MEDIUM_PADDING),
                 "Student",
                 "Instructor",
+                Modifier.padding(vertical = UIConstants.MEDIUM_PADDING),
                 onChanged = viewModel::onButtonToggleEducation
             )
         }

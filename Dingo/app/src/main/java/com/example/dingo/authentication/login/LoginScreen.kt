@@ -1,7 +1,6 @@
 package com.example.dingo.authentication.login
 
 import android.util.Log
-import android.util.LogPrinter
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -73,6 +72,11 @@ fun LoginScreen(
             imageVector = Icons.Rounded.AddCircle,
             contentDescription = "Placeholder"
         )
+        CustomSwitch(
+            "Standard",
+            "Education",
+            Modifier.padding(vertical = MEDIUM_PADDING),
+        ) {}
 
         logInFields(navController = navController)
     }

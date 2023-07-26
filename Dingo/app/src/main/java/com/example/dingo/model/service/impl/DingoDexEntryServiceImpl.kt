@@ -52,6 +52,9 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
 
     override suspend fun getEntry(entryName: String) : List<DingoDexEntry> {
         // TODO: Change temp to user when auth is done
+        println(firestore.collection(DINGO_DEX_ENTRIES)
+            .whereEqualTo(USER_ID_FIELD, "temp")
+            .whereEqualTo(ENTRY_NAME, entryName).get().await().documents[0])
         return firestore.collection(DINGO_DEX_ENTRIES)
             .whereEqualTo(USER_ID_FIELD, "temp")
             .whereEqualTo(ENTRY_NAME, entryName).get().await().toObjects(DingoDexEntry::class.java)
