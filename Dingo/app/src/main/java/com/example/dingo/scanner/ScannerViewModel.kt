@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.dingo.common.SessionInfo
 import com.example.dingo.AnimalDetectionModel
+import com.example.dingo.common.addNewEntry
 import com.example.dingo.model.service.AccountService
 import com.example.dingo.model.service.DingoDexEntryService
 import com.example.dingo.model.service.DingoDexStorageService
@@ -52,6 +53,7 @@ constructor(
             var result = false
             isLoading.value = true
             val entries = dingoDexEntryService.getEntry(SessionInfo.currentUserID, entryName)
+            addNewEntry(entryName)
             if (entries.isEmpty()) {
                 val dingoDex = dingoDexStorageService.findDingoDexItem(entryName)
                 if (dingoDex != null) {

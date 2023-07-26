@@ -68,8 +68,6 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
         return tripId
     }
 
-
-
     override suspend fun getTrip(tripId: String): Trip? {
         return firestore.collection(TRIP_COLLECTIONS)
             .document(tripId)

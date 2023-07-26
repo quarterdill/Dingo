@@ -17,10 +17,6 @@ interface TripService {
         title : String = "Your Trip"
     ): String
 
-//    suspend fun addNewEntry(entryId: String)
-//
-//    suspend fun addPicture(picturePath: String)
-
     suspend fun getTrip(tripId: String): Trip?
 
     suspend fun deleteTrip(postId: String)

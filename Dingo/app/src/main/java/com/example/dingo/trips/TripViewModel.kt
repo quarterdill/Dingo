@@ -32,20 +32,7 @@ constructor(
     val discoveredEntries = mutableListOf<String>()
     val picturePaths = mutableListOf<String>()
 
-    fun addNewEntry(entryId: String) {
-        if (SessionInfo.currentUser != null && SessionInfo.currentUser!!.activeTrip) {
-            val hasEntry = discoveredEntries.indexOf(entryId) != -1
-            if (!hasEntry) {
-                discoveredEntries.add(entryId)
-            }
-        }
 
-    }
-
-    fun addPicture(picturePath: String) {
-        if (SessionInfo.currentUser != null && SessionInfo.currentUser!!.activeTrip)
-            picturePaths.add(picturePath)
-    }
 
     fun locationTrackingStopped(locationList: MutableList<LatLng>) : List<LatLng> {
 
