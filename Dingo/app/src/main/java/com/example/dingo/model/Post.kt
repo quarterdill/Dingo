@@ -7,6 +7,7 @@ import com.google.firebase.firestore.DocumentId
 import java.time.Month
 
 data class Comment (
+    @DocumentId val id: String = "",
     var authorName: String = "",
     var textContent: String = "",
     var timestamp: Timestamp = Timestamp.now(),

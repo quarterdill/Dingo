@@ -25,4 +25,5 @@ interface PostService {
     suspend fun setPostNext(postId: String, nextPostId: String)
     suspend fun getComments(postId: String, limit: Int = 10): Flow<MutableList<Comment>?>
     suspend fun addComment(postId: String, username: String, commentText: String)
+    suspend fun deleteComment(postId: String, commentId: String)
 }
