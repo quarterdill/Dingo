@@ -15,12 +15,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
@@ -176,44 +173,9 @@ fun DingoDexScreen(
                         println("Error occurred when downloading user's DingoDex image from Firebase $it")
                     }
                 }
-                LazyColumn() {
-
-                }
                 Column(
-                    modifier = Modifier.verticalScroll(rememberScrollState()),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Row(
-                        modifier = Modifier.padding(16.dp),
-                        horizontalArrangement = Arrangement.spacedBy(10.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            modifier = Modifier.padding(4.dp),
-                            fontSize = 16.sp,
-                            text = "${dingodexEntryContent.name} | ${dingodexEntryContent.scientific_name}"
-                        )
-                    }
-                    Row(
-                        modifier = Modifier.padding(16.dp),
-                        horizontalArrangement = Arrangement.spacedBy(10.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Image(
-                            bitmap = bitmap.asImageBitmap(),
-                            contentDescription = if (dingodexEntryContent.is_fauna) "Fauna" else "Flora",
-                            contentScale = ContentScale.Inside,
-                            alignment = Alignment.CenterStart,
-                        )
-                    }
-                    Row() {
-                        Text(
-                            textAlign = TextAlign.Left,
-                            modifier = Modifier.width(300.dp),
-                            fontSize = 16.sp,
-                            text = dingodexEntryContent.description.trimIndent()
-                        )
-                    }
                     Row(
                         modifier = Modifier.padding(16.dp),
                         horizontalArrangement = Arrangement.spacedBy(10.dp),
@@ -225,10 +187,36 @@ fun DingoDexScreen(
                             },
                         ) {
                             Text(
+                                modifier = Modifier.padding(4.dp),
                                 fontSize = 16.sp,
                                 text = "Back",
                             )
                         }
+                    }
+                    Row(
+                        modifier = Modifier.padding(16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(10.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            modifier = Modifier.padding(4.dp),
+                            fontSize = 16.sp,
+                            text = "${dingodexEntryContent.name} | ${dingodexEntryContent.scientific_name}"
+                        )
+                    }
+                    Row() {
+                        Image(
+                            bitmap = bitmap.asImageBitmap(),
+                            contentDescription = if (dingodexEntryContent.is_fauna) "Fauna" else "Flora",
+                            contentScale = ContentScale.Inside,
+                            alignment = Alignment.CenterStart,
+                        )
+                        Text(
+                            textAlign = TextAlign.Left,
+                            modifier = Modifier.width(200.dp),
+                            fontSize = 16.sp,
+                            text = dingodexEntryContent.description.trimIndent()
+                        )
                     }
                 }
             }
@@ -275,7 +263,7 @@ private fun DingoDexItem(
                 }
             }
             Text(
-                modifier = Modifier.width(90.dp),
+                modifier = Modifier.width(72.dp),
                 text = item.name,
                 textAlign = TextAlign.Center
             )
