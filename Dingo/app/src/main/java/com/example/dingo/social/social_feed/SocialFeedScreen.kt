@@ -18,6 +18,7 @@ import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -37,6 +38,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -63,6 +65,10 @@ fun SocialFeedScreen(
     var currentPostId = remember { mutableStateOf("") }
     val feedItems = viewModel.userFeed.observeAsState()
     var createNewPost = remember { mutableStateOf(false) }
+
+    val isLoading = viewModel.isLoading.observeAsState()
+
+
     if (createNewPost.value) {
         CreatePostModal(
             viewModel,
@@ -78,7 +84,12 @@ fun SocialFeedScreen(
         contentAlignment = Alignment.Center,
     ) {
         if (feedItems.value.isNullOrEmpty()) {
-            Text("No posts found... try adding some friends")
+
+            if (isLoading.value!!) {
+                CircularProgressIndicator()
+            } else {
+                Text("No posts found... try adding some friends")
+            }
         } else {
             LazyColumn(
                 modifier = Modifier.fillMaxHeight()
@@ -121,14 +132,16 @@ private fun SocialPost(
     Column {
         var timeDiffMsg = getTimeDiffMessage(post.timestamp)
 
-        if (trip != null) {
+        if (trip != null && trip.locations.isNotEmpty()) {
             tripMap(points = trip.locations, fullSize = false )
         }
         Text(
             modifier = Modifier.height(20.dp),
             fontSize = 12.sp,
             color = Color.Gray,
-            text="${post.username} posted $timeDiffMsg ago with tripId: ${post.tripId ?: "none"}"
+            overflow= TextOverflow.Ellipsis,
+            text="${post.username} posted ${trip?.title ?: ""} $timeDiffMsg ago with tripId: ${post.tripId ?: "none"}"
+
         )
         Text(
             modifier = Modifier.padding(all = 12.dp),
@@ -159,13 +172,16 @@ private fun SocialPost(
 fun DropdownMenuExample(items: List<Trip>, onTripSelected: (Trip) -> Unit) {
     var expanded by remember { mutableStateOf(false) }
     var selectedIndex by remember { mutableStateOf(0) }
-    Text(
-        text = items[selectedIndex].title,
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = { expanded = true })
-            .background(Color.Gray)
-    )
+    Button(
+        onClick = { expanded = true },
+
+    ) {
+        Text(
+            text = items[selectedIndex].title,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            )
+    }
     DropdownMenu(
         expanded = expanded,
         onDismissRequest = { expanded = false },
@@ -173,7 +189,7 @@ fun DropdownMenuExample(items: List<Trip>, onTripSelected: (Trip) -> Unit) {
     ) {
         items.forEachIndexed { index, item ->
             DropdownMenuItem(
-                text = {Text("${item.title} with id: ${item.id}")},
+                text = {Text("${item.title} with id: ${item.id} posted ${getTimeDiffMessage(item.timestamp)} ago")},
                 onClick = {
                     selectedIndex = index
                     onTripSelected(item)
@@ -197,31 +213,21 @@ private fun CreatePostModal(
 
     CustomDialog(onDismissRequest = onDismissRequest) {
         var textContentState by remember { mutableStateOf("") }
-        Text("selectedTrip id:${selectedTrip?.id ?: "none"} title: ${selectedTrip?.title ?: "none"}")
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
-//            SimpleDropdownMenu()
-            Text(
-                text = "Post",
-                fontSize = UIConstants.SUBTITLE2_TEXT
-            )
+            Text(fontSize = UIConstants.SUBTITLE2_TEXT,    maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                text="selectedTrip id:${selectedTrip?.id ?: "none"} title: ${selectedTrip?.title ?: "none"}")
             TextField(
                 modifier = Modifier
                     .padding(vertical = UIConstants.MEDIUM_PADDING)
-                    .height(100.dp),
+                    .height(70.dp),
                 value = textContentState,
                 onValueChange = { textContentState = it },
                 label = { Text("") }
             )
-            DropdownMenuExample(tripFeedItems, onTripSelected = { newValue ->
-                selectedTrip = newValue
-            })
-
-            //   SELECT trip
-//            Get trip feed names
-//            clickable
             Row (
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
@@ -245,7 +251,17 @@ private fun CreatePostModal(
                 ) {
                     Text(text = "Cancel")
                 }
+
             }
+            Column(
+                modifier = Modifier.height(30.dp)
+            ) {
+                DropdownMenuExample(tripFeedItems, onTripSelected = { newValue ->
+                    selectedTrip = newValue
+                })
+            }
+
+
         }
     }
 }
@@ -259,6 +275,8 @@ private fun CommentsDialog(
     val fetchComments = viewModel
         .getCommentsForPost(currentPostId.value)
         .observeAsState()
+
+    val isLoading = viewModel.isLoading.observeAsState()
     CustomDialog(
         onDismissRequest = onDismissRequest
     ) {
@@ -277,10 +295,14 @@ private fun CommentsDialog(
                 contentAlignment = Alignment.Center,
             ) {
                 if (fetchComments.value.isNullOrEmpty()) {
-                    Text(
-                        "No comments yet. Be the first to comment!",
-                        textAlign = TextAlign.Center,
-                    )
+                    if (isLoading.value!!) {
+                        CircularProgressIndicator()
+                    } else {
+                        Text(
+                            "No comments yet. Be the first to comment!",
+                            textAlign = TextAlign.Center,
+                        )
+                    }
                 } else {
                     LazyColumn(
                         modifier = Modifier.fillMaxHeight()

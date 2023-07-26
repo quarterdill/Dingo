@@ -2,9 +2,13 @@ package com.example.dingo.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Purple80 = Color(0xFFD0BCFF)
-val PurpleGrey80 = Color(0xFFCCC2DC)
-val Pink80 = Color(0xFFEFB8C8)
+val color_text_field = Color(0xFFedf7e1)
+val color_primary = Color(0xFF243614)
+val color_on_primary = Color(0xFFb8cea1)
+val color_secondary = Color(0xFF597C2B)
+val color_on_secondary = Color.White
+val color_background = Color(0xFFd4eabb)
+val color_light_transparent = Color(0x99b8cea1)
 
 val Purple40 = Color(0xFF6650a4)
 val PurpleGrey40 = Color(0xFF625b71)
