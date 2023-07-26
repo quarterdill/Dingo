@@ -2,6 +2,7 @@ package com.example.dingo.common
 
 import com.example.dingo.model.Achievement
 import com.example.dingo.model.AchievementListings
+import com.example.dingo.model.Trip
 import com.example.dingo.model.User
 import com.example.dingo.model.service.UserService
 
@@ -16,6 +17,7 @@ object SessionInfo {
     var currentUserID: String = ""
     var currentUsername: String = ""
     var nameToStat: MutableMap<String, Stat> = mutableMapOf()
+    var trip: Trip? = null
 }
 
 // each stat is an observable and has a list of corresponding achievements
@@ -26,6 +28,27 @@ enum class StatName {
     LOGINS, SCANS, SUCCESSFUL_SCANS, FLORA_SCANS, FAUNA_SCANS, NUM_SOCIAL_POSTS,
     NUM_CLASSROOM_POSTS, DISTINCT_FLORA, DISTINCT_FAUNA, DISTANCE_WALKED, NUM_TRIPS,
     NUM_COMMENTS, NUM_FRIENDS_ACCEPTED, NUM_FRIENDS_DECLINED,
+}
+
+fun newTrip() {
+    SessionInfo.trip = Trip()
+}
+
+fun addNewEntryToTrip(entryId: String) {
+    if (SessionInfo.trip != null) {
+        var trip = SessionInfo.trip!!
+        if (trip.discoveredEntries.indexOf(entryId) == -1) {
+            trip.discoveredEntries.add(entryId)
+        }
+    }
+
+}
+
+fun addPictureToTrip(picturePath: String) {
+    if (SessionInfo.trip != null) {
+        var trip = SessionInfo.trip!!
+        trip.picturePaths.add(picturePath)
+    }
 }
 
 fun initializeStats() {
