@@ -98,7 +98,7 @@ fun ProfileScreen(
 
 //      Text(
         Text("Flora: $numFloraFound / $totalFlora")
-        Text("Flora: $numFaunaFound / $totalFauna")
+        Text("Fauna: $numFaunaFound / $totalFauna")
         Spacer(modifier = Modifier.height(30.dp))
         Text("Achievements: ")
         LazyColumn(
