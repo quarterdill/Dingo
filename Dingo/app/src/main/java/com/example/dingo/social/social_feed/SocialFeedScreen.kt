@@ -79,7 +79,7 @@ fun SocialFeedScreen(
         }
         FloatingActionButton(
             modifier = Modifier
-                .padding(bottom = 96.dp, end = UIConstants.MEDIUM_PADDING)
+                .padding(UIConstants.MEDIUM_PADDING)
                 .align(alignment = Alignment.BottomEnd),
             onClick = { createNewPost.value = true }
         ) {
