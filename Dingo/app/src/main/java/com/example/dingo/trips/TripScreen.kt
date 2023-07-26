@@ -216,7 +216,9 @@ fun TripScreen(
 //            }
             composable(TripNavigationItem.CreatePost.route) {
                 Log.d("here2", "creating post")
-                tripMap(trackedLocations, true)
+                if (trackedLocations.isNotEmpty()) {
+                    tripMap(trackedLocations, true)
+                }
                 PostTripModal(navController = navController,  trip = SessionInfo.trip )
             }
             composable(TripNavigationItem.TripDetails.route) {
@@ -240,12 +242,14 @@ fun TripScreen(
 
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
-                                text = "Description",
+                                text = "You have collected ${trip.discoveredEntries.size} Dingo(s) ${getTimeDiffMessage(trip.timestamp)} ago",
                                 modifier = Modifier.padding(16.dp),
                                 fontSize = 16.sp
                             )
                             Box(modifier = Modifier.fillMaxSize()) {
-                                tripMap(trip.locations, true)
+                                if (trip != null && trip.locations.isNotEmpty()) {
+                                    tripMap(trip.locations, true)
+                                }
                             }
                         }
                     }
@@ -448,13 +452,12 @@ private fun PostTripModal(
         }
         Button(
             onClick = {
-//                viewModel.makeDummyTrips(trackedLocations)
                 if (trip != null) {
                     trip.title = textContentState
                     trip.username = SessionInfo.currentUsername
                     trip.userId = SessionInfo.currentUserID
-//                    val tripId = viewModel.createTrip(trip = trip)
-                    val tripId = viewModel.makeDummyTrip(trip = trip)
+                    val tripId = viewModel.createTrip(trip = trip)
+//                    val tripId = viewModel.makeDummyTrip(trip = trip)
 
                 }
 
