@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -58,7 +59,9 @@ import com.example.dingo.UIConstants
 import com.example.dingo.common.SessionInfo
 import com.example.dingo.model.Trip
 import com.example.dingo.model.service.impl.getTimeDiffMessage
+import com.example.dingo.ui.theme.color_background
 import com.example.dingo.ui.theme.color_on_secondary
+import com.example.dingo.ui.theme.color_primary
 import com.example.dingo.ui.theme.color_secondary
 import com.google.firebase.Timestamp
 import com.google.maps.android.compose.Polyline
@@ -116,8 +119,8 @@ fun TripScreen(
     }
 
     Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier = Modifier.fillMaxSize().background(color = color_background),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         NavHost(
             navController = navController,
@@ -131,6 +134,7 @@ fun TripScreen(
                     ) {
                     Text(
                         text = "Trips",
+                        color = color_primary,
                         fontSize = UIConstants.TITLE_TEXT,
                     )
 

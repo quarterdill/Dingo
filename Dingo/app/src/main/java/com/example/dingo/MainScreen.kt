@@ -48,6 +48,8 @@ import com.example.dingo.social.SocialScreen
 import com.example.dingo.social.profile.SendFriendReqDialog
 import com.example.dingo.trips.TripScreen
 import com.example.dingo.model.AccountType
+import com.example.dingo.ui.theme.color_on_primary
+import com.example.dingo.ui.theme.color_primary
 import kotlinx.coroutines.launch
 
 sealed class NavBarItem(
@@ -171,14 +173,16 @@ fun MainScreen(
 @Composable
 private fun navBar(navController: NavHostController) {
     var navItems = listOf(NavBarItem.Trip, NavBarItem.Scanner, NavBarItem.Social, NavBarItem.Classroom)
-    NavigationBar() {
+    if (SessionInfo.currentUser!!.accountType == AccountType.STANDARD) {
+        navItems = listOf(NavBarItem.Trip, NavBarItem.Scanner, NavBarItem.Social)
+    }
+    NavigationBar(
+        containerColor = color_on_primary,
+        contentColor = color_primary
+    ) {
         val currentRoute = getCurrentRoute(navController = navController)
         navItems.forEach{
             val isSelected =  it.route == currentRoute
-            val currentAccountType = SessionInfo.currentUser!!.accountType
-            if (currentAccountType == AccountType.STANDARD) {
-                navItems = listOf(NavBarItem.Trip, NavBarItem.Scanner, NavBarItem.Social)
-            }
             NavigationBarItem(
                 icon = {
                     Icon(imageVector = it.icon, contentDescription = "temp")

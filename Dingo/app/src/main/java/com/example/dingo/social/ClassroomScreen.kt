@@ -1,6 +1,7 @@
 package com.example.dingo.social
 
 import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,6 +17,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AddCircle
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -51,6 +53,11 @@ import com.example.dingo.model.UserType
 import com.example.dingo.social.classroom_feed.ClassroomFeedScreen
 import com.example.dingo.social.classroom_feed.ClassroomFeedViewModel
 import com.example.dingo.social.classroom_member.ClassroomMembersScreen
+import com.example.dingo.ui.theme.color_background
+import com.example.dingo.ui.theme.color_light_transparent
+import com.example.dingo.ui.theme.color_on_secondary
+import com.example.dingo.ui.theme.color_primary
+import com.example.dingo.ui.theme.color_secondary
 
 
 sealed class ClassroomNavigationItem(
@@ -85,7 +92,7 @@ fun ClassroomScreen(
     var classroomId = remember { mutableStateOf("") }
     val navController = rememberNavController()
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().background(color = color_background),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         val fetchClassrooms = viewModel
@@ -107,7 +114,8 @@ fun ClassroomScreen(
             Text(
                 text = "Classroom",
                 fontSize = UIConstants.TITLE_TEXT,
-                modifier = Modifier.align(Alignment.Center)
+                modifier = Modifier.align(Alignment.Center),
+                color = color_primary
             )
         }
 
@@ -143,6 +151,7 @@ fun ClassroomScreen(
                     }
                     Text(
                         "Choose a classroom",
+                        color = color_primary,
                         modifier = Modifier.padding(UIConstants.MEDIUM_PADDING),
                         fontSize = UIConstants.SUBTITLE1_TEXT,
                     )
@@ -151,7 +160,8 @@ fun ClassroomScreen(
                             Button(
                                 onClick = {
                                     createClassroomDialogState.value = true
-                                }
+                                },
+                                colors = ButtonDefaults.buttonColors(containerColor = color_secondary, color_on_secondary)
                             ) {
                                 Text("Create new classroom")
                             }
@@ -162,7 +172,7 @@ fun ClassroomScreen(
                         contentAlignment = Alignment.Center,
                     ) {
                         if (classrooms.isNullOrEmpty()) {
-                            Text("No classrooms available...")
+                            Text("No classrooms available...",color = color_primary)
                         } else {
                             LazyColumn(
                                 modifier = Modifier.fillMaxSize(),
@@ -174,7 +184,7 @@ fun ClassroomScreen(
                                     ClickableText(
                                         modifier = Modifier.padding(UIConstants.SMALL_PADDING),
                                         style = TextStyle(
-                                            color = Color.LightGray,
+                                            color = color_on_secondary,
                                             fontSize = 26.sp,
                                         ),
                                         text = AnnotatedString(classrooms[i].name),
@@ -265,7 +275,8 @@ private fun CreateClassroomDialog (
         ) {
             Text(
                 text = "Create classroom",
-                fontSize = UIConstants.SUBTITLE2_TEXT
+                fontSize = UIConstants.SUBTITLE2_TEXT,
+                color = color_primary
             )
             TextField(
                 modifier = Modifier
@@ -286,14 +297,16 @@ private fun CreateClassroomDialog (
                             textContentState,
                         )
                         onDismissRequest()
-                    }
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = color_secondary, color_on_secondary)
                 ) {
                     Text(text = "Create Classroom")
                 }
                 Button(
                     onClick = {
                         onDismissRequest()
-                    }
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = color_secondary, color_on_secondary)
                 ) {
                     Text(text = "Cancel")
                 }

@@ -111,7 +111,7 @@ fun logInFields(
                 Log.d("STATE", "in on click")
                 viewModel.onSignInClick(navController)
             }},
-            colors = ButtonDefaults.buttonColors(containerColor = color_secondary, color_on_secondary)
+                colors = ButtonDefaults.buttonColors(containerColor = color_secondary, color_on_secondary)
         ) {
             Text(text = "Login", fontSize = 16.sp)
         }

@@ -2,6 +2,7 @@ package com.example.dingo.social.profile
 
 import android.se.omapi.Session
 import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -43,6 +44,7 @@ import com.example.dingo.dingodex.DingoDexScreen
 import com.example.dingo.model.AccountType
 import com.example.dingo.model.DingoDexEntryListings
 import com.example.dingo.model.User
+import com.example.dingo.ui.theme.color_background
 import com.example.dingo.ui.theme.color_on_secondary
 import com.example.dingo.ui.theme.color_secondary
 import kotlinx.coroutines.CoroutineScope
@@ -65,7 +67,7 @@ fun ProfileScreen(
     val achievements = viewModel.getAchievements(LocalContext.current)
 
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().background(color = color_background),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
@@ -171,7 +173,7 @@ private fun FriendSection(
             Button(
                 onClick = { sendFriendReqDialogState.value = true },
                 colors =
-                ButtonDefaults.buttonColors(containerColor = color_secondary, color_on_secondary)F
+                ButtonDefaults.buttonColors(containerColor = color_secondary, color_on_secondary)
             ) {
                 Text("Send Friend Request")
             }
