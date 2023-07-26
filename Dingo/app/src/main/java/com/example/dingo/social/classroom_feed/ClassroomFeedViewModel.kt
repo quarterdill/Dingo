@@ -1,6 +1,5 @@
-package com.example.dingo.social
+package com.example.dingo.social.classroom_feed
 
-import android.se.omapi.Session
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -9,7 +8,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.dingo.common.SessionInfo
 import com.example.dingo.common.StatName
 import com.example.dingo.common.incrementStat
-import com.example.dingo.model.AccountType
 import com.example.dingo.model.Classroom
 import com.example.dingo.model.Comment
 import com.example.dingo.model.Post
@@ -22,11 +20,10 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
-class ClassroomViewModel
+class ClassroomFeedViewModel
 @Inject
 constructor(
     private val classroomService: ClassroomService,
@@ -316,6 +313,4 @@ constructor(
 
         }
     }
-
-
 }

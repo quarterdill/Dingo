@@ -89,6 +89,7 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
                 pictureLocations = (geoTrip.pictureLocations.map { location ->
                     LatLng(location["latitude"] as Double, location["longitude"] as Double)
                 }).toMutableList(),
+
             )
             trips.add(trip)
         }
