@@ -93,6 +93,18 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
             }
     }
 
+    override suspend fun deletePost(classroomId: String, postId: String) {
+        firestore.collection(CLASSROOM_COLLECTIONS)
+            .document(classroomId)
+            .update("posts", FieldValue.arrayRemove(postId))
+            .addOnSuccessListener {
+                println("Successfully removed post from classroom $classroomId")
+            }
+            .addOnFailureListener {e ->
+                println("Error removing post from classroom: $e")
+            }
+    }
+
     override suspend fun getPostFeed(classroomId: String, limit: Int): Flow<MutableList<Post>?> {
         // TODO("get (limit) most recent posts for feed")
 

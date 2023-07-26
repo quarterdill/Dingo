@@ -170,6 +170,28 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
             }
     }
 
+    override suspend fun deleteComment(postId: String, commentId: String) {
+        firestore.collection(POST_COLLECTIONS)
+            .document(postId)
+            .update("comments", FieldValue.arrayRemove(commentId))
+            .addOnSuccessListener {
+                println("Successfully removed comment id $commentId from post $postId")
+            }
+            .addOnFailureListener {e ->
+                println("Error in removing comment from post: $e")
+            }
+
+        firestore.collection(COMMENT_COLLECTIONS)
+            .document(commentId)
+            .delete()
+            .addOnSuccessListener {
+                println("Successfully deleted comment!")
+            }
+            .addOnFailureListener {e ->
+                println("Error in deleting comment document: $e")
+            }
+    }
+
 
     companion object {
         private const val POST_COLLECTIONS = "postCollections"

@@ -15,12 +15,14 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
@@ -192,11 +194,17 @@ fun ClassroomScreen(
                             )
                         }
                     }
-                    Text("Choose a classroom")
+                    val classrooms = fetchClassrooms.value
+                    if (classrooms != null && classrooms.size > 0) {
+                        Text("Choose a classroom")
+                    } else {
+                        Text("No classrooms available...")
+                    }
+
                     LazyColumn(
                         modifier = Modifier.weight(1.0f, true)
                     ) {
-                        val classrooms = fetchClassrooms.value
+
                         if (classrooms != null) {
                             println("num classrooms: ${classrooms.size}")
                             items(classrooms.size) { i ->
@@ -270,7 +278,7 @@ fun ClassroomScreen(
                         var posts = feedItems.value
                         if (posts != null) {
                             items(posts.size) {
-                                ClassroomPost(posts[it], navController, viewModel, currentPostId)
+                                ClassroomPost(posts[it], navController, viewModel, currentPostId, classroomId.value)
                                 println("post content: ${posts[it].textContent}")
                             }
                         }
@@ -329,7 +337,7 @@ fun ClassroomScreen(
                         println("comments: $comments")
                         if (comments != null) {
                             items(comments.size) {
-                                CommentText(comments[it])
+                                CommentText(comments[it], currentPostId.value, viewModel)
                             }
                         }
                     }
@@ -370,9 +378,15 @@ private fun ClassroomPost(
     navController: NavHostController,
     viewModel: ClassroomViewModel,
     currentPostId: MutableState<String>,
+    classroomId: String,
 //    updateComments: (String) -> Unit,
 //    fetchComments: State<MutableList<Comment>?>,
 ) {
+    var currUserType = AccountType.STUDENT
+    val currUser = SessionInfo.currentUser
+    if (currUser != null) {
+        currUserType = currUser.accountType
+    }
     Row(
         modifier = Modifier.padding(16.dp),
         horizontalArrangement = Arrangement.spacedBy(10.dp),
@@ -403,6 +417,18 @@ private fun ClassroomPost(
                     navController.navigate(ClassroomNavigationItem.ViewComments.route)
                 }
             )
+            if (currUserType == AccountType.INSTRUCTOR) {
+                IconButton(
+                    onClick = {
+                        viewModel.removePost(classroomId, post.id)
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.Delete,
+                        contentDescription = "Delete Post",
+                    )
+                }
+            }
             Divider(
                 thickness = 1.dp,
                 color = Color.Gray,
@@ -523,21 +549,21 @@ private fun CreateClassroomModal(
         )
         Button(
             onClick = {
-                navController.navigate(ClassroomNavigationItem.ClassroomPostFeed.route)
-            }
-        ) {
-            Text(text = "Cancel")
-        }
-        Button(
-            onClick = {
                 viewModel.createClassroom(
                     creatorUserId,
                     textContentState,
                 )
-                navController.navigate(ClassroomNavigationItem.ClassroomPostFeed.route)
+                navController.navigate(ClassroomNavigationItem.SelectClassroom.route)
             }
         ) {
-            Text(text = "Create Post")
+            Text(text = "Create Classroom")
+        }
+        Button(
+            onClick = {
+                navController.navigate(ClassroomNavigationItem.SelectClassroom.route)
+            }
+        ) {
+            Text(text = "Cancel")
         }
     }
 }
@@ -560,7 +586,12 @@ private fun Comments(
 }
 
 @Composable
-private fun CommentText(comment: Comment){
+private fun CommentText(
+    comment: Comment,
+    postId: String,
+    viewModel: ClassroomViewModel,
+    currAccountType: AccountType = AccountType.INSTRUCTOR,
+){
     var timeDiffMsg = getTimeDiffMessage(comment.timestamp)
     Text(
         modifier = Modifier.height(20.dp),
@@ -572,8 +603,22 @@ private fun CommentText(comment: Comment){
         text = "${comment.textContent}"
     )
 
+    if (currAccountType == AccountType.INSTRUCTOR) {
+        IconButton(
+            onClick = {
+                viewModel.removeComment(postId, comment.id)
+            }
+        ) {
+            Icon(
+                imageVector = Icons.Rounded.Delete,
+                contentDescription = "Delete Post",
+            )
+        }
+    }
+
     Divider(
         thickness = 1.dp,
         color = Color.Gray,
     )
+
 }
