@@ -51,8 +51,7 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
             isFauna = newDingoDexEntry.is_fauna,
             numEncounters = 1,
             location = "",
-            pictures = emptyList(),
-            scientificName = newDingoDexEntry.scientific_name,
+            pictures = mutableListOf(),
             displayPicture = "default",
             scientificName = newDingoDexEntry.scientific_name
         )
