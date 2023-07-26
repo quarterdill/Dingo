@@ -13,23 +13,16 @@ data class Trip (
     var username: String = "",
     var locations: List<LatLng> = emptyList<LatLng>(),
     var discoveredEntries: List<String?> = emptyList(),
-    var startTime: Timestamp = Timestamp.now(),
-    var endTime: Timestamp = Timestamp.now(),
-    var timestamp : Timestamp = Timestamp.now(),
-    var title : String = "Your Trip"
-
+    var timestamp: Timestamp = Timestamp.now(),
     )
 
-
-// This is for converting the Firestore representation of Trips with GeoPoint to the application version of Trips with LatLong
 data class GeoTrip (
-    val id: String = "",
+    @DocumentId val id: String = "",
     var userId: String = "",
     var username: String = "",
-    var locations: List<HashMap<String, Any>> =emptyList(),
+    var locations: List<LatLng> = emptyList<LatLng>(),
     var discoveredEntries: List<String> = emptyList(),
-    var startTime: Timestamp = Timestamp.now(),
-    var endTime: Timestamp = Timestamp.now(),
-    var timestamp : Timestamp = Timestamp.now(),
-    var title : String = "Your Trip"
-)
+    var timestamp: Timestamp = Timestamp.now(),
+
+
+    )

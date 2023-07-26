@@ -1,7 +1,6 @@
 package com.example.dingo.model.service.impl
 
 import android.util.Log
-import com.example.dingo.model.GeoTrip
 import com.example.dingo.model.Trip
 import com.example.dingo.model.service.AccountService
 import com.example.dingo.model.service.TripService
@@ -19,6 +18,15 @@ import javax.inject.Inject
 
 
 
+// This is for converting the Firestore representation of Trips with GeoPoint to the application version of Trips with LatLong
+data class GeoTrip (
+    val id: String = "",
+    var userId: String = "",
+    var username: String = "",
+    var locations: List<HashMap<String, Any>> =emptyList(),
+    var discoveredEntries: List<String> = emptyList(),
+    var timestamp: Timestamp = Timestamp.now(),
+)
 
 class TripServiceImpl
 @Inject
@@ -28,21 +36,14 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
         userId: String,
         username: String,
         locations: List<LatLng>,
-        discoveredEntries: List<String>,
-        startTime : Timestamp,
-        endTime: Timestamp,
-        timestamp:Timestamp,
-        title:String
+        discoveredEntries: List<String>
 
     ): String {
         var trip: Trip = Trip()
         trip.userId = userId
         trip.username = username
         trip.locations = locations
-        trip.startTime = startTime
-        trip.endTime = Timestamp.now()
         trip.timestamp = Timestamp.now()
-        trip.title = title
 
 //        Default to empty lists for now
 //        TODO("Fetch locations using Android API and discoveredEntries from Scanner Service")
@@ -92,10 +93,7 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
                     LatLng(location["latitude"] as Double, location["longitude"] as Double)
                 },
                 discoveredEntries = geoTrip.discoveredEntries,
-                startTime= geoTrip.startTime,
-                endTime = geoTrip.endTime,
-                timestamp= geoTrip.timestamp,
-                title = geoTrip.title
+                timestamp = geoTrip.timestamp,
             )
             trips.add(trip)
         }

@@ -16,7 +16,6 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.example.dingo.common.SessionInfo
 import com.google.android.gms.maps.model.LatLng
-import com.google.firebase.Timestamp
 
 @HiltViewModel
 class TripViewModel
@@ -44,25 +43,16 @@ constructor(
     fun createTrip(
         userId: String,
         username: String,
-        locations: List<LatLng>,
-        discoveredEntries : List<String> = emptyList<String>(),
-        startTime : Timestamp = Timestamp.now(),
-        endTime : Timestamp = Timestamp.now(),
-        timestamp : Timestamp = Timestamp.now(),
-        title : String = "Your Trip"
-
+        locations: List<LatLng>
     ) {
+        var discoveredEntries = emptyList<String>()
         viewModelScope.launch {
 
             val tripId = tripService.createTrip(
                 userId,
                 username,
                 locations,
-                discoveredEntries,
-                startTime,
-                endTime,
-                timestamp,
-                title
+                discoveredEntries
             )
             Log.d("TripViewModel", "createTrip: username:$username userId:$userId tripId:$tripId")
 

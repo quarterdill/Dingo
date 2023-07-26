@@ -55,7 +55,6 @@ import androidx.navigation.compose.rememberNavController
 import com.example.dingo.common.SessionInfo
 import com.example.dingo.model.Trip
 import com.example.dingo.model.service.impl.getTimeDiffMessage
-import com.google.firebase.Timestamp
 import com.google.maps.android.compose.Polyline
 
 
@@ -79,8 +78,6 @@ fun TripScreen(
     var isServiceRunning by remember { mutableStateOf(false) }
     var trackedLocations : List<LatLng> by remember { mutableStateOf(emptyList()) }
     var selectedTrip: Trip? by remember { mutableStateOf(null) }
-    var startTime: Timestamp by remember { mutableStateOf(Timestamp.now()) }
-
 
     val permissionState = remember { mutableStateOf(false) }
 
@@ -130,7 +127,6 @@ fun TripScreen(
                                             Intent(context, LocationTrackingService::class.java)
                                         )
                                         Log.d("tripScreen", "trackedLocations: $trackedLocations")
-                                        startTime = Timestamp.now()
                                         navController.navigate(TripNavigationItem.TrackTrip.route)
                                     } else {
                                         context.stopService(Intent(context, LocationTrackingService::class.java))
@@ -192,7 +188,7 @@ fun TripScreen(
             composable(TripNavigationItem.CreatePost.route) {
                 Log.d("tripScreen", "trackedLocations: $trackedLocations")
                 tripMap(trackedLocations, true)
-                PostTripModal(navController = navController,  locations = trackedLocations,  discoveredEntries = emptyList(), startTime=startTime )
+                PostTripModal(navController = navController,  locations = trackedLocations, discoveredEntries = emptyList() )
             }
             composable(TripNavigationItem.TripDetails.route) {
                 Log.d("tripScreen", "Trip Details selectedTrip: $selectedTrip")
@@ -213,7 +209,7 @@ fun TripScreen(
 }
 
 @Composable
-private fun TripPost(trip: Trip, navController: NavHostController, onTripSelected : (Trip) -> Unit) {
+private fun TripPost(trip: Trip, navController: NavHostController, onTripSelected : (Trip) -> Unit ) {
     Row(
         modifier = Modifier.padding(16.dp),
         horizontalArrangement = Arrangement.spacedBy(10.dp),
@@ -221,7 +217,7 @@ private fun TripPost(trip: Trip, navController: NavHostController, onTripSelecte
     ) {
 
         ClickableText(
-            text = AnnotatedString("${trip.username} posted ${trip.title} ${getTimeDiffMessage(trip.timestamp)} ago with ${trip.discoveredEntries.size} entrie(s) and ${trip.locations.size} location points"),
+            text = AnnotatedString("${trip.username} posted ${trip.locations} with ${trip.discoveredEntries} entrie(s)"),
             onClick = {
                 onTripSelected(trip)
                 navController.navigate(TripNavigationItem.TripDetails.route)
@@ -254,6 +250,34 @@ fun LocationPermissionScreen() {
 
         Text(text = "Permission Granted: ${permissionState.value}")
 
+    }
+}
+
+@Preview
+@Composable
+fun LocationTrackingScreen() {
+    var isServiceRunning by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+
+    Column {
+        Button(
+            onClick = {
+
+                isServiceRunning = !isServiceRunning
+                if (isServiceRunning) {
+                    ContextCompat.startForegroundService(
+                        context,
+                        Intent(context, LocationTrackingService::class.java)
+                    )
+
+                } else {
+                    context.stopService(Intent(context, LocationTrackingService::class.java))
+                }
+            },
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Text(text = if (isServiceRunning) "Stop Tracking" else "Start Tracking ")
+        }
     }
 }
 
@@ -317,6 +341,46 @@ sealed class TripNavigationItem(
 
 
 
+
+
+@Composable
+private fun TripPost(
+    post: Trip,
+    navController: NavHostController,
+    viewModel: TripViewModel,
+) {
+    Row(
+        modifier = Modifier.padding(16.dp),
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        var timeDiffMsg = getTimeDiffMessage(post.timestamp)
+        Column(
+
+        ) {
+            Text(
+                modifier = Modifier.height(20.dp),
+                fontSize = 12.sp,
+                color = Color.Gray,
+                text="${post.username} posted $timeDiffMsg ago")
+            Text(
+                modifier = Modifier.padding(all = 12.dp),
+                text = "${post.discoveredEntries.size}"
+            )
+            ClickableText(
+                text = AnnotatedString("${post.discoveredEntries.size} comment(s)"),
+                onClick = {
+                    navController.navigate(TripNavigationItem.ViewComments.route)
+                }
+            )
+            Divider(
+                thickness = 1.dp,
+                color = Color.Gray,
+            )
+
+        }
+    }
+}
 @Composable
 private fun TripDetailsModal(
     viewModel: TripViewModel = hiltViewModel(),
@@ -363,7 +427,6 @@ private fun PostTripModal(
     navController: NavHostController,
     locations : List<LatLng>,
     discoveredEntries: List<String>,
-    startTime:Timestamp=Timestamp.now()
 
     ) {
     var textContentState by remember { mutableStateOf("") }
@@ -389,8 +452,12 @@ private fun PostTripModal(
         Button(
             onClick = {
 //                viewModel.makeDummyTrips(trackedLocations)
+                val currUser = SessionInfo.currentUser
+                if (currUser != null) {
+                    val tripId = viewModel.createTrip(userId= currUser.id,username= currUser.username,locations=locations,
 
-                    val tripId = viewModel.createTrip(userId= SessionInfo.currentUserID,username= SessionInfo.currentUsername,locations=locations, startTime = startTime, endTime = Timestamp.now(), title=textContentState)
+                        )
+                }
 
 
 //                TODO: post as trip and create a post of the given trip ID
