@@ -31,6 +31,7 @@ import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -73,6 +74,10 @@ import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
+import com.example.dingo.ui.theme.color_background
+import com.example.dingo.ui.theme.color_on_secondary
+import com.example.dingo.ui.theme.color_primary
+import com.example.dingo.ui.theme.color_secondary
 import com.google.firebase.Timestamp
 import com.google.firebase.storage.FirebaseStorage
 import com.google.maps.android.compose.GoogleMap
@@ -139,8 +144,8 @@ fun TripScreen(
     }
 
     Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier = Modifier.fillMaxSize().background(color = color_background),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         NavHost(
             navController = navController,
@@ -154,6 +159,7 @@ fun TripScreen(
                     ) {
                     Text(
                         text = "Trips",
+                        color = color_primary,
                         fontSize = UIConstants.TITLE_TEXT,
                     )
 
@@ -197,6 +203,8 @@ fun TripScreen(
                                     navController.navigate(TripNavigationItem.CreatePost.route)
                                 }
                             },
+                            colors =
+                            ButtonDefaults.buttonColors(containerColor = color_secondary, color_on_secondary)
                         ) {
                             Text(text = if (isServiceRunning.value) "Stop Tracking Permission Granted: ${permissionState.value}" else "Start Tracking Permission Granted: ${permissionState.value}")
 

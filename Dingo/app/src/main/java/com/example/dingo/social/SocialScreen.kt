@@ -1,6 +1,7 @@
 package com.example.dingo.social
 
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,6 +21,7 @@ import com.example.dingo.common.SessionInfo
 import com.example.dingo.model.AccountType
 import com.example.dingo.social.profile.ProfileScreen
 import com.example.dingo.social.social_feed.SocialFeedScreen
+import com.example.dingo.ui.theme.color_background
 
 
 sealed class SocialNavigationItem(
@@ -56,7 +58,7 @@ fun SocialScreen(
     val navController = rememberNavController()
     Box {
         Column(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxSize().background(color = color_background),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
