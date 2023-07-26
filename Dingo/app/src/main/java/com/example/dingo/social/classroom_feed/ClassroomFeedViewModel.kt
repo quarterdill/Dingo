@@ -10,6 +10,7 @@ import com.example.dingo.common.StatName
 import com.example.dingo.common.incrementStat
 import com.example.dingo.model.Classroom
 import com.example.dingo.model.Comment
+import com.example.dingo.model.DingoDexEntry
 import com.example.dingo.model.Post
 import com.example.dingo.model.User
 import com.example.dingo.model.UserType
@@ -142,14 +143,14 @@ constructor(
         userId: String,
         username: String,
         textContent: String,
-        entryIds: List<String>,
+        entry: DingoDexEntry?,
         tripId: String?
     ) {
         viewModelScope.launch {
             val postId = postService.createPost(
                 userId,
                 username,
-                entryIds,
+                entry,
                 tripId,
                 textContent,
                 classroomId,
@@ -200,7 +201,7 @@ constructor(
                 val post = postService.createPost(
                     user.id,
                     user.username,
-                    emptyList(),
+                    null,
                     null,
                     "Hi everyone this is my first post!"
                 )
@@ -215,7 +216,7 @@ constructor(
                 val post = postService.createPost(
                     user.id,
                     user.username,
-                    emptyList(),
+                    null,
                     null,
                     "Look at this cool bird I found"
                 )
@@ -230,7 +231,7 @@ constructor(
                 val post = postService.createPost(
                     user.id,
                     user.username,
-                    emptyList(),
+                    null,
                     null,
                     "I don't like nature"
                 )

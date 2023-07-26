@@ -37,15 +37,19 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.dingo.CustomDialog
 import com.example.dingo.UIConstants
 import com.example.dingo.common.SessionInfo
+import com.example.dingo.dingodex.DingoDexViewModel
 import com.example.dingo.model.AccountType
 import com.example.dingo.model.Comment
+import com.example.dingo.model.DingoDexEntry
 import com.example.dingo.model.Post
+import com.example.dingo.model.Trip
 import com.example.dingo.model.service.impl.getTimeDiffMessage
 import com.example.dingo.ui.theme.color_background
 import com.example.dingo.ui.theme.color_light_transparent
@@ -55,16 +59,31 @@ import com.example.dingo.ui.theme.color_post_background
 import com.example.dingo.ui.theme.color_primary
 import com.example.dingo.ui.theme.color_secondary
 import com.example.dingo.ui.theme.color_text_field
+import com.example.dingo.social.social_feed.DropdownEntryMenu
+import com.example.dingo.social.social_feed.DropdownMenuExample
+import com.example.dingo.trips.TripViewModel
+
 
 
 @Composable
 fun ClassroomFeedScreen(
     classroomId: MutableState<String>,
-    viewModel: ClassroomFeedViewModel = hiltViewModel()
+    viewModel: ClassroomFeedViewModel = hiltViewModel(),
+    dingoDexViewModel: DingoDexViewModel = hiltViewModel(),
+    tripViewModel: TripViewModel = hiltViewModel()
 ) {
     var currentPostId = remember { mutableStateOf("") }
     val feedItems = viewModel
         .getClassroomFeed(classroomId.value)
+        .observeAsState()
+    val tripFeedItems = tripViewModel
+        .getTripFeed(SessionInfo.currentUserID)
+        .observeAsState()
+    val myDingoDexFauna = dingoDexViewModel
+        .getDingoDexCollectedEntries(true, SessionInfo.currentUserID)
+        .observeAsState()
+    val myDingoDexFlora = dingoDexViewModel
+        .getDingoDexCollectedEntries(false, SessionInfo.currentUserID)
         .observeAsState()
     var createNewPost = remember { mutableStateOf(false) }
     if (createNewPost.value) {
@@ -72,7 +91,10 @@ fun ClassroomFeedScreen(
             viewModel,
             classroomId.value,
             SessionInfo.currentUserID,
-            SessionInfo.currentUsername
+            SessionInfo.currentUsername,
+            tripFeedItems.value as List<Trip>?,
+            myDingoDexFauna.value as MutableList<DingoDexEntry>,
+            myDingoDexFlora.value as MutableList<DingoDexEntry>,
         ) {
             createNewPost.value = false
         }
@@ -287,8 +309,13 @@ private fun CreatePostDialog(
     classroomId: String,
     userId: String,
     username: String,
+    tripFeedItems:List<Trip>?,
+    myDingoDexFauna: MutableList<DingoDexEntry>,
+    myDingoDexFlora: MutableList<DingoDexEntry>,
     onDismissRequest : () -> Unit,
 ) {
+    var selectedTrip : Trip? by remember { mutableStateOf(null) } // Initialize with -1 to indicate no trip is selected
+    var selectedEntry : DingoDexEntry? by remember { mutableStateOf(null) }
     var textContentState by remember { mutableStateOf("") }
     CustomDialog(onDismissRequest = onDismissRequest) {
         Column(
@@ -299,6 +326,22 @@ private fun CreatePostDialog(
                 text = "Post to Classroom",
                 fontSize = UIConstants.SUBTITLE2_TEXT
             )
+            if (selectedTrip != null) {
+                Text(fontSize = UIConstants.SUBTITLE2_TEXT,    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    text="Selected trip: ${selectedTrip?.title ?: "none"}",
+                )
+            } else if (selectedEntry != null) {
+                Text(fontSize = UIConstants.SUBTITLE2_TEXT,    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    text="Selected entry: ${selectedEntry?.name ?: "none"}",
+                )
+            } else {
+                Text(fontSize = UIConstants.SUBTITLE2_TEXT,    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    text="No selected entry or trip",
+                )
+            }
             TextField(
                 modifier = Modifier
                     .padding(vertical = UIConstants.MEDIUM_PADDING)
@@ -308,6 +351,18 @@ private fun CreatePostDialog(
                 onValueChange = { textContentState = it },
                 label = { Text("") }
             )
+            if (tripFeedItems != null) {
+                DropdownMenuExample(tripFeedItems, onTripSelected = { newValue ->
+                    selectedTrip = newValue
+                })
+            }
+            if (selectedTrip == null) {
+                var myDingoDexItems = myDingoDexFauna + myDingoDexFlora
+                myDingoDexItems = myDingoDexItems.sortedByDescending {it.timestamp}
+                DropdownEntryMenu(myDingoDexItems, onEntrySelected  = { newValue ->
+                    selectedEntry = newValue
+                })
+            }
             Row (
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
@@ -319,7 +374,7 @@ private fun CreatePostDialog(
                             userId,
                             username,
                             textContentState,
-                            mutableListOf<String>(),
+                            selectedEntry,
                             null,
                         )
                         onDismissRequest()

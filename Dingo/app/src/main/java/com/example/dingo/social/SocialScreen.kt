@@ -18,6 +18,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.dingo.CustomSwitch
 import com.example.dingo.UIConstants
 import com.example.dingo.common.SessionInfo
+import com.example.dingo.dingodex.DingoDexScreen
 import com.example.dingo.model.AccountType
 import com.example.dingo.social.profile.ProfileScreen
 import com.example.dingo.social.social_feed.SocialFeedScreen
@@ -35,6 +36,10 @@ sealed class SocialNavigationItem(
     object MyProfile : SocialNavigationItem(
         name = "MyProfile",
         route = "myprofile",
+    )
+    object MyDingoDex : SocialNavigationItem(
+        name = "MyDingoDex",
+        route = "mydingodex",
     )
 }
 
@@ -61,10 +66,12 @@ fun SocialScreen(
             modifier = Modifier.fillMaxSize().background(color = color_background),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                text = "Socials",
-                fontSize = UIConstants.TITLE_TEXT,
-            )
+            if (SessionInfo.currentUser!!.accountType == AccountType.STANDARD) {
+                Text(
+                    text = "Socials",
+                    fontSize = UIConstants.TITLE_TEXT,
+                )
+            }
             if (SessionInfo.currentUser!!.accountType == AccountType.STANDARD) {
                 CustomSwitch(
                     "Feed", "Profile",
@@ -77,7 +84,7 @@ fun SocialScreen(
                     }
                 }
             } else {
-                ProfileScreen(navControllerSignOut = navControllerSignOut)
+                ProfileScreen(navControllerSignOut = navControllerSignOut, navController = navController)
             }
             NavHost(
                 navController = navController,
@@ -87,7 +94,11 @@ fun SocialScreen(
                     SocialFeedScreen()
                 }
                 composable(SocialNavigationItem.MyProfile.route) {
-                    ProfileScreen(navControllerSignOut = navControllerSignOut)
+                    ProfileScreen(navControllerSignOut = navControllerSignOut, navController = navController)
+                }
+                composable(SocialNavigationItem.MyDingoDex.route) {
+                    println("sdfgasdfasdf")
+                    DingoDexScreen(userId = SessionInfo.currentUserID)
                 }
             }
         }

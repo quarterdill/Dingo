@@ -3,6 +3,7 @@ package com.example.dingo.model.service.impl
 import com.example.dingo.model.AccountType
 import com.example.dingo.model.Classroom
 import com.example.dingo.model.Comment
+import com.example.dingo.model.DingoDexEntry
 import com.example.dingo.model.Post
 import com.example.dingo.model.User
 import com.example.dingo.model.UserType
@@ -28,7 +29,7 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
     override suspend fun createPost(
         userId: String,
         username: String,
-        entryIds: List<String>,
+        entry: DingoDexEntry?,
         tripId: String?,
         textContent: String,
         classroomId: String?,
@@ -36,7 +37,9 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
         var post: Post = Post()
         post.userId = userId
         post.username = username
-        post.entryIds = entryIds
+        if (entry != null) {
+            post.entryId = entry.id
+        }
         post.tripId = tripId
         post.textContent = textContent
         post.timestamp = Timestamp.now()

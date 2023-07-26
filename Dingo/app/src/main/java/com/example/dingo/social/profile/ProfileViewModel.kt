@@ -18,6 +18,7 @@ import com.example.dingo.model.PostComparator
 import com.example.dingo.model.User
 import com.example.dingo.model.service.AccountService
 import com.example.dingo.model.service.ClassroomService
+import com.example.dingo.model.service.DingoDexEntryService
 import com.example.dingo.model.service.PostService
 import com.example.dingo.model.service.UserService
 import com.example.dingo.model.service.impl.UserServiceImpl
@@ -39,6 +40,7 @@ class ProfileViewModel
 constructor(
     private val userService: UserService,
     private val accountService: AccountService,
+    private val dingoDexService: DingoDexEntryService,
 ) : ViewModel() {
 
     suspend fun onSignOutClick(navController: NavHostController) {

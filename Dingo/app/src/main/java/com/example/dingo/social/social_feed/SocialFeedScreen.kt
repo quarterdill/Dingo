@@ -1,4 +1,9 @@
 package com.example.dingo.social.social_feed
+import android.content.res.AssetManager
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.drawable.BitmapDrawable
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.material3.DropdownMenu
@@ -35,6 +40,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
@@ -45,7 +52,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.dingo.CustomDialog
 import com.example.dingo.UIConstants
 import com.example.dingo.common.SessionInfo
+import com.example.dingo.dingodex.DingoDexViewModel
 import com.example.dingo.model.Comment
+import com.example.dingo.model.DingoDexEntry
+import com.example.dingo.model.DingoDexEntryContent
 import com.example.dingo.model.Post
 import com.example.dingo.model.Trip
 import com.example.dingo.trips.TripViewModel
@@ -53,16 +63,26 @@ import com.example.dingo.trips.tripMap
 import com.example.dingo.ui.theme.color_on_primary
 import com.example.dingo.ui.theme.color_primary
 import com.google.firebase.Timestamp
+import com.google.firebase.storage.FirebaseStorage
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.tasks.await
 
 @Composable
 fun SocialFeedScreen(
     viewModel: SocialFeedViewModel = hiltViewModel(),
+    dingoDexViewModel: DingoDexViewModel = hiltViewModel(),
     tripViewModel: TripViewModel = hiltViewModel()
 ) {
     val currentUser = SessionInfo.currentUser
     val currentUserId = SessionInfo.currentUserID
     val tripFeedItems = tripViewModel
         .getTripFeed(currentUserId)
+        .observeAsState()
+    val myDingoDexFauna = dingoDexViewModel
+        .getDingoDexCollectedEntries(true, SessionInfo.currentUserID)
+        .observeAsState()
+    val myDingoDexFlora = dingoDexViewModel
+        .getDingoDexCollectedEntries(false, SessionInfo.currentUserID)
         .observeAsState()
     var currentPostId = remember { mutableStateOf("") }
     val feedItems = viewModel.userFeed.observeAsState()
@@ -72,11 +92,18 @@ fun SocialFeedScreen(
 
 
     if (createNewPost.value) {
+        var trips = mutableListOf<Trip>()
+        if (tripFeedItems.value != null) {
+            trips = tripFeedItems.value!!
+        }
+        println("MY TRIPS: $trips")
         CreatePostModal(
             viewModel,
             SessionInfo.currentUserID,
             SessionInfo.currentUsername,
-            tripFeedItems = tripFeedItems.value as List<Trip>
+            tripFeedItems = trips as List<Trip>,
+            myDingoDexFauna.value as MutableList<DingoDexEntry>,
+            myDingoDexFlora.value as MutableList<DingoDexEntry>,
         ) {
             createNewPost.value = false
         }
@@ -122,6 +149,44 @@ fun SocialFeedScreen(
 }
 
 @Composable
+private fun entryShower(
+    entryId: String,
+    viewModel: DingoDexViewModel = hiltViewModel(),
+) {
+    println("GETTING ENTRY PIC: $entryId")
+    var entry = viewModel.getEntryById(entryId)
+    var entryPath = ""
+    if (entry != null) {
+        if (entry.displayPicture != "default") {
+            entryPath = entry.displayPicture
+        }
+    }
+    println("got entry path: $entryPath")
+    if (entryPath != "") {
+        val storageRef = FirebaseStorage.getInstance().reference.child(entryPath)
+
+        val assetManager: AssetManager = LocalContext.current.assets
+        var defaultBitmap = BitmapFactory.decodeStream(assetManager.open("images/white_tailed_deer.jpg"))
+        var bitmap: Bitmap by remember {mutableStateOf(defaultBitmap)}
+
+//        storageRef.getBytes(15000000).addOnSuccessListener {
+//            println("bitmap")
+//            bitmap = BitmapFactory.decodeByteArray(it, 0, it.size)
+//            println(bitmap)
+//            println("bitmap come")
+//        }.addOnFailureListener {
+//            println("Error occurred when downloading user's DingoDex image from Firebase $it")
+//        }
+//        println("making image rn")
+        Image(
+            bitmap = bitmap.asImageBitmap(),
+            contentDescription = "entry picture",
+        )
+//        println("done making image rn")
+    }
+}
+
+@Composable
 private fun SocialPost(
     post: Post,
     trip: Trip?,
@@ -138,6 +203,9 @@ private fun SocialPost(
 
         if (trip != null && trip.locations.isNotEmpty()) {
             tripMap(trip = trip, fullSize = false )
+        }
+        if (post.entryId != "") {
+            entryShower(post.entryId)
         }
         Text(
             modifier = Modifier.height(20.dp),
@@ -178,13 +246,12 @@ fun DropdownMenuExample(items: List<Trip>, onTripSelected: (Trip) -> Unit) {
     var selectedIndex by remember { mutableStateOf(0) }
     Button(
         onClick = { expanded = true },
-
     ) {
         Text(
-            text = items[selectedIndex].title,
+            text = "Add Trip",
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            )
+        )
     }
     DropdownMenu(
         expanded = expanded,
@@ -204,6 +271,37 @@ fun DropdownMenuExample(items: List<Trip>, onTripSelected: (Trip) -> Unit) {
     }
 }
 
+@Composable
+fun DropdownEntryMenu(items: List<DingoDexEntry>, onEntrySelected: (DingoDexEntry) -> Unit) {
+    var expanded by remember { mutableStateOf(false) }
+    var selectedIndex by remember { mutableStateOf(0) }
+    Button(
+        onClick = { expanded = true },
+    ) {
+        Text(
+            text = "Add Entry",
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
+    }
+    DropdownMenu(
+        expanded = expanded,
+        onDismissRequest = { expanded = false },
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        items.forEachIndexed { index, item ->
+            DropdownMenuItem(
+                text = {Text("${item.name}")},
+                onClick = {
+                    selectedIndex = index
+                    onEntrySelected(item)
+                    expanded = false
+                }
+            )
+        }
+    }
+}
+
 
 @Composable
 private fun CreatePostModal(
@@ -211,9 +309,12 @@ private fun CreatePostModal(
     userId: String,
     username: String,
     tripFeedItems:List<Trip>,
+    myDingoDexFauna: MutableList<DingoDexEntry>,
+    myDingoDexFlora: MutableList<DingoDexEntry>,
     onDismissRequest : () -> Unit,
 ) {
-    var selectedTrip : Trip? by remember { mutableStateOf(null) } // Initialize with -1 to indicate no trip is selected
+    var selectedTrip : Trip? by remember { mutableStateOf(null) }
+    var selectedEntry : DingoDexEntry? by remember { mutableStateOf(null) }
 
     CustomDialog(onDismissRequest = onDismissRequest) {
         var textContentState by remember { mutableStateOf("") }
@@ -221,9 +322,23 @@ private fun CreatePostModal(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
-            Text(fontSize = UIConstants.SUBTITLE2_TEXT,    maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                text="selectedTrip id:${selectedTrip?.id ?: "none"} title: ${selectedTrip?.title ?: "none"}")
+            if (selectedTrip != null) {
+                Text(fontSize = UIConstants.SUBTITLE2_TEXT,    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    text="Selected trip: ${selectedTrip?.title ?: "none"}",
+                )
+            } else if (selectedEntry != null) {
+                Text(fontSize = UIConstants.SUBTITLE2_TEXT,    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    text="Selected entry: ${selectedEntry?.name ?: "none"}",
+                )
+            } else {
+                Text(fontSize = UIConstants.SUBTITLE2_TEXT,    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    text="No selected entry or trip",
+                )
+            }
+
             TextField(
                 modifier = Modifier
                     .padding(vertical = UIConstants.MEDIUM_PADDING)
@@ -232,6 +347,44 @@ private fun CreatePostModal(
                 onValueChange = { textContentState = it },
                 label = { Text("") }
             )
+            println("TRIP FEED ITEMS: $tripFeedItems")
+            if (tripFeedItems.isNotEmpty() && selectedEntry == null) {
+                DropdownMenuExample(tripFeedItems, onTripSelected = { newValue ->
+                    selectedTrip = newValue
+                })
+//                if (selectedTrip != null) {
+//                    Button(
+//                        onClick = {
+//                            selectedTrip = null
+//                        }
+//                    ) {
+//                        Text("Remove Trip")
+//                    }
+//                }
+            }
+            if (selectedTrip == null) {
+                var myDingoDexItems = myDingoDexFauna + myDingoDexFlora
+
+                myDingoDexItems = myDingoDexItems.sortedByDescending {it.timestamp}
+                if (myDingoDexItems.isNotEmpty()) {
+//                    if (selectedEntry != null) {
+//                        Button(
+//                            onClick = {
+//                                selectedEntry = null
+//                            }
+//                        ) {
+//                            Text("Remove Entry")
+//                        }
+//                    }
+                    DropdownEntryMenu(myDingoDexItems, onEntrySelected = { newValue ->
+                        selectedEntry = newValue
+                    })
+                }
+            }
+
+            //   SELECT trip
+//            Get trip feed names
+//            clickable
             Row (
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
@@ -242,7 +395,7 @@ private fun CreatePostModal(
                             userId,
                             username,
                             textContentState,
-                            mutableListOf<String>(),
+                            selectedEntry,
                             selectedTrip?.id ?: null,
                         )
                         onDismissRequest()
@@ -257,15 +410,15 @@ private fun CreatePostModal(
                 }
 
             }
-            Column(
-                modifier = Modifier.height(30.dp)
-            ) {
-                DropdownMenuExample(tripFeedItems, onTripSelected = { newValue ->
-                    selectedTrip = newValue
-                })
-            }
-
-
+//            Column(
+//                modifier = Modifier.height(30.dp)
+//            ) {
+//                if (tripFeedItems.isNotEmpty()) {
+//                    DropdownMenuExample(tripFeedItems, onTripSelected = { newValue ->
+//                        selectedTrip = newValue
+//                    })
+//                }
+//            }
         }
     }
 }
