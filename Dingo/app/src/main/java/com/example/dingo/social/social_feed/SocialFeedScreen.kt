@@ -152,70 +152,34 @@ private fun SocialPost(
 
 
 @Composable
-fun DropdownMenuExample(trips: List<Trip>) {
+fun DropdownMenuExample(items: List<Trip>, onTripSelected: (Trip) -> Unit) {
     var expanded by remember { mutableStateOf(false) }
-    val titles = trips.map { it.title }
     var selectedIndex by remember { mutableStateOf(0) }
-
-
-        Text(
-            text = titles[selectedIndex],
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable(onClick = { expanded = true })
-                .background(Color.Gray)
-        )
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            titles.forEachIndexed { index, item ->
-                DropdownMenuItem(
-                    text = {Text("$item")},
-                    onClick = {
-                        selectedIndex = index
-                        expanded = false
-                    }
-                )
-            }
-        }
-
-}
-
-@Composable
-fun SimpleDropdownMenu() {
-    val items = listOf("Option 1", "Option 2", "Option 3")
-    var selectedIndex by remember { mutableStateOf(0) }
-    var expanded by remember { mutableStateOf(false) }
-
-    Box(modifier = Modifier
-        .fillMaxSize()
-        .wrapContentSize(Alignment.TopStart)) {
-        Text(
-            text = items[selectedIndex],
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable(onClick = { expanded = true })
-                .background(Color.Gray)
-        )
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            items.forEachIndexed { index, item ->
-                DropdownMenuItem(
-                    text = { Text("$item")},
-                    onClick = {
-                        selectedIndex = index
-                        expanded = false
-                    }
-                )
-            }
+    Text(
+        text = items[selectedIndex].title,
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = { expanded = true })
+            .background(Color.Gray)
+    )
+    DropdownMenu(
+        expanded = expanded,
+        onDismissRequest = { expanded = false },
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        items.forEachIndexed { index, item ->
+            DropdownMenuItem(
+                text = {Text("${item.title}")},
+                onClick = {
+                    selectedIndex = index
+                    onTripSelected(item)
+                    expanded = false
+                }
+            )
         }
     }
 }
+
 
 @Composable
 private fun CreatePostModal(
@@ -225,9 +189,13 @@ private fun CreatePostModal(
     tripFeedItems:List<Trip>,
     onDismissRequest : () -> Unit,
 ) {
+    var selectedTrip : Trip? by remember { mutableStateOf(null) } // Initialize with -1 to indicate no trip is selected
+    fun updateSelectedTrip(newValue: Trip?) {
+        selectedTrip = newValue
+    }
     CustomDialog(onDismissRequest = onDismissRequest) {
         var textContentState by remember { mutableStateOf("") }
-
+        Text("selected Trip: $selectedTrip")
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
@@ -245,7 +213,9 @@ private fun CreatePostModal(
                 onValueChange = { textContentState = it },
                 label = { Text("") }
             )
-            DropdownMenuExample(tripFeedItems)
+            DropdownMenuExample(tripFeedItems, onTripSelected = { newValue ->
+                updateSelectedTrip(newValue)
+            })
 
             //   SELECT trip
 //            Get trip feed names
@@ -260,7 +230,8 @@ private fun CreatePostModal(
                             userId,
                             username,
                             textContentState,
-                            mutableListOf<String>(), null,
+                            mutableListOf<String>(),
+                            selectedTrip?.id,
                         )
                         onDismissRequest()
                     }
