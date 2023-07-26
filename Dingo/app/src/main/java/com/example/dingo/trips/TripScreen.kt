@@ -453,8 +453,9 @@ private fun PostTripModal(
                     trip.title = textContentState
                     trip.username = SessionInfo.currentUsername
                     trip.userId = SessionInfo.currentUserID
+//                    val tripId = viewModel.createTrip(trip = trip)
+                    val tripId = viewModel.makeDummyTrip(trip = trip)
 
-                    val tripId = viewModel.createTrip(trip = trip)
                 }
 
 //                TODO: post as trip and create a post of the given trip ID

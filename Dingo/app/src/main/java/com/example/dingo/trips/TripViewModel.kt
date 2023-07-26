@@ -93,15 +93,12 @@ constructor(
         )
     }
 
-//    fun makeDummyTrips() {
-//        viewModelScope.launch {
-//                val tripId = tripService.createTrip(
-//                    userId=SessionInfo.currentUserID,
-//                    username=SessionInfo.currentUsername,
-//                    locations = dummyTrip1,
-//                    discoveredEntries = emptyList())
-//
-//                Log.d("TripViewModel", " making a trip with tripId: $tripId")
-//        }
-//    }
+    fun makeDummyTrip(trip:Trip) {
+        viewModelScope.launch {
+                trip.locations= dummyTrip1 as MutableList<LatLng>
+                val tripId = tripService.createTrip(trip)
+                SessionInfo.trip = null
+                Log.d("TripViewModel", " making a dummy trip with tripId: $tripId")
+        }
+    }
 }
