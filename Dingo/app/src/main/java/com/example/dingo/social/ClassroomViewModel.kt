@@ -7,6 +7,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
 import com.example.dingo.common.SessionInfo
+import com.example.dingo.common.StatName
+import com.example.dingo.common.incrementStat
 import com.example.dingo.model.AccountType
 import com.example.dingo.model.Classroom
 import com.example.dingo.model.Comment
@@ -94,7 +96,7 @@ constructor(
 
         for (userPair in userList) {
             viewModelScope.launch {
-                userService.createUser(userPair.first, userPair.second, AccountType.EDUCATION)
+                userService.createUser(userPair.first, userPair.second, AccountType.STUDENT)
             }
         }
     }
@@ -138,7 +140,7 @@ constructor(
             classroomService.addPost(classroomId, postId)
             userService.addClassroomPost(userId, postId)
         }
-
+        incrementStat(StatName.NUM_CLASSROOM_POSTS)
     }
 
     fun makeComment(
@@ -149,6 +151,7 @@ constructor(
         viewModelScope.launch {
             postService.addComment(postId, SessionInfo.currentUsername, textContent)
         }
+        incrementStat(StatName.NUM_COMMENTS)
     }
 
 

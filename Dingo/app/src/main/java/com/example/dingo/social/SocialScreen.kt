@@ -19,6 +19,7 @@ import com.example.dingo.UIConstants
 import com.example.dingo.social.profile.ProfileScreen
 import com.example.dingo.social.social_feed.SocialFeedScreen
 
+
 sealed class SocialNavigationItem(
     val name: String,
     val route: String,

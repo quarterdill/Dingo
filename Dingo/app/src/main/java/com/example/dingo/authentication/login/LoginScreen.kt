@@ -86,7 +86,7 @@ fun LoginScreen(
 
 
 @Composable
-private fun logInFields(
+fun logInFields(
     viewModel: LoginViewModel = hiltViewModel(),
     navController: NavHostController
 ) {

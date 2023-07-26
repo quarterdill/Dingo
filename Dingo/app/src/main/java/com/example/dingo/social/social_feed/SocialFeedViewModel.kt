@@ -5,6 +5,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
 import com.example.dingo.common.SessionInfo
+import com.example.dingo.common.StatName
+import com.example.dingo.common.incrementStat
+import com.example.dingo.common.isValidEmail
+import com.example.dingo.model.AccountType
+import com.example.dingo.model.Classroom
 import com.example.dingo.model.Comment
 import com.example.dingo.model.Post
 import com.example.dingo.model.PostComparator
@@ -59,9 +64,11 @@ constructor(
             }
 
         }
+        incrementStat(StatName.NUM_SOCIAL_POSTS)
     }
 
     fun getFeedForUser(userId: String, limit: Int = 10): MutableList<Post> {
+        // TODO: add loading
         var ret = mutableListOf<Post>()
 
         runBlocking {
@@ -137,6 +144,28 @@ constructor(
         viewModelScope.launch {
             postService.addComment(postId, SessionInfo.currentUsername, textContent)
         }
+        incrementStat(StatName.NUM_COMMENTS)
     }
+
+
+
+    fun getUsersPosts(userId: String): LiveData<MutableList<Post>?> {
+        return liveData(Dispatchers.IO) {
+            try {
+                userService.getUsersPosts(userId).collect {
+                    if (it != null) {
+                        val posts = it
+                        emit(posts)
+                    } else {
+                        emit(null)
+                    }
+                }
+            } catch (e: java.lang.Exception) {
+                // Do nothing
+                println("Error in getting user's own posts: $e")
+            }
+        }
+    }
+
 
 }

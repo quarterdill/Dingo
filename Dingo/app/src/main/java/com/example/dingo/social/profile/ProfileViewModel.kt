@@ -8,9 +8,12 @@ import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.example.dingo.common.SessionInfo
+import com.example.dingo.common.StatName
+import com.example.dingo.common.incrementStat
 import com.example.dingo.model.Achievement
 import com.example.dingo.model.AchievementListings
 import com.example.dingo.model.DingoDexEntryListings
+import com.example.dingo.model.Post
 import com.example.dingo.model.User
 import com.example.dingo.model.service.AccountService
 import com.example.dingo.model.service.ClassroomService
@@ -40,6 +43,23 @@ constructor(
         }
     }
 
+    fun getFriendsForUser(userId: String): LiveData<MutableList<User>?> {
+        return liveData(Dispatchers.IO) {
+            try {
+                userService.getFriends(userId).collect {
+                    if (it != null) {
+                        emit(it)
+                    } else {
+                        emit(null)
+                    }
+                }
+            } catch (e: java.lang.Exception) {
+                // Do nothing
+                println("$e")
+            }
+        }
+    }
+
     fun sendFriendReq(senderId: String, receiverName: String): Boolean {
         var receiverUser: User? = null
         var friendReqOk: Boolean = false
@@ -59,6 +79,7 @@ constructor(
         runBlocking{
             msg = userService.acceptFriendReq(senderId, receiverId)
         }
+        incrementStat(StatName.NUM_FRIENDS_ACCEPTED)
         return msg
     }
 
@@ -67,6 +88,7 @@ constructor(
         runBlocking{
             msg = userService.declineFriendReq(senderId, receiverId)
         }
+        incrementStat(StatName.NUM_FRIENDS_DECLINED)
         return msg
     }
 
@@ -82,23 +104,6 @@ constructor(
                     }
                 }
             } catch (e: java.lang.Exception) {
-                // Do nothing
-                println("$e")
-            }
-        }
-    }
-
-    fun getFriendsForUser(userId: String): LiveData<MutableList<User>?> {
-        return liveData(Dispatchers.IO) {
-            try {
-                userService.getFriends(userId).collect {
-                    if (it != null) {
-                        emit(it)
-                    } else {
-                        emit(null)
-                    }
-                }
-            } catch (e: Exception) {
                 // Do nothing
                 println("$e")
             }
@@ -126,7 +131,7 @@ constructor(
         if (currUser != null) {
             val achievementIds = currUser.achievements
             for (i in achievementIds) {
-                ret.add(AchievementListings.getInstance(context).achievementList[i])
+                ret.add(AchievementListings.achievementList[i])
             }
         }
 

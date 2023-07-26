@@ -84,6 +84,7 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
                         if (snapshot == null) {
                             trySend(null)
                         } else if (snapshot.exists()) {
+                            println("SNAPSHOT: $snapshot")
                             trySend(snapshot.toObject(User::class.java))
                         }
                     }
@@ -466,6 +467,23 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
             }
             awaitClose { subscription.remove() }
         }
+    }
+
+    override suspend fun updateStats() {
+        val currUser = SessionInfo.currentUser
+        if (currUser != null) {
+            firestore.collection(USER_COLLECTIONS)
+                .document(currUser.id)
+                .update("stats", currUser.stats)
+                .await()
+        }
+    }
+
+    override suspend fun addTripForUser(userId : String, tripId: String) {
+        firestore.collection(USER_COLLECTIONS)
+            .document(userId)
+            .update("trips", FieldValue.arrayUnion(tripId))
+            .await()
     }
 
     companion object {
