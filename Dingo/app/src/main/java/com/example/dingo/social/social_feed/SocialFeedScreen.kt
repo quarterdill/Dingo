@@ -1,13 +1,18 @@
 package com.example.dingo.social.social_feed
-
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
@@ -20,6 +25,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -39,22 +45,29 @@ import com.example.dingo.UIConstants
 import com.example.dingo.common.SessionInfo
 import com.example.dingo.model.Comment
 import com.example.dingo.model.Post
+import com.example.dingo.model.Trip
+import com.example.dingo.trips.TripViewModel
 import com.google.firebase.Timestamp
 
 @Composable
 fun SocialFeedScreen(
     viewModel: SocialFeedViewModel = hiltViewModel(),
+    tripViewModel: TripViewModel = hiltViewModel()
 ) {
     val currentUser = SessionInfo.currentUser
+    val currentUserId = SessionInfo.currentUserID
+    val tripFeedItems = tripViewModel
+        .getTripFeed(currentUserId)
+        .observeAsState()
     var currentPostId = remember { mutableStateOf("") }
     val feedItems = viewModel.userFeed.observeAsState()
-    println("teststes ${feedItems.value}")
     var createNewPost = remember { mutableStateOf(false) }
     if (createNewPost.value) {
         CreatePostModal(
             viewModel,
             SessionInfo.currentUserID,
             SessionInfo.currentUsername,
+            tripFeedItems = tripFeedItems.value as List<Trip>
         ) {
             createNewPost.value = false
         }
@@ -110,7 +123,7 @@ private fun SocialPost(
             modifier = Modifier.height(20.dp),
             fontSize = 12.sp,
             color = Color.Gray,
-            text="${post.username} posted $timeDiffMsg ago"
+            text="${post.username} posted $timeDiffMsg ago with tripId: ${post.tripId ?: "none"}"
         )
         Text(
             modifier = Modifier.padding(all = 12.dp),
@@ -133,30 +146,77 @@ private fun SocialPost(
     }
 }
 
+
+
+
+
+@Composable
+fun DropdownMenuExample(items: List<Trip>, onTripSelected: (Trip) -> Unit) {
+    var expanded by remember { mutableStateOf(false) }
+    var selectedIndex by remember { mutableStateOf(0) }
+    Text(
+        text = items[selectedIndex].title,
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = { expanded = true })
+            .background(Color.Gray)
+    )
+    DropdownMenu(
+        expanded = expanded,
+        onDismissRequest = { expanded = false },
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        items.forEachIndexed { index, item ->
+            DropdownMenuItem(
+                text = {Text("${item.title}")},
+                onClick = {
+                    selectedIndex = index
+                    onTripSelected(item)
+                    expanded = false
+                }
+            )
+        }
+    }
+}
+
+
 @Composable
 private fun CreatePostModal(
     viewModel: SocialFeedViewModel = hiltViewModel(),
     userId: String,
     username: String,
-    onDismissRequest: () -> Unit,
+    tripFeedItems:List<Trip>,
+    onDismissRequest : () -> Unit,
 ) {
+    var selectedTrip : Trip? by remember { mutableStateOf(null) } // Initialize with -1 to indicate no trip is selected
+
     CustomDialog(onDismissRequest = onDismissRequest) {
         var textContentState by remember { mutableStateOf("") }
-
+        Text("selectedTrip id:${selectedTrip?.id ?: "none"} title: ${selectedTrip?.title ?: "none"}")
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
+//            SimpleDropdownMenu()
             Text(
                 text = "Post",
                 fontSize = UIConstants.SUBTITLE2_TEXT
             )
             TextField(
-                modifier = Modifier.padding(vertical = UIConstants.MEDIUM_PADDING).height(100.dp),
+                modifier = Modifier
+                    .padding(vertical = UIConstants.MEDIUM_PADDING)
+                    .height(100.dp),
                 value = textContentState,
                 onValueChange = { textContentState = it },
                 label = { Text("") }
             )
+            DropdownMenuExample(tripFeedItems, onTripSelected = { newValue ->
+                selectedTrip = newValue
+            })
+
+            //   SELECT trip
+//            Get trip feed names
+//            clickable
             Row (
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
@@ -168,7 +228,7 @@ private fun CreatePostModal(
                             username,
                             textContentState,
                             mutableListOf<String>(),
-                            null,
+                            selectedTrip?.id ?: null,
                         )
                         onDismissRequest()
                     }
@@ -233,7 +293,9 @@ private fun CommentsDialog(
             }
 
             TextField(
-                modifier = Modifier.padding(vertical = UIConstants.MEDIUM_PADDING).height(100.dp),
+                modifier = Modifier
+                    .padding(vertical = UIConstants.MEDIUM_PADDING)
+                    .height(100.dp),
                 value = textContentState,
                 onValueChange = { textContentState = it },
                 label = { Text("") }
