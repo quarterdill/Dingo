@@ -81,7 +81,6 @@ fun DingoDexScreen(
 ) {
     val navController = rememberNavController()
     val selected = remember { mutableStateOf("")}
-    println(userId)
     viewModel.getEntries(userId)
     Column(
         modifier = Modifier.fillMaxSize(),

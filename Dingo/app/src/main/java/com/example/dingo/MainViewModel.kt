@@ -92,7 +92,4 @@ constructor(
             }
         }
     }
-
-    val isEmailVerified get() = repo.currentUser?.isEmailVerified ?: false
-
 }

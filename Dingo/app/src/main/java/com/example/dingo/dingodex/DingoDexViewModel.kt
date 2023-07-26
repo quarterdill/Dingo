@@ -53,6 +53,7 @@ constructor(
             val dingoDexItems = mutableListOf<DingoDexCollectionItem>()
             try {
                 userService.getUserFlow(userId).collect {
+                    print(it)
                     if (it != null) {
                         val uncollectedDingoDex = if (isFauna) {
                             it.uncollectedFauna
@@ -60,10 +61,8 @@ constructor(
                             it.uncollectedFlora
                         }
                         for (item in uncollectedDingoDex) {
-                            println(item)
                             try {
-                                dingoDexStorageService.getDingoDexItem(item, isFauna)
-                                val dingoDexItem = dingoDexStorageService.getDingoDexItem(item, isFauna)
+                                val dingoDexItem = dingoDexStorageService.getDingoDexItem(if (isFauna) item else item-50, isFauna)
                                 if (dingoDexItem != null) {
                                     dingoDexItems.add(
                                         DingoDexCollectionItem(

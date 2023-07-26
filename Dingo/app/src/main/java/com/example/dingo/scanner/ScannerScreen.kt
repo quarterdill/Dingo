@@ -158,15 +158,41 @@ private fun CapturedImageBitmapDialog(
                             })
                             Text("Save Image")
                         }
-
-                        Button(
-                            onClick = {
-                                viewModel.scanImage(capturedImage, context, setDefaultPicture, savePicture, animalCallback)
-                                onDismissRequest()
-                               // viewModel.savePicture("Dummy_Data", capturedImage, setDefaultPicture, context)
-                            },
+                        Row (
+                            verticalAlignment = Alignment.CenterVertically,
                         ) {
-                            Text(text = "Scan Image")
+                            Button(
+                                onClick = {
+                                    viewModel.scanImage(
+                                        capturedImage,
+                                        context,
+                                        setDefaultPicture,
+                                        savePicture,
+                                        true,
+                                        animalCallback
+                                    )
+                                    onDismissRequest()
+                                    // viewModel.savePicture("Dummy_Data", capturedImage, setDefaultPicture, context)
+                                },
+                            ) {
+                                Text(text = "Scan Animal")
+                            }
+                            Button(
+                                onClick = {
+                                    viewModel.scanImage(
+                                        capturedImage,
+                                        context,
+                                        setDefaultPicture,
+                                        savePicture,
+                                        false,
+                                        animalCallback
+                                    )
+                                    onDismissRequest()
+                                    // viewModel.savePicture("Dummy_Data", capturedImage, setDefaultPicture, context)
+                                },
+                            ) {
+                                Text(text = "Scan Plant")
+                            }
                         }
                     }
                 }
