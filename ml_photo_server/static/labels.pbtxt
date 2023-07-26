@@ -1,0 +1,245 @@
+item {
+  name: "42223"
+  id: 436
+  display_name: "Odocoileus virginianus"
+}
+item {
+  name: "41638"
+  id: 216
+  display_name: "Ursus americanus"
+}
+item {
+  name: "41663"
+  id: 221
+  display_name: "Procyon lotor"
+}
+item {
+  name: "42069"
+  id: 358
+  display_name: "Vulpes vulpes"
+}
+item {
+  name: "46017"
+  id: 1749
+  display_name: "Sciurus carolinensis"
+}
+item {
+  name: "46217"
+  id: 1830
+  display_name: "Tamias striatus"
+}
+item {
+  name: "43111"
+  id: 729
+  display_name: "Sylvilagus floridanus"
+}
+item {
+  name: "7089"
+  id: 2461
+  display_name: "Branta canadensis"
+}
+item {
+  name: "6930"
+  id: 2389
+  display_name: "Anas platyrhynchos"
+}
+item {
+  name: "12727"
+  id: 1549
+  display_name: "Turdus migratorius"
+}
+item {
+  name: "12942"
+  id: 1202
+  display_name: "Sialia sialis"
+}
+item {
+  name: "145310"
+  id: 2084
+  display_name: "Spinus tristis"
+}
+item {
+  name: "9744"
+  id: 2020
+  display_name: "Agelaius phoeniceus"
+}
+item {
+  name: "5305"
+  id: 1849
+  display_name: "Haliaeetus leucocephalus"
+}
+item {
+  name: "116999"
+  id: 787
+  display_name: "Pandion haliaetus"
+}
+item {
+  name: "906"
+  id: 273
+  display_name: "Meleagris gallopavo"
+}
+item {
+  name: "43794"
+  id: 970
+  display_name: "Castor canadensis"
+}
+item {
+  name: "42051"
+  id: 350
+  display_name: "Canis latrans"
+}
+item {
+  name: "41880"
+  id: 281
+  display_name: "Mephitis mephitis"
+}
+item {
+  name: "50001"
+  id: 258
+  display_name: "Terrapene carolina carolina"
+}
+item {
+  name: "39771"
+  id: 2418
+  display_name: "Chrysemys picta"
+}
+item {
+  name: "39682"
+  id: 2379
+  display_name: "Chelydra serpentina"
+}
+item {
+  name: "66003"
+  id: 158
+  display_name: "Lithobates pipiens"
+}
+item {
+  name: "28362"
+  id: 1251
+  display_name: "Thamnophis sirtalis"
+}
+item {
+  name: "29777"
+  id: 1805
+  display_name: "Lampropeltis triangulum"
+}
+item {
+  name: "48662"
+  id: 2697
+  display_name: "Danaus plexippus"
+}
+item {
+  name: "47219"
+  id: 2157
+  display_name: "Apis mellifera"
+}
+item {
+  name: "57516"
+  id: 57
+  display_name: "Bombus terrestris"
+}
+item {
+  name: "27805"
+  id: 1068
+  display_name: "Notophthalmus viridescens"
+}
+item {
+  name: "27486"
+  id: 988
+  display_name: "Pseudotriton ruber"
+}
+item {
+  name: "4626"
+  id: 1585
+  display_name: "Gavia immer"
+}
+item {
+  name: "4265"
+  id: 1437
+  display_name: "Phalacrocorax auritus"
+}
+item {
+  name: "4956"
+  id: 1721
+  display_name: "Ardea herodias"
+}
+item {
+  name: "4364"
+  id: 1472
+  display_name: "Larus delawarensis"
+}
+item {
+  name: "2548"
+  id: 957
+  display_name: "Megaceryle alcyon"
+}
+item {
+  name: "8021"
+  id: 2499
+  display_name: "Corvus brachyrhynchos"
+}
+item {
+  name: "8229"
+  id: 9
+  display_name: "Cyanocitta cristata"
+}
+item {
+  name: "14801"
+  id: 2367
+  display_name: "Sitta carolinensis"
+}
+item {
+  name: "144815"
+  id: 1928
+  display_name: "Poecile atricapillus"
+}
+item {
+  name: "3936"
+  id: 1326
+  display_name: "Scolopax minor"
+}
+item {
+  name: "9083"
+  id: 269
+  display_name: "Cardinalis cardinalis"
+}
+item {
+  name: "9100"
+  id: 1899
+  display_name: "Melospiza melodia"
+}
+item {
+  name: "9135"
+  id: 1355
+  display_name: "Spizella passerina"
+}
+item {
+  name: "9184"
+  id: 312
+  display_name: "Zonotrichia albicollis"
+}
+item {
+  name: "64968"
+  id: 2670
+  display_name: "Anaxyrus americanus"
+}
+item {
+  name: "23783"
+  id: 2569
+  display_name: "Hyla versicolor"
+}
+item {
+  name: "27186"
+  id: 893
+  display_name: "Plethodon cinereus"
+}
+item {
+  name: "46260"
+  id: 1846
+  display_name: "Tamiasciurus hudsonicus"
+}
+item {
+  name: "74758"
+  id: 328
+  display_name: "Neovison vison"
+}
