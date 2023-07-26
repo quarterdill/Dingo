@@ -12,9 +12,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.ClickableText
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.AddCircle
+import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -86,12 +91,38 @@ fun ClassroomScreen(
         val fetchClassrooms = viewModel
             .getClassrooms()
             .observeAsState()
+        Box (
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            if (classroomId.value != "") {
+                IconButton(
+                    onClick = {
+                        classroomId.value = ""
+                        navController.navigate(ClassroomNavigationItem.SelectClassroom.route)
+                    },
+                ) {
+                    Icon(imageVector = Icons.Rounded.ArrowBack, contentDescription = "back")
+                }
+            }
+            Text(
+                text = "Classroom",
+                fontSize = UIConstants.TITLE_TEXT,
+                modifier = Modifier.align(Alignment.Center)
+            )
+        }
 
-        Text(
-            text = "Classroom",
-            fontSize = UIConstants.TITLE_TEXT,
-        )
-
+        if (classroomId.value != "") {
+            CustomSwitch(
+                "Feed", "Members",
+                modifier = Modifier.padding(UIConstants.MEDIUM_PADDING),
+            ) {
+                if (it) {
+                    navController.navigate(ClassroomNavigationItem.MemberList.route)
+                } else {
+                    navController.navigate(ClassroomNavigationItem.ClassroomPostFeed.route)
+                }
+            }
+        }
         NavHost(
             navController = navController,
             startDestination = ClassroomNavigationItem.SelectClassroom.route
@@ -112,6 +143,7 @@ fun ClassroomScreen(
                     }
                     Text(
                         "Choose a classroom",
+                        modifier = Modifier.padding(UIConstants.MEDIUM_PADDING),
                         fontSize = UIConstants.SUBTITLE1_TEXT,
                     )
                     if (SessionInfo.currentUser != null) {
@@ -140,6 +172,7 @@ fun ClassroomScreen(
                                 items(classrooms.size) { i ->
                                     println("got classroom: ${classrooms[i]}")
                                     ClickableText(
+                                        modifier = Modifier.padding(UIConstants.SMALL_PADDING),
                                         style = TextStyle(
                                             color = Color.LightGray,
                                             fontSize = 26.sp,

@@ -108,12 +108,6 @@ private fun MemberList(
                         color = Color.Gray,
                     )
                     Text(text = userTypeStr)
-                    Divider(
-                        modifier = Modifier
-                            .height(30.dp)
-                            .width(1.dp),
-                        color = Color.Gray,
-                    )
                 }
             }
         }
