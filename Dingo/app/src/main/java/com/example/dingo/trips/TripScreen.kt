@@ -6,6 +6,9 @@ import com.bumptech.glide.Glide
 //import androidx.compose.material.Text
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.AssetManager
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -43,6 +46,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
@@ -70,6 +74,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.firebase.Timestamp
+import com.google.firebase.storage.FirebaseStorage
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerInfoWindow
@@ -343,6 +348,11 @@ fun LocationPermissionScreen() {
 
 @Composable
 fun tripMap(trip : Trip,  fullSize: Boolean) {
+    val currentContext = LocalContext.current
+    val assetManager: AssetManager = currentContext.assets
+
+
+
 
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(trip.locations.lastOrNull() ?: LatLng(51.52061810406676, -0.12635325270312533), 15f)
@@ -365,6 +375,7 @@ fun tripMap(trip : Trip,  fullSize: Boolean) {
 
             val formattedStartTime = dateFormat.format(startDate)
             val formattedEndTime = dateFormat.format(endDate)
+
 
 
             Polyline(points = trip.locations)
@@ -396,6 +407,22 @@ fun tripMap(trip : Trip,  fullSize: Boolean) {
 //                    snippet = "Location: ${pictureLocation.latitude}, ${pictureLocation.longitude}",
 //                    icon = BitmapDescriptorFactory.fromResource(R.drawable.fauna_placeholder)
 //                )
+                val storageRef = FirebaseStorage.getInstance().reference.child(picturePath)
+                var bitmap: Bitmap? by remember {mutableStateOf(null)}
+//    var isLoading: MutableLiveData<Boolean?> by remember {mutableStateOf(false)}
+
+                storageRef.getBytes(1500000000).addOnSuccessListener {
+                    println("bitmap")
+//        isLoading.postValue(true)
+                    bitmap = BitmapFactory.decodeByteArray(it, 0, it.size)
+                    println(bitmap)
+                    println("bitmap come")
+//        isLoading.value = false
+                }.addOnFailureListener {
+                    println("Error occurred when downloading user's DingoDex image from Firebase $it")
+//        isLoading.value = false
+                }
+
                 MarkerInfoWindow(
                     state = MarkerState(position = pictureLocation),
                     icon = BitmapDescriptorFactory.fromResource(R.drawable.fauna_placeholder),
@@ -412,20 +439,21 @@ fun tripMap(trip : Trip,  fullSize: Boolean) {
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
 
+
                             Image(
-                                painter = painterResource(id = R.drawable.fauna_placeholder),
-                                contentDescription = null,
+                                bitmap = bitmap!!.asImageBitmap(),
+                              contentDescription = null,
                                 contentScale = ContentScale.Fit,
                                 modifier = Modifier
                                     .height(80.dp)
                                     .fillMaxWidth(),
-
-                                )
+                            )
                             //.........................Spacer
                             Spacer(modifier = Modifier.height(24.dp))
                             //.........................Text: title
+
                             Text(
-                                text = "Marker Title",
+                                text = "",
                                 textAlign = TextAlign.Center,
                                 modifier = Modifier
                                     .padding(top = 10.dp)
@@ -436,7 +464,7 @@ fun tripMap(trip : Trip,  fullSize: Boolean) {
                             Spacer(modifier = Modifier.height(8.dp))
                             //.........................Text : description
                             Text(
-                                text = "Customizing a marker's info window",
+                                text = "",
                                 textAlign = TextAlign.Center,
                                 modifier = Modifier
                                     .padding(top = 10.dp, start = 25.dp, end = 25.dp)
