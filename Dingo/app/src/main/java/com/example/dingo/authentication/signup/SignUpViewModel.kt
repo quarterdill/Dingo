@@ -2,7 +2,9 @@ package com.example.dingo.authentication.signup
 
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.example.dingo.common.isValidEmail
 import com.example.dingo.common.isValidPassword
@@ -12,6 +14,7 @@ import com.example.dingo.model.service.UserService
 import com.example.dingo.navigation.Screen
 import com.example.dingo.model.AccountType
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
@@ -22,6 +25,8 @@ constructor(
     private val accountService: AccountService,
     private val userService: UserService
 ) : ViewModel() {
+
+    var isLoading = MutableLiveData(false)
     var uiState = mutableStateOf(SignUpUIState())
         private set
 
@@ -72,30 +77,35 @@ constructor(
             Log.d("STATE", "passwords don't match")
             return
         }
-        var authId = ""
-        runBlocking {
-            println("AUTH: twoetjijdfi authid is $authId")
-            authId = accountService.registerUser(email, password)
-
-            println("AUTH: authid is $authId")
-
-            if (authId != "") {
-                navController.navigate(route = Screen.LoginScreen.route)
-                var accountType: AccountType = AccountType.STANDARD
-                if (uiState.value.accountType) {
-                    accountType = if (uiState.value.educationType) {
-                        AccountType.INSTRUCTOR
+        isLoading.value = true
+        viewModelScope.launch {
+            accountService.registerUser(email, password) {result, authId ->
+                viewModelScope.launch {
+                    if (result) {
+                        var accountType: AccountType = AccountType.STANDARD
+                        if (uiState.value.accountType) {
+                            accountType = if (uiState.value.educationType) {
+                                AccountType.INSTRUCTOR
+                            } else {
+                                AccountType.STUDENT
+                            }
+                        }
+                        userService.createUser(
+                            uiState.value.username,
+                            uiState.value.email,
+                            authId,
+                            accountType
+                        )
+                        isLoading.value = false
+                        navController.navigate(route = Screen.LoginScreen.route)
                     } else {
-                        AccountType.STUDENT
+                        isLoading.value = false
+                        // TODO: add error toast
                     }
                 }
-                userService.createUser(
-                    uiState.value.username,
-                    uiState.value.email,
-                    authId,
-                    accountType
-                )
+
             }
+
         }
     }
 }

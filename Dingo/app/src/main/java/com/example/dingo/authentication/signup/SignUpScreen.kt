@@ -5,6 +5,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,12 +16,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AddCircle
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -52,30 +55,42 @@ fun SignUpScreen(
     navController: NavHostController
 ) {
     val uiState by viewModel.uiState
-    Column(
+    val isLoading = viewModel.isLoading.observeAsState()
+    Box(
         modifier = Modifier
             .fillMaxSize()
             .background(color = Purple80),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
+        contentAlignment = Alignment.Center,
+    ) {
+        if (isLoading.value!!) {
+            CircularProgressIndicator()
+        } else {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(color = Purple80),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
 
-        ) {
-        CustomSwitch(
-            "Standard",
-            "Education",
-            Modifier.padding(vertical = UIConstants.MEDIUM_PADDING),
-            onChanged = viewModel::onButtonToggle
-        )
-        Log.d("STATE", uiState.accountType.toString())
-        if (uiState.accountType) {
-            CustomSwitch(
-                "Student",
-                "Instructor",
-                Modifier.padding(vertical = UIConstants.MEDIUM_PADDING),
-                onChanged = viewModel::onButtonToggleEducation
-            )
+                ) {
+                CustomSwitch(
+                    "Standard",
+                    "Education",
+                    Modifier.padding(vertical = UIConstants.MEDIUM_PADDING),
+                    onChanged = viewModel::onButtonToggle
+                )
+                Log.d("STATE", uiState.accountType.toString())
+                if (uiState.accountType) {
+                    CustomSwitch(
+                        "Student",
+                        "Instructor",
+                        Modifier.padding(vertical = UIConstants.MEDIUM_PADDING),
+                        onChanged = viewModel::onButtonToggleEducation
+                    )
+                }
+                SignUpFields(navController = navController)
+            }
         }
-        SignUpFields(navController = navController)
     }
 }
 @Composable
@@ -115,6 +130,7 @@ private fun SignUpFields(
                 fontSize = 15.sp
             )
         }
-    }
 
+
+    }
 }
