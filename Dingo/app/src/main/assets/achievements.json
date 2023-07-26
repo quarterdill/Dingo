@@ -3,77 +3,77 @@
     "achievementId": 0,
     "name": "Dingo Diver",
     "description": "Make a Dingo account",
-    "condition_field": "LOGINS",
-    "condition_value": 1
+    "conditionField": "LOGINS",
+    "conditionValue": 1
   },
   {
     "achievementId": 1,
     "name": "Scanning...",
     "description": "Make your first scan",
-    "condition_field": "SUCCESSFUL_SCANS",
-    "condition_value": 1
+    "conditionField": "SUCCESSFUL_SCANS",
+    "conditionValue": 1
   },
   {
     "achievementId": 2,
     "name": "Fauna Hunter",
     "description": "Find 5 fauna",
-    "condition_field": "FAUNA_SCANS",
-    "condition_value": 5
+    "conditionField": "FAUNA_SCANS",
+    "conditionValue": 5
   },
   {
     "achievementId": 3,
     "name": "Flora Hunter",
     "description": "Find 5 flora",
-    "condition_field": "FLORA_SCANS",
-    "condition_value": 5
+    "conditionField": "FLORA_SCANS",
+    "conditionValue": 5
   },
   {
     "achievementId": 4,
     "name": "Social Butterfly",
     "description": "Make your first social post",
-    "condition_field": "NUM_SOCIAL_POSTS",
-    "condition_value": 1
+    "conditionField": "NUM_SOCIAL_POSTS",
+    "conditionValue": 1
   },
   {
     "achievementId": 5,
     "name": "Social Butterfly II",
     "description": "Make ten social posts",
-    "condition_field": "NUM_SOCIAL_POSTS",
-    "condition_value": 10
+    "conditionField": "NUM_SOCIAL_POSTS",
+    "conditionValue": 10
   },
   {
     "achievementId": 6,
     "name": "Rising Pupil",
     "description": "Make your first classroom post",
-    "condition_field": "NUM_CLASSROOM_POSTS",
-    "condition_value": 1
+    "conditionField": "NUM_CLASSROOM_POSTS",
+    "conditionValue": 1
   },
   {
     "achievementId": 7,
     "name": "Rising Pupil II",
     "description": "Make ten classroom posts",
-    "condition_field": "NUM_CLASSROOM_POSTS",
-    "condition_value": 10
+    "conditionField": "NUM_CLASSROOM_POSTS",
+    "conditionValue": 10
   },
   {
     "achievementId": 8,
     "name": "Supportive Sandy",
     "description": "Make your first comment",
-    "condition_field": "NUM_COMMENTS",
-    "condition_value": 1
+    "conditionField": "NUM_COMMENTS",
+    "conditionValue": 1
   },
   {
     "achievementId": 9,
     "name": "Accepted!",
     "description": "Accept a friend request",
-    "condition_field": "NUM_FRIENDS_ACCEPTED",
-    "condition_value": 1
+    "conditionField": "NUM_FRIENDS_ACCEPTED",
+    "conditionValue": 1
   },
   {
     "achievementId": 10,
     "name": "Rejected!",
     "description": "Reject a friend request",
-    "condition_field": "NUM_FRIENDS_DECLINED",
-    "condition_value": 1
+    "conditionField": "NUM_FRIENDS_DECLINED",
+    "conditionValue": 1
   }
 ]

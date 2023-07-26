@@ -1,6 +1,7 @@
 package com.example.dingo.social
 
 import android.se.omapi.Session
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -39,6 +40,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
@@ -321,7 +323,7 @@ fun ClassroomScreen(
                 }
             }
             composable(ClassroomNavigationItem.AddMember.route) {
-                AddMemberModal(viewModel, navController)
+                AddMemberModal(viewModel, navController, classroomId.value)
             }
             composable(ClassroomNavigationItem.ViewComments.route) {
                 Column(
@@ -572,8 +574,42 @@ private fun CreateClassroomModal(
 private fun AddMemberModal(
     viewModel: ClassroomViewModel = hiltViewModel(),
     navController: NavHostController,
+    classroomId: String
 ) {
-    Text("Cannot add new members as a student")
+    var textContentState by remember { mutableStateOf("") }
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+    ) {
+        val currentContext = LocalContext.current
+        Text(text = "Add Student")
+        TextField(
+            value = textContentState,
+            onValueChange = { textContentState = it },
+            label = { Text("")}
+        )
+        Button(
+            onClick = {
+                val ok = viewModel.addStudent(classroomId, textContentState)
+                if (ok) {
+                    Toast.makeText(
+                        currentContext,
+                        "Added student!",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                } else {
+                    Toast.makeText(
+                        currentContext,
+                        "Couldn't find student...",
+                        Toast.LENGTH_SHORT,
+                    ).show()
+                }
+            }
+        ) {
+            Text(text = "Add")
+        }
+    }
 }
 
 @Composable

@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.dingo.common.SessionInfo
 import com.example.dingo.AnimalDetectionModel
 import com.example.dingo.model.service.AccountService
 import com.example.dingo.model.service.DingoDexEntryService
@@ -33,10 +34,12 @@ constructor(
     val state = _state.asStateFlow()
     var isLoading = MutableLiveData<Boolean>(false)
 
-    fun onPhotoCaptured(bitmap: Bitmap, context: Context) {
+    fun scanImage(bitmap: Bitmap, context: Context, saveAsDefault: Boolean, saveStorage: Boolean, callBack: (String) -> Unit) {
         val animalDetectionModel = AnimalDetectionModel(context)
-        val prediction = animalDetectionModel.run( bitmap )
-        println(prediction)
+        val prediction = animalDetectionModel.run( bitmap , callBack, saveAsDefault, saveStorage, this::savePicture, this::addEntry)
+        updateCapturedPhotoState(bitmap)
+    }
+    fun onPhotoCaptured(bitmap: Bitmap) {
         updateCapturedPhotoState(bitmap)
     }
 
@@ -48,7 +51,7 @@ constructor(
         viewModelScope.launch {
             var result = false
             isLoading.value = true
-            val entries = dingoDexEntryService.getEntry(entryName)
+            val entries = dingoDexEntryService.getEntry(SessionInfo.currentUserID, entryName)
             if (entries.isEmpty()) {
                 val dingoDex = dingoDexStorageService.findDingoDexItem(entryName)
                 if (dingoDex != null) {
@@ -69,15 +72,16 @@ constructor(
         }
     }
 
-    fun savePicture(entryName: String, image: Bitmap, saveAsDefault: Boolean, context: Context) {
+    fun savePicture(entryName: String, image: Bitmap, saveAsDefault: Boolean, saveImage: Boolean, context: Context) {
         viewModelScope.launch {
-
-            imageInternalStorageService.saveImage(entryName, image, context)
+            if (saveImage) {
+                imageInternalStorageService.saveImage(entryName, image, context)
+            }
             if (saveAsDefault) {
                     var result = false
                     val imagePath = dingoDexEntryService.addPicture(entryName, image)
                     if (imagePath != "") {
-                        val entries = dingoDexEntryService.getEntry(entryName)
+                        val entries = dingoDexEntryService.getEntry(SessionInfo.currentUserID, entryName)
                         if (entries.isNotEmpty()) {
                             // Should only have 1 entry for each animal/plant
                             var entry = entries[0]
