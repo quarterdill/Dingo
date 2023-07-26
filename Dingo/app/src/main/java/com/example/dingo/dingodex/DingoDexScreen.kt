@@ -41,6 +41,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.createBitmap
@@ -240,7 +241,6 @@ private fun DingoDexItem(
     item: DingoDexCollectionItem,
     navController: NavHostController,
     selected: MutableState<String>,
-    viewModel: DingoDexViewModel = hiltViewModel()
 ) {
     val currentContext = LocalContext.current
     val assetManager: AssetManager = currentContext.assets
@@ -251,6 +251,7 @@ private fun DingoDexItem(
         selected.value = item.scientificName
         navController.navigate(DingoDexNavItem.Description.route)
         },
+        modifier = Modifier.padding(3.dp),
         enabled = item.numEncounters != 0
     ) {
         Column(
@@ -280,7 +281,10 @@ private fun DingoDexItem(
             Text(
                 modifier = Modifier.width(72.dp),
                 text = item.name,
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
+                fontSize = 12.sp,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
             )
         }
     }
