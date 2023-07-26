@@ -1,6 +1,7 @@
 package com.example.dingo.scanner
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
 import androidx.compose.runtime.Composable
 import android.graphics.Bitmap
@@ -34,6 +35,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import android.graphics.BitmapFactory
 import androidx.compose.ui.unit.dp
 import android.graphics.Matrix
+import android.location.Location
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -65,6 +67,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.dingo.R
+import com.example.dingo.common.SessionInfo
 import com.example.dingo.UIConstants
 import com.example.dingo.ui.theme.color_light_transparent
 import com.example.dingo.ui.theme.color_on_primary
@@ -75,6 +78,9 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
+import com.google.android.gms.location.LocationServices
+import com.google.type.LatLng
+import kotlinx.coroutines.tasks.await
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -104,6 +110,7 @@ fun ScannerScreen(
 
 }
 
+@SuppressLint("MissingPermission")
 @Composable
 private fun CapturedImageBitmapDialog(
     capturedImage: Bitmap,
@@ -114,6 +121,8 @@ private fun CapturedImageBitmapDialog(
     val capturedImageBitmap: ImageBitmap = remember { capturedImage.asImageBitmap() }
     val isLoading = viewModel.isLoading.observeAsState()
     val context = LocalContext.current
+    val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
+
     //viewModel.addEntry("Dummy Data")
     Dialog(
         onDismissRequest = onDismissRequest,

@@ -1,5 +1,8 @@
 package com.example.dingo.trips
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
@@ -12,6 +15,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import android.location.Location
+import android.os.Build
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.example.dingo.common.SessionInfo
@@ -99,6 +103,22 @@ constructor(
                 val tripId = tripService.createTrip(trip)
                 SessionInfo.trip = null
                 Log.d("TripViewModel", " making a dummy trip with tripId: $tripId")
+        }
+    }
+
+    fun createNotificationChannel(context: Context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                CHANNEL_ID,
+                CHANNEL_NAME,
+                NotificationManager.IMPORTANCE_LOW
+            ).apply {
+                description = CHANNEL_DESCRIPTION
+            }
+
+            val notificationManager =
+                context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
         }
     }
 }

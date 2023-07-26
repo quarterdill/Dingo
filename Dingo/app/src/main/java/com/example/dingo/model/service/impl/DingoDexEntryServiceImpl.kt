@@ -99,7 +99,7 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
         private const val DINGO_DEX_ENTRIES = "dingoDexEntries"
         private const val USER_ID_FIELD = "userId"
         private const val IS_FAUNA_FIELD = "fauna"
-        private const val ENTRY_NAME = "name"
+        private const val ENTRY_NAME = "scientificName"
 
     }
 }

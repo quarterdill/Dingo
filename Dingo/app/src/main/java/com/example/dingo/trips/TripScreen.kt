@@ -33,6 +33,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
@@ -85,10 +86,12 @@ fun TripScreen(
 
     var selectedTrip: Trip? by remember { mutableStateOf(null) }
     var trackedLocations : List<LatLng> by remember { mutableStateOf(emptyList()) }
-    LocationTrackingService().createNotificationChannel(context)
+    viewModel.createNotificationChannel(context)
     LocationTrackingService.locationList.observe(lifeCycleOwner, Observer {
         trackedLocations = it
-        SessionInfo.trip!!.locations = it
+        if (SessionInfo.trip != null) {
+            SessionInfo.trip!!.locations = it
+        }
     })
 
     val permissionState = remember { mutableStateOf(false) }
@@ -130,9 +133,6 @@ fun TripScreen(
                         text = "Trips",
                         fontSize = UIConstants.TITLE_TEXT,
                     )
-
-                    Text(text = if (isServiceRunning.value) "false" else "true")
-
 
                     LazyColumn(
                         modifier = Modifier.weight(1.0f, true)
@@ -181,45 +181,62 @@ fun TripScreen(
                     }
                 }
             }
-//            composable(TripNavigationItem.TrackTrip.route) {
-//                val dummyTripId = "dummy"
-//                LocationPermissionScreen()
-//                tripMap(trackedLocations, true)
-//                val context = LocalContext.current
-//                Column {
-//                    Button(
-//                        onClick = {
-//                            if (!permissionState.value) {
-//                                requestPermissionLauncher.launch(android.Manifest.permission.ACCESS_FINE_LOCATION)
-//                            }
-//                            isServiceRunning = !isServiceRunning
-//                            if (isServiceRunning) {
-//                                ContextCompat.startForegroundService(
-//                                    context,
-//                                    Intent(context, LocationTrackingService::class.java)
-//                                )
-//                                Log.d("tripScreen", "trackedLocations: $trackedLocations")
-//
-//                                navController.navigate(TripNavigationItem.CreatePost.route)
-//
-//                            } else {
-//                                context.stopService(Intent(context, LocationTrackingService::class.java))
-//                                navController.navigate(TripNavigationItem.CreatePost.route)
-//
-//                            }
-//                        },
-//                        modifier = Modifier.padding(16.dp)
-//                    ) {
-//                        Text(text = if (isServiceRunning) "Stop Tracking Permission Granted: ${permissionState.value}" else "Start Tracking Permission Granted: ${permissionState.value}")
-//                    }
-//                }
-//            }
+
             composable(TripNavigationItem.CreatePost.route) {
-                Log.d("here2", "creating post")
-                if (trackedLocations.isNotEmpty()) {
-                    tripMap(trackedLocations, true)
+                var textContentState by remember { mutableStateOf("") }
+                if (SessionInfo.trip != null) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.padding(16.dp),) {
+
+                                TextField(
+                                    value = textContentState,
+                                    onValueChange = { textContentState = it },
+                                    placeholder = { Text("Name your trip")},
+                                    isError = textContentState.isEmpty()
+                                )
+
+                        Column(modifier = Modifier.weight(6.0f, true)) {
+                            Text(
+                                text = "Description",
+                                modifier = Modifier.padding(16.dp),
+                                fontSize = 16.sp
+                            )
+                            Box(modifier = Modifier.fillMaxSize()) {
+                                if (SessionInfo.trip!!.locations.isNotEmpty()) {
+                                  tripMap(SessionInfo.trip!!.locations, true)
+                                }
+                            }
+                        }
+                        Row(modifier = Modifier.weight(1.0f, true), horizontalArrangement = Arrangement.spacedBy(10.dp),
+                            verticalAlignment = Alignment.CenterVertically) {
+                            Button(
+                                onClick = {
+                                    viewModel.discardTrip()
+                                    navController.navigate(TripNavigationItem.TripPostFeed.route)
+                                }
+                            ) {
+                                Text(text = "Discard Current Trip")
+                            }
+                            Button(
+                                enabled = !textContentState.isEmpty(),
+                                onClick = {
+                                    if (SessionInfo.trip != null) {
+                                        SessionInfo.trip!!.title = textContentState
+                                        SessionInfo.trip!!.username = SessionInfo.currentUsername
+                                        SessionInfo.trip!!.userId = SessionInfo.currentUserID
+
+                                        val tripId = viewModel.createTrip(trip = SessionInfo.trip!!)
+                                    }
+                                    navController.navigate(TripNavigationItem.TripPostFeed.route)
+                                }
+                            ) {
+                                Text(text = "Post Trip")
+                            }
+                        }
+                    }
                 }
-                PostTripModal(navController = navController,  trip = SessionInfo.trip )
+//                    tripMap(trackedLocations, true)
+//                PostTripModal(navController = navController,  trip = SessionInfo.trip )
             }
             composable(TripNavigationItem.TripDetails.route) {
                 Log.d("tripScreen", "Trip Details selectedTrip: $selectedTrip")
@@ -253,26 +270,8 @@ fun TripScreen(
                             }
                         }
                     }
-//                    Box(modifier = Modifier.fillMaxSize()) {
-//
-//                    TopAppBar(
-//                        title = { Text(text = "Map Title") },
-//                        navigationIcon = {
-//                            IconButton(onClick = { /* Handle back action here */ }) {
-//                                Icon(Icons.Default.ArrowBack, contentDescription = "Back")
-//                            }
-//                        }
-//                    )
-//                    Column(modifier = Modifier.padding(16.dp)) {
-//                        Text(text = "day, time, km, animals discovered", fontSize = 16.sp)
-//                        Box(modifier = Modifier.fillMaxSize()) {
-//                            tripMap(trip.locations, true)
-//                        }
-//                    }
                 }
             }
-//                TripDetailsModal(navController = navController, tripId = "", userId = "" , username = "", locations = trackedLocations )
-//            }
         }
     }
 }
@@ -323,7 +322,7 @@ fun LocationPermissionScreen() {
 }
 
 @Composable
-fun tripMap(points: List<LatLng>, fullSize: Boolean) {
+fun tripMap(points: List<LatLng>,  fullSize: Boolean) {
 
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(points.lastOrNull() ?: LatLng(51.52061810406676, -0.12635325270312533), 15f)
@@ -337,7 +336,12 @@ fun tripMap(points: List<LatLng>, fullSize: Boolean) {
             Polyline(points = points)
             Marker(
                 state = MarkerState(position = points.last()),
-                title = "Current Location",
+                title = "Start",
+                snippet = "Trip Started at"
+            )
+            Marker(
+                state = MarkerState(position = points.first()),
+                title = "Finish",
                 snippet = "You are here"
             )
         }
