@@ -199,16 +199,45 @@ private fun CapturedImageBitmapDialog(
                                 color = color_primary
                             )
                         }
-
-                        Button(
-                            onClick = {
-                                viewModel.scanImage(capturedImage, context, setDefaultPicture, savePicture, animalCallback)
-                                onDismissRequest()
-                            },
-                            colors =
-                            ButtonDefaults.buttonColors(containerColor = color_secondary, color_on_secondary)
+                        Row (
+                            verticalAlignment = Alignment.CenterVertically,
                         ) {
-                            Text(text = "Scan Image")
+                            Button(
+                                onClick = {
+                                    viewModel.scanImage(
+                                        capturedImage,
+                                        context,
+                                        setDefaultPicture,
+                                        savePicture,
+                                        true,
+                                        animalCallback
+                                    )
+                                    onDismissRequest()
+                                    // viewModel.savePicture("Dummy_Data", capturedImage, setDefaultPicture, context)
+                                },
+                                colors =
+                                ButtonDefaults.buttonColors(containerColor = color_secondary, color_on_secondary)
+                            ) {
+                                Text(text = "Scan Animal")
+                            }
+                            Button(
+                                onClick = {
+                                    viewModel.scanImage(
+                                        capturedImage,
+                                        context,
+                                        setDefaultPicture,
+                                        savePicture,
+                                        false,
+                                        animalCallback
+                                    )
+                                    onDismissRequest()
+                                    // viewModel.savePicture("Dummy_Data", capturedImage, setDefaultPicture, context)
+                                },
+                                colors =
+                                ButtonDefaults.buttonColors(containerColor = color_secondary, color_on_secondary)
+                            ) {
+                                Text(text = "Scan Plant")
+                            }
                         }
                     }
                 }
@@ -247,8 +276,6 @@ private fun ScannerPreview(
         floatingActionButtonPosition =  FabPosition.Center,
         floatingActionButton = {
             FloatingActionButton (
-                containerColor = color_on_primary,
-                contentColor = color_primary,
                 onClick = {
                     val mainExecutor = ContextCompat.getMainExecutor(context)
                     cameraController.takePicture(mainExecutor, object : ImageCapture.OnImageCapturedCallback() {
@@ -260,6 +287,7 @@ private fun ScannerPreview(
                             image.close()
                         }
                     })
+//                    viewModel.addEntry("Dummy Fauna")
                 }
             ) {
                 Icon(

@@ -398,5 +398,365 @@
     "scientific_name": "Neovison vison",
     "description": "The American Mink (Neovison vison) is a small, semi-aquatic mammal native to North America. It has a sleek, dark brown fur coat and a white patch on its chin. Minks are proficient swimmers and can be found near rivers, streams, and coastal areas. They are skilled predators, feeding on fish, amphibians, birds, and small mammals. Minks play an important role in controlling aquatic and rodent populations in their habitats.",
     "default_picture_name": "images/american_mink.jpg"
+  },
+  {
+    "id": 50,
+    "is_fauna": false,
+    "name": "Sugar Maple",
+    "scientific_name": "Acer saccharum",
+    "description": "Sugar Maple is a deciduous tree native to Ontario, Canada. It is famous for its stunning fall foliage, with leaves turning vibrant shades of red, orange, and yellow. This iconic tree is widely used for maple syrup production and is an essential part of Ontario's natural landscape.",
+    "default_picture_name": "images/sugar_maple.jpg"
+  },
+  {
+    "id": 51,
+    "is_fauna": false,
+    "name": "White Pine",
+    "scientific_name": "Pinus strobus",
+    "description": "White Pine is a majestic evergreen tree that is native to Ontario, Canada. It is one of the tallest trees in eastern North America, known for its soft, flexible needles and beautiful, conical shape. The White Pine has significant ecological importance and is a symbol of strength.",
+    "default_picture_name": "images/white_pine.jpg"
+  },
+  {
+    "id": 52,
+    "is_fauna": false,
+    "name": "Eastern Hemlock",
+    "scientific_name": "Tsuga canadensis",
+    "description": "Eastern Hemlock, scientifically known as Tsuga canadensis, is a coniferous tree native to Ontario, Canada. This evergreen species is an essential component of the region's forests, providing habitat and food for various wildlife. Eastern Hemlock's dense, dark green foliage and graceful appearance make it a beloved tree in the province.",
+    "default_picture_name": "images/eastern_hemlock.jpg"
+  },
+  {
+    "id": 53,
+    "is_fauna": false,
+    "name": "Eastern White Cedar",
+    "scientific_name": "Thuja occidentalis",
+    "description": "Eastern White Cedar, scientifically known as Thuja occidentalis, is a small to medium-sized evergreen tree native to Ontario, Canada. Also called the Northern White Cedar, it is prized for its aromatic and durable wood. This tree is a characteristic feature of Ontario's boreal forests.",
+    "default_picture_name": "images/eastern_white_cedar.jpg"
+  },
+  {
+    "id": 54,
+    "is_fauna": false,
+    "name": "Red Oak",
+    "scientific_name": "Quercus rubra",
+    "description": "Red Oak, scientifically known as Quercus rubra, is a stately deciduous tree native to Ontario, Canada. It is easily recognized by its deeply lobed leaves and acorns, which provide food for numerous wildlife species. The strong and durable wood of Red Oak has been widely used in construction and furniture making.",
+    "default_picture_name": "images/red_oak.jpg"
+  },
+  {
+    "id": 55,
+    "is_fauna": false,
+    "name": "White Oak",
+    "scientific_name": "Quercus alba",
+    "description": "White Oak, scientifically known as Quercus alba, is a large deciduous tree native to Ontario, Canada. It is characterized by its broad, rounded crown and distinctive lobed leaves with a whitish underside. The White Oak's acorns provide a valuable food source for various wildlife, and its timber is highly prized for its strength and beauty.",
+    "default_picture_name": "images/white_oak.jpg"
+  },
+  {
+    "id": 56,
+    "is_fauna": false,
+    "name": "Black Cherry",
+    "scientific_name": "Prunus serotina",
+    "description": "Black Cherry, scientifically known as Prunus serotina, is a deciduous tree native to Ontario, Canada. It is a common species in the province's woodlands and is known for its beautiful white flowers in spring and dark red to black cherries in late summer, which are enjoyed by wildlife and humans alike.",
+    "default_picture_name": "images/black_cherry.jpg"
+  },
+  {
+    "id": 57,
+    "is_fauna": false,
+    "name": "White Ash",
+    "scientific_name": "Fraxinus americana",
+    "description": "White Ash, scientifically known as Fraxinus americana, is a large deciduous tree native to Ontario, Canada. It is prized for its strong, flexible wood, making it a popular choice for various products, including baseball bats. Unfortunately, White Ash populations are threatened by the emerald ash borer, an invasive pest.",
+    "default_picture_name": "images/white_ash.jpg"
+  },
+  {
+    "id": 58,
+    "is_fauna": false,
+    "name": "American Beech",
+    "scientific_name": "Fagus grandifolia",
+    "description": "American Beech, scientifically known as Fagus grandifolia, is a slow-growing deciduous tree native to Ontario, Canada. It is known for its smooth, light gray bark and distinctive serrated leaves. The beech nuts produced by this tree are an essential food source for wildlife, including birds, squirrels, and bears.",
+    "default_picture_name": "images/american_beech.jpg"
+  },
+  {
+    "id": 59,
+    "is_fauna": false,
+    "name": "Eastern Redbud",
+    "scientific_name": "Cercis canadensis",
+    "description": "Eastern Redbud, scientifically known as Cercis canadensis, is a small deciduous tree native to Ontario, Canada. It is celebrated for its eye-catching pink to purple flowers that bloom in early spring, attracting bees and butterflies. The heart-shaped leaves add further charm to this beautiful ornamental tree.",
+    "default_picture_name": "images/eastern_redbud.jpg"
+  },
+  {
+    "id": 60,
+    "is_fauna": false,
+    "name": "Serviceberry",
+    "scientific_name": "Amelanchier alnifolia",
+    "description": "Serviceberry, scientifically known as Amelanchier, is a diverse group of deciduous shrubs and small trees native to Ontario, Canada. They are valued for their early spring flowers, which are an important nectar source for pollinators. Serviceberries produce small, edible berries that are enjoyed by wildlife and humans alike.",
+    "default_picture_name": "images/serviceberry.jpg"
+  },
+  {
+    "id": 61,
+    "is_fauna": false,
+    "name": "Eastern Cottonwood",
+    "scientific_name": "Populus deltoides",
+    "description": "Eastern Cottonwood, scientifically known as Populus deltoides, is a large deciduous tree native to Ontario, Canada. It is often found near water bodies, as it has a high tolerance for moist soils. The triangular-shaped leaves and fluffy cotton-like seeds make this tree easily identifiable.",
+    "default_picture_name": "images/eastern_cottonwood.jpg"
+  },
+  {
+    "id": 62,
+    "is_fauna": false,
+    "name": "Black Willow",
+    "scientific_name": "Salix nigra",
+    "description": "Black Willow, scientifically known as Salix nigra, is a medium-sized deciduous tree native to Ontario, Canada. It is commonly found along rivers, streams, and wetlands. The flexible branches and twigs of Black Willow have been historically used for making baskets and other crafts.",
+    "default_picture_name": "images/black_willow.jpg"
+  },
+  {
+    "id": 63,
+    "is_fauna": false,
+    "name": "Red Maple",
+    "scientific_name": "Acer rubrum",
+    "description": "Red Maple, scientifically known as Acer rubrum, is a fast-growing deciduous tree native to Ontario, Canada. It is famous for its brilliant red foliage in the fall, adding a splash of color to the landscape. Red Maple is highly adaptable and can thrive in various soil types and environmental conditions.",
+    "default_picture_name": "images/red_maple.jpg"
+  },
+  {
+    "id": 64,
+    "is_fauna": false,
+    "name": "Yellow Birch",
+    "scientific_name": "Betula alleghaniensis",
+    "description": "Yellow Birch, scientifically known as Betula alleghaniensis, is a large deciduous tree native to Ontario, Canada. It is distinguished by its shiny, golden-yellow bark that peels in horizontal strips. Yellow Birch wood is valuable for its strength and beauty, and it has been used for various woodworking projects.",
+    "default_picture_name": "images/yellow_birch.jpg"
+  },
+  {
+    "id": 65,
+    "is_fauna": false,
+    "name": "American Elm",
+    "scientific_name": "Ulmus americana",
+    "description": "American Elm, scientifically known as Ulmus americana, is a majestic deciduous tree native to Ontario, Canada. It was once a dominant tree species in North American forests but was devastated by Dutch elm disease. The American Elm's vase-like shape and arching branches make it a classic and iconic tree.",
+    "default_picture_name": "images/american_elm.jpg"
+  },
+  {
+    "id": 66,
+    "is_fauna": false,
+    "name": "Eastern Red Cedar",
+    "scientific_name": "Juniperus virginiana",
+    "description": "Eastern Red Cedar, scientifically known as Juniperus virginiana, is a small to medium-sized evergreen tree native to Ontario, Canada. Despite its name, it is not a true cedar but a species of juniper. Eastern Red Cedar is important for providing shelter and food for various birds and mammals.",
+    "default_picture_name": "images/eastern_red_cedar.jpg"
+  },
+  {
+    "id": 67,
+    "is_fauna": false,
+    "name": "Spicebush",
+    "scientific_name": "Lindera benzoin",
+    "description": "Spicebush, scientifically known as Lindera benzoin, is a deciduous shrub native to Ontario, Canada. It is valued for its fragrant, spicy-scented leaves and bright red berries. Spicebush serves as a host plant for the spicebush swallowtail butterfly and provides important habitat for wildlife.",
+    "default_picture_name": "images/spicebush.jpg"
+  },
+  {
+    "id": 68,
+    "is_fauna": false,
+    "name": "Witch Hazel",
+    "scientific_name": "Hamamelis virginiana",
+    "description": "Witch Hazel, scientifically known as Hamamelis virginiana, is a deciduous shrub native to Ontario, Canada. It is known for its late-season blooms when most other plants have lost their leaves. The distinctive spidery flowers and medicinal properties of witch hazel have made it a popular plant in traditional herbal medicine.",
+    "default_picture_name": "images/witch_hazel.jpg"
+  },
+  {
+    "id": 69,
+    "is_fauna": false,
+    "name": "Swamp Rose",
+    "scientific_name": "Rosa palustris",
+    "description": "Swamp Rose, scientifically known as Rosa palustris, is a deciduous shrub native to Ontario, Canada. As the name suggests, it thrives in wetlands and marshy areas. The showy pink flowers and red hips of Swamp Rose add beauty and provide food for various pollinators and wildlife.",
+    "default_picture_name": "images/swamp_rose.jpg"
+  },
+  {
+    "id": 70,
+    "is_fauna": false,
+    "name": "Purple Coneflower",
+    "scientific_name": "Echinacea purpurea",
+    "description": "Purple Coneflower, scientifically known as Echinacea purpurea, is a herbaceous perennial native to Ontario, Canada. It is famous for its striking pink to purple daisy-like flowers with prominent cone-shaped centers. Purple Coneflower is not only a beautiful wildflower but also a popular medicinal plant used for immune support.",
+    "default_picture_name": "images/purple_coneflower.jpg"
+  },
+  {
+    "id": 71,
+    "is_fauna": false,
+    "name": "Wild Bergamot",
+    "scientific_name": "Monarda fistulosa",
+    "description": "Wild Bergamot, scientifically known as Monarda fistulosa, is a perennial herb native to Ontario, Canada. It is part of the mint family and is characterized by its distinctive lavender to pink flowers and aromatic foliage. Wild Bergamot is not only a lovely addition to gardens but also attracts pollinators like bees and butterflies.",
+    "default_picture_name": "images/wild_bergamot.jpg"
+  },
+  {
+    "id": 72,
+    "is_fauna": false,
+    "name": "Blue Flag Iris",
+    "scientific_name": "Iris versicolor",
+    "description": "Blue Flag Iris, scientifically known as Iris versicolor, is a striking perennial wildflower native to Ontario, Canada. It is known for its vibrant blue to purple flowers and sword-like leaves. Blue Flag Iris thrives in wetlands and along the edges of ponds and lakes, providing habitat for various aquatic species.",
+    "default_picture_name": "images/blue_flag_iris.jpg"
+  },
+  {
+    "id": 73,
+    "is_fauna": false,
+    "name": "Wild Columbine",
+    "scientific_name": "Aquilegia canadensis",
+    "description": "Wild Columbine, scientifically known as Aquilegia canadensis, is a charming perennial wildflower native to Ontario, Canada. It is characterized by its unique red and yellow flowers that resemble hanging lanterns. Wild Columbine is a favorite of hummingbirds and other pollinators.",
+    "default_picture_name": "images/wild_columbine.jpg"
+  },
+  {
+    "id": 74,
+    "is_fauna": false,
+    "name": "Joe Pye Weed",
+    "scientific_name": "Eutrochium maculatum",
+    "description": "Joe Pye Weed, scientifically known as Eutrochium maculatum, is a tall, herbaceous perennial native to Ontario, Canada. It has clusters of pinkish-purple flowers that attract butterflies and other pollinators. Joe Pye Weed is often found in moist meadows and along stream banks.",
+    "default_picture_name": "images/joe_pye_weed.jpg"
+  },
+  {
+    "id": 75,
+    "is_fauna": false,
+    "name": "Cardinal Flower",
+    "scientific_name": "Lobelia cardinalis",
+    "description": "Cardinal Flower, scientifically known as Lobelia cardinalis, is a stunning perennial wildflower native to Ontario, Canada. It is known for its vibrant red flowers and attracts hummingbirds, butterflies, and bees. Cardinal Flower is often found in wetlands, along stream banks, and in other damp areas.",
+    "default_picture_name": "images/cardinal_flower.jpg"
+  },
+  {
+    "id": 76,
+    "is_fauna": false,
+    "name": "Canada Lily",
+    "scientific_name": "Lilium canadense",
+    "description": "Canada Lily, scientifically known as Lilium canadense, is a native perennial lily species found in Ontario, Canada. It is renowned for its nodding, orange or yellow, bell-shaped flowers with dark spots. Canada Lily blooms in early summer and is a delightful addition to gardens or natural landscapes.",
+    "default_picture_name": "images/canada_lily.jpg"
+  },
+  {
+    "id": 77,
+    "is_fauna": false,
+    "name": "Wild Geranium",
+    "scientific_name": "Geranium maculatum",
+    "description": "Wild Geranium, scientifically known as Geranium maculatum, is a woodland perennial native to Ontario, Canada. It features delicate pink to lavender flowers and deeply lobed leaves. Wild Geranium provides nectar and pollen for bees and butterflies, making it a valuable wildflower in ecosystems.",
+    "default_picture_name": "images/wild_geranium.jpg"
+  },
+  {
+    "id": 78,
+    "is_fauna": false,
+    "name": "Bunchberry",
+    "scientific_name": "Cornus canadensis",
+    "description": "Bunchberry, scientifically known as Cornus canadensis, is a small, creeping perennial plant native to Ontario, Canada. It is a member of the dogwood family and is known for its four large, white bracts that surround the tiny greenish flowers. Bunchberry produces bright red berries that are enjoyed by birds and other wildlife.",
+    "default_picture_name": "images/bunchberry.jpg"
+  },
+  {
+    "id": 79,
+    "is_fauna": false,
+    "name": "Wild Ginger",
+    "scientific_name": "Asarum canadense",
+    "description": "Wild Ginger, scientifically known as Asarum canadense, is a low-growing perennial herb native to Ontario, Canada. It has heart-shaped leaves and produces inconspicuous flowers close to the ground. Wild Ginger's aromatic rhizomes have a spicy, ginger-like flavor and were traditionally used by Indigenous peoples as a seasoning and medicine.",
+    "default_picture_name": "images/wild_ginger.jpg"
+  },
+  {
+    "id": 80,
+    "is_fauna": false,
+    "name": "Jack-in-the-Pulpit",
+    "scientific_name": "Arisaema triphyllum",
+    "description": "Jack-in-the-Pulpit, scientifically known as Arisaema triphyllum, is a fascinating perennial plant native to Ontario, Canada. It is named after its unique flower structure, where a hood-like spathe surrounds a central column (the 'Jack'). The plant produces bright red berries that are toxic to humans but provide food for various animals.",
+    "default_picture_name": "images/jack_in_the_pulpit.jpg"
+  },
+  {
+    "id": 81,
+    "is_fauna": false,
+    "name": "Virginia Creeper",
+    "scientific_name": "Parthenocissus quinquefolia",
+    "description": "Virginia Creeper, scientifically known as Parthenocissus quinquefolia, is a deciduous vine native to Ontario, Canada. It is a vigorous climber, often found climbing on trees and buildings. Virginia Creeper's dark green leaves turn bright red in the fall, creating a stunning display of color.",
+    "default_picture_name": "images/virginia_creeper.jpg"
+  },
+  {
+    "id": 82,
+    "is_fauna": false,
+    "name": "Trout Lily",
+    "scientific_name": "Erythronium americanum",
+    "description": "Trout Lily, scientifically known as Erythronium americanum, is a charming spring ephemeral native to Ontario, Canada. Its name comes from the mottled leaves that resemble the patterns found on trout fish. Trout Lily produces bright yellow flowers and is often found carpeting the forest floor in early spring.",
+    "default_picture_name": "images/trout_lily.jpg"
+  },
+  {
+    "id": 83,
+    "is_fauna": false,
+    "name": "Balsam Fir",
+    "scientific_name": "Abies balsamea",
+    "description": "Balsam Fir, scientifically known as Abies balsamea, is a medium-sized evergreen tree native to Ontario, Canada. It is known for its aromatic needles and small, erect cones. Balsam Fir provides important habitat and food sources for various wildlife species.",
+    "default_picture_name": "images/balsam_fir.jpg"
+  },
+  {
+    "id": 84,
+    "is_fauna": false,
+    "name": "Eastern White Spruce",
+    "scientific_name": "Picea glauca",
+    "description": "Eastern White Spruce, scientifically known as Picea glauca, is a tall evergreen tree native to Ontario, Canada. It is characterized by its conical shape and blue-green needles. Eastern White Spruce is an important timber species and serves as a shelter for many forest-dwelling animals.",
+    "default_picture_name": "images/eastern_white_spruce.jpg"
+  },
+  {
+    "id": 85,
+    "is_fauna": false,
+    "name": "Wild Sarsaparilla",
+    "scientific_name": "Aralia nudicaulis",
+    "description": "Wild Sarsaparilla, scientifically known as Aralia nudicaulis, is a perennial herb native to Ontario, Canada. It is a member of the ginseng family and is known for its umbrella-like leaves and small white flowers. The roots of Wild Sarsaparilla have been used for traditional medicine and as a flavoring for beverages.",
+    "default_picture_name": "images/wild_sarsaparilla.jpg"
+  },
+  {
+    "id": 86,
+    "is_fauna": false,
+    "name": "Canada Anemone",
+    "scientific_name": "Anemone canadensis",
+    "description": "Canada Anemone, scientifically known as Anemone canadensis, is a herbaceous perennial native to Ontario, Canada. It features white, daisy-like flowers with bright yellow centers. Canada Anemone is often found in moist meadows, stream banks, and woodland edges.",
+    "default_picture_name": "images/canada_anemone.jpg"
+  },
+  {
+    "id": 87,
+    "is_fauna": false,
+    "name": "Wild Strawberry",
+    "scientific_name": "Fragaria virginiana",
+    "description": "Wild Strawberry, scientifically known as Fragaria virginiana, is a low-growing perennial plant native to Ontario, Canada. It produces small, sweet, and juicy strawberries that are loved by both humans and wildlife. Wild Strawberry is an important food source for birds, mammals, and insects.",
+    "default_picture_name": "images/wild_strawberry.jpg"
+  },
+  {
+    "id": 88,
+    "is_fauna": false,
+    "name": "Arrowwood Viburnum",
+    "scientific_name": "Viburnum dentatum",
+    "description": "Arrowwood Viburnum, scientifically known as Viburnum dentatum, is a deciduous shrub native to Ontario, Canada. It is known for its clusters of small, creamy white flowers that attract various pollinators. Arrowwood Viburnum produces blue-black berries that are enjoyed by birds and other wildlife.",
+    "default_picture_name": "images/arrowwood_viburnum.jpg"
+  },
+  {
+    "id": 89,
+    "is_fauna": false,
+    "name": "American Hazelnut",
+    "scientific_name": "Corylus americana",
+    "description": "American Hazelnut, scientifically known as Corylus americana, is a multi-stemmed shrub native to Ontario, Canada. It produces tasty hazelnuts that are consumed by many animals, including squirrels and birds. American Hazelnut is an essential component of the forest understory.",
+    "default_picture_name": "images/american_hazelnut.jpg"
+  },
+  {
+    "id": 90,
+    "is_fauna": false,
+    "name": "Red Trillium",
+    "scientific_name": "Trillium erectum",
+    "description": "Red Trillium, scientifically known as Trillium erectum, is a distinctive perennial wildflower native to Ontario, Canada. It has maroon to dark red flowers and is often found in rich, moist woodlands. Red Trillium is sensitive to disturbance, and its populations need protection to ensure their survival.",
+    "default_picture_name": "images/red_trillium.jpg"
+  },
+  {
+    "id": 91,
+    "is_fauna": false,
+    "name": "Red Osier Dogwood",
+    "scientific_name": "Cornus sericea",
+    "description": "Red Osier Dogwood, scientifically known as Cornus sericea, is a deciduous shrub native to Ontario, Canada. It is admired for its bright red stems, which add vibrant color to the winter landscape. Red Osier Dogwood provides food and shelter for various wildlife species.",
+    "default_picture_name": "images/red_osier_dogwood.jpg"
+  },
+  {
+    "id": 92,
+    "is_fauna": false,
+    "name": "Wild Blueberry",
+    "scientific_name": "Vaccinium angustifolium",
+    "description": "Wild Blueberry, scientifically known as Vaccinium angustifolium, is a low-growing shrub native to Ontario, Canada. It produces delicious blueberries that are a favorite of many animals, including bears, birds, and humans. Wild Blueberries are an essential part of the boreal forest ecosystem.",
+    "default_picture_name": "images/wild_blueberry.jpg"
+  },
+  {
+    "id": 93,
+    "is_fauna": false,
+    "name": "False Solomon's Seal",
+    "scientific_name": "Maianthemum racemosum",
+    "description": "False Solomon's Seal, scientifically known as Maianthemum racemosum, is a perennial plant native to Ontario, Canada. It is valued for its graceful, arching stems and clusters of small white flowers. False Solomon's Seal provides food and habitat for various woodland creatures.",
+    "default_picture_name": "images/false_solomons_seal.jpg"
+  },
+  {
+    "id": 94,
+    "is_fauna": false,
+    "name": "Virginia Bluebells",
+    "scientific_name": "Mertensia virginica",
+    "description": "Virginia Bluebells, scientifically known as Mertensia virginica, is a spring-flowering perennial native to Ontario, Canada. Its bell-shaped, blue to pink flowers appear in early spring and attract pollinators like bees and butterflies. Virginia Bluebells are often found in moist woodlands and along stream banks.",
+    "default_picture_name": "images/virginia_bluebells.jpg"
   }
 ]

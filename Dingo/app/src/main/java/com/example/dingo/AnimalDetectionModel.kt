@@ -31,16 +31,17 @@ class AnimalDetectionModel(context : Context) {
         return outputStream.toByteArray()
     }
 
-    public fun run (input : Bitmap, callback: (String) -> Unit, saveAsDefault: Boolean, saveStorage: Boolean,
+    public fun run (input : Bitmap, callback: (String) -> Unit, saveAsDefault: Boolean, saveStorage: Boolean, animal: Boolean,
                     savePicture: (entryName: String, image: Bitmap, saveAsDefault: Boolean, saveImage: Boolean, context: Context) -> Unit,
                     addEntry: (entryName: String) -> Unit) : IntArray {
         val mutableCopy: Bitmap = input.copy(input.config, true)
-        val refitImage = Bitmap.createScaledBitmap(input, modelInputImageDim, modelInputImageDim, false)
+        val secondCopy: Bitmap = input.copy(input.config, true)
+        val refitImage = Bitmap.createScaledBitmap(secondCopy, modelInputImageDim, modelInputImageDim, false)
          val imageBytes = convertBitmapToByteArray(refitImage);
 
         GlobalScope.launch {
             try {
-                val response = sendPostRequest(imageBytes)
+                val response = sendPostRequest(imageBytes, animal)
                 // Handle the response data
                 val responseData = response.body?.string()
                 println(responseData)
@@ -62,7 +63,7 @@ class AnimalDetectionModel(context : Context) {
         return intArrayOf(1,2)
     }
 
-    private fun sendPostRequest(imageBytes: ByteArray): okhttp3.Response {
+    private fun sendPostRequest(imageBytes: ByteArray, animal: Boolean): okhttp3.Response {
 
         val client = OkHttpClient.Builder()
             .connectTimeout(80, TimeUnit.SECONDS) // Set connection timeout to 40 seconds
@@ -74,10 +75,17 @@ class AnimalDetectionModel(context : Context) {
             .addFormDataPart("image", "image.jpg", imageBytes.toRequestBody("image/*".toMediaType()))
             .build()
 
-        val request = Request.Builder()
-            .url("http://192.168.2.166:8000/api/process_image/")
+        var request = Request.Builder()
+            .url("http://192.168.2.166:8000/api/process_plant/")
             .post(requestBody)
             .build()
+
+        if(animal) {
+             request = Request.Builder()
+                .url("http://192.168.2.166:8000/api/process_image/")
+                .post(requestBody)
+                .build()
+        }
 
         return client.newCall(request).execute()
     }
