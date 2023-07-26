@@ -390,5 +390,13 @@
     "scientific_name": "Neovison vison",
     "description": "\nThe American Mink (Neovison vison) is a small, semi-aquatic mammal native to North America. It has a sleek, dark brown fur coat and a white patch on its chin. Minks are proficient swimmers and can be found near rivers, streams, and coastal areas. They are skilled predators, feeding on fish, amphibians, birds, and small mammals. Minks play an important role in controlling aquatic and rodent populations in their habitats.",
     "default_picture_name": "images/american_mink.jpg"
+  },
+  {
+    "id": 50,
+    "is_fauna": true,
+    "name": "Painted Lady Butterfly",
+    "scientific_name": "Vanessa cardui",
+    "description": "The Painted Lady Butterfly (Vanessa cardui) is a colorful and widespread butterfly species found across North America, Europe, and Asia. It has orange and black wings with distinct black and white markings. Painted ladies are migratory insects, traveling long distances during seasonal movements. They feed on nectar from a wide variety of flowers, making them valuable pollinators. These beautiful butterflies are a joy to observe in gardens and meadows during their annual migrations.",
+    "default_picture_name": "images/skunk.jpg"
   }
 ]

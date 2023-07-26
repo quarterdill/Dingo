@@ -12,6 +12,7 @@ import com.example.dingo.model.AccountType
 import com.example.dingo.model.Classroom
 import com.example.dingo.model.Comment
 import com.example.dingo.model.Post
+import com.example.dingo.model.User
 import com.example.dingo.model.PostComparator
 import com.example.dingo.model.PostType
 import com.example.dingo.model.service.PostService
@@ -31,6 +32,7 @@ constructor(
     private val userService: UserService,
     private val postService: PostService,
 ) : ViewModel() {
+    val userFeed = getFeedForUser(SessionInfo.currentUserID)
 
     fun makePost(
         userId: String,
@@ -67,53 +69,52 @@ constructor(
         incrementStat(StatName.NUM_SOCIAL_POSTS)
     }
 
-    fun getFeedForUser(userId: String, limit: Int = 10): MutableList<Post> {
-        // TODO: add loading
-        var ret = mutableListOf<Post>()
-
-        runBlocking {
-            var user = withContext(Dispatchers.Default) {
-                userService.getUser(userId)
-            }
-
-            if (user != null) {
-                val postQueueByTimestamp = PriorityQueue(PostComparator)
-                var friendsAndMe = user.friends + listOf(userId)
-                for (friendId in friendsAndMe) {
-                    val friend = withContext(Dispatchers.Default) {
-                        userService.getUser(friendId)
-                    }
-                    if (friend != null) {
-                        if (friend.postHead != "") {
-                            val friendPost = withContext(Dispatchers.Default) {
-                                postService.getPost(friend.postHead)
+    private fun getFeedForUser(userId: String, limit: Int = 10):  LiveData<MutableList<Post>> {
+        return liveData(Dispatchers.IO) {
+            try {
+                userService.getUserFlow(userId).collect {
+                    val ret = mutableListOf<Post>()
+                    if (it != null) {
+                        val postQueueByTimestamp = PriorityQueue(PostComparator)
+                        var friendsAndMe = it.friends + listOf(userId)
+                        for (friendId in friendsAndMe) {
+                            val friend = withContext(Dispatchers.Default) {
+                                userService.getUser(friendId)
                             }
-                            if (friendPost != null) {
-                                postQueueByTimestamp.add(friendPost)
+                            if (friend != null) {
+                                if (friend.postHead != "") {
+                                    val friendPost = withContext(Dispatchers.Default) {
+                                        postService.getPost(friend.postHead)
+                                    }
+                                    if (friendPost != null) {
+                                        postQueueByTimestamp.add(friendPost)
+                                    }
+
+                                }
                             }
+                        }
 
+                        var currFeedLength = 0
+                        while (postQueueByTimestamp.isNotEmpty() && currFeedLength < limit) {
+                            val toAdd = postQueueByTimestamp.remove()
+                            ret.add(toAdd)
+                            currFeedLength++
+                            if (toAdd.prevPost != "") {
+                                val prevFriendPost = withContext(Dispatchers.Default) {
+                                    postService.getPost(toAdd.prevPost)
+                                }
+                                if (prevFriendPost != null) {
+                                    postQueueByTimestamp.add(prevFriendPost)
+                                }
+                            }
                         }
                     }
+                    emit(ret)
                 }
-
-                var currFeedLength = 0
-                while (postQueueByTimestamp.isNotEmpty() && currFeedLength < limit) {
-                    val toAdd = postQueueByTimestamp.remove()
-                    ret.add(toAdd)
-                    currFeedLength++
-                    if (toAdd.prevPost != "") {
-                        val prevFriendPost = withContext(Dispatchers.Default) {
-                            postService.getPost(toAdd.prevPost)
-                        }
-                        if (prevFriendPost != null) {
-                            postQueueByTimestamp.add(prevFriendPost)
-                        }
-                    }
-                }
+            }  catch (e: Exception) {
+                emit(mutableListOf())
             }
         }
-
-        return ret
     }
 
     fun getCommentsForPost(postId: String): LiveData<MutableList<Comment>?> {
@@ -132,7 +133,7 @@ constructor(
                 }
             } catch (e: java.lang.Exception) {
                 // Do nothing
-                println("$e")
+                println("error getting comments for post: $e")
             }
         }
     }
@@ -166,6 +167,4 @@ constructor(
             }
         }
     }
-
-
 }

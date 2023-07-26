@@ -23,7 +23,7 @@ interface AccountService {
 
     //val currentUser: Flow<User>
 
-    suspend fun registerUser(email: String, password: String): Boolean
+    suspend fun registerUser(email: String, password: String): String
     suspend fun loginUser(email: String, password: String): Boolean
     suspend fun sendEmailVerification(): SendEmailVerificationResponse
     suspend fun sendRecoveryEmail(email: String): SendRecoveryResponse

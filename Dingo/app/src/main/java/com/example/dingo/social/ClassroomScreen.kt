@@ -1,5 +1,6 @@
 package com.example.dingo.social
 
+import android.se.omapi.Session
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -48,6 +49,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.dingo.common.SessionInfo
+import com.example.dingo.model.AccountType
 import com.example.dingo.model.Comment
 import com.example.dingo.trips.TripScreen
 import com.example.dingo.model.Post
@@ -63,6 +65,10 @@ sealed class ClassroomNavigationItem(
     object SelectClassroom : ClassroomNavigationItem(
         name = "SelectClassroom",
         route = "selectclassroom",
+    )
+    object CreateClassroom : ClassroomNavigationItem(
+        name = "CreateClassroom",
+        route = "createclassroom",
     )
     object ClassroomPostFeed : ClassroomNavigationItem(
         name = "ClassroomPostFeed",
@@ -168,6 +174,24 @@ fun ClassroomScreen(
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+                    if (SessionInfo.currentUser != null) {
+                        if (SessionInfo.currentUser!!.accountType == AccountType.INSTRUCTOR) {
+                            Button(
+                                onClick = {
+                                    navController.navigate(ClassroomNavigationItem.CreateClassroom.route)
+                                }
+                            ) {
+                                Text("Create new classroom")
+                            }
+
+                            Divider(
+                                modifier = Modifier
+                                    .height(3.dp)
+                                    .width(200.dp),
+                                color = Color.Gray,
+                            )
+                        }
+                    }
                     Text("Choose a classroom")
                     LazyColumn(
                         modifier = Modifier.weight(1.0f, true)
@@ -194,6 +218,9 @@ fun ClassroomScreen(
                         }
                     }
                 }
+            }
+            composable(ClassroomNavigationItem.CreateClassroom.route) {
+                CreateClassroomModal(viewModel, navController, SessionInfo.currentUserID)
             }
             composable(ClassroomNavigationItem.ClassroomPostFeed.route) {
                 Column(
@@ -238,7 +265,7 @@ fun ClassroomScreen(
 //              }
 //              SEE ABOVE
                     LazyColumn(
-                        modifier = Modifier.weight(1.0f, true)
+                        modifier = Modifier.weight(0.9f, true)
                     ) {
                         var posts = feedItems.value
                         if (posts != null) {
@@ -264,6 +291,17 @@ fun ClassroomScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 )
                 {
+                    if (SessionInfo.currentUser != null) {
+                        if (SessionInfo.currentUser!!.accountType == AccountType.INSTRUCTOR) {
+                            Button(
+                                onClick = {
+                                    navController.navigate(ClassroomNavigationItem.AddMember.route)
+                                }
+                            ) {
+                                Text("Add Students")
+                            }
+                        }
+                    }
                     MemberList(fetchTeachers.value, UserType.TEACHER)
                     Divider(
                         modifier = Modifier
@@ -456,6 +494,45 @@ private fun CreatePostModal(
                     textContentState,
                     mutableListOf<String>(),
                     null,
+                )
+                navController.navigate(ClassroomNavigationItem.ClassroomPostFeed.route)
+            }
+        ) {
+            Text(text = "Create Post")
+        }
+    }
+}
+
+@Composable
+private fun CreateClassroomModal(
+    viewModel: ClassroomViewModel = hiltViewModel(),
+    navController: NavHostController,
+    creatorUserId: String,
+) {
+    var textContentState by remember { mutableStateOf("") }
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+    ) {
+        Text(text = "Create classroom")
+        TextField(
+            value = textContentState,
+            onValueChange = { textContentState = it },
+            label = { Text("")}
+        )
+        Button(
+            onClick = {
+                navController.navigate(ClassroomNavigationItem.ClassroomPostFeed.route)
+            }
+        ) {
+            Text(text = "Cancel")
+        }
+        Button(
+            onClick = {
+                viewModel.createClassroom(
+                    creatorUserId,
+                    textContentState,
                 )
                 navController.navigate(ClassroomNavigationItem.ClassroomPostFeed.route)
             }

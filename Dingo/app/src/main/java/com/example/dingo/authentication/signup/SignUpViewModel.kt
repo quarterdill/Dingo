@@ -12,6 +12,7 @@ import com.example.dingo.model.service.UserService
 import com.example.dingo.navigation.Screen
 import com.example.dingo.model.AccountType
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 @HiltViewModel
@@ -28,6 +29,8 @@ constructor(
         get() = uiState.value.email
     private val password
         get() = uiState.value.password
+    private val username
+        get() = uiState.value.username
 
     fun onButtonToggle(type: Boolean) {
         uiState.value = uiState.value.copy(accountType = type)
@@ -40,6 +43,10 @@ constructor(
     }
     fun onEmailChange(newValue: String) {
         uiState.value = uiState.value.copy(email = newValue)
+    }
+
+    fun onUsernameChange(newValue: String) {
+        uiState.value = uiState.value.copy(username = newValue)
     }
 
     fun onPasswordChange(newValue: String) {
@@ -65,19 +72,30 @@ constructor(
             Log.d("STATE", "passwords don't match")
             return
         }
-        val successfulSignup = accountService.registerUser(email, password)
+        var authId = ""
+        runBlocking {
+            println("AUTH: twoetjijdfi authid is $authId")
+            authId = accountService.registerUser(email, password)
 
-        if (successfulSignup) {
-            navController.navigate(route = Screen.LoginScreen.route)
-            var accountType: AccountType = AccountType.STANDARD
-            if (uiState.value.accountType) {
-                accountType = if (uiState.value.educationType) {
-                    AccountType.INSTRUCTOR
-                } else {
-                    AccountType.STUDENT
+            println("AUTH: authid is $authId")
+
+            if (authId != "") {
+                navController.navigate(route = Screen.LoginScreen.route)
+                var accountType: AccountType = AccountType.STANDARD
+                if (uiState.value.accountType) {
+                    accountType = if (uiState.value.educationType) {
+                        AccountType.INSTRUCTOR
+                    } else {
+                        AccountType.STUDENT
+                    }
                 }
+                userService.createUser(
+                    uiState.value.username,
+                    uiState.value.email,
+                    authId,
+                    accountType
+                )
             }
-            userService.createUser(uiState.value.email,uiState.value.email,accountType)
         }
     }
 }

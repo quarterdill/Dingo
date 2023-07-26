@@ -47,8 +47,8 @@ fun SocialFeedScreen(
 ) {
     val currentUser = SessionInfo.currentUser
     var currentPostId = remember { mutableStateOf("") }
-    val feedItems = viewModel
-        .getFeedForUser(SessionInfo.currentUserID)
+    val feedItems = viewModel.userFeed.observeAsState()
+    println("teststes ${feedItems.value}")
     var createNewPost = remember { mutableStateOf(false) }
     if (createNewPost.value) {
         CreatePostModal(
@@ -59,24 +59,26 @@ fun SocialFeedScreen(
             createNewPost.value = false
         }
     }
-    Box {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
+    Box (
+        modifier = Modifier.fillMaxHeight(),
+        contentAlignment = Alignment.Center,
+    ) {
+        if (feedItems.value.isNullOrEmpty()) {
+            Text("No posts found... try adding some friends")
+        } else {
             LazyColumn(
-                modifier = Modifier.weight(1.0f, true)
+                modifier = Modifier.fillMaxHeight()
             ) {
-                var posts = feedItems
+                var posts = feedItems.value
                 if (posts != null) {
+                    println("test rebuild ${posts.size}")
                     items(posts.size) {
                         SocialPost(posts[it], currentPostId)
                     }
                 }
             }
-            if (feedItems == null || feedItems.size == 0) {
-                Text("No posts found... try adding some friends")
-            }
         }
+
         FloatingActionButton(
             modifier = Modifier
                 .padding(UIConstants.MEDIUM_PADDING)
@@ -150,7 +152,7 @@ private fun CreatePostModal(
                 fontSize = UIConstants.SUBTITLE2_TEXT
             )
             TextField(
-                modifier = Modifier.padding(vertical = UIConstants.MEDIUM_PADDING),
+                modifier = Modifier.padding(vertical = UIConstants.MEDIUM_PADDING).height(100.dp),
                 value = textContentState,
                 onValueChange = { textContentState = it },
                 label = { Text("") }
@@ -231,7 +233,7 @@ private fun CommentsDialog(
             }
 
             TextField(
-                modifier = Modifier.padding(vertical = UIConstants.MEDIUM_PADDING),
+                modifier = Modifier.padding(vertical = UIConstants.MEDIUM_PADDING).height(100.dp),
                 value = textContentState,
                 onValueChange = { textContentState = it },
                 label = { Text("") }

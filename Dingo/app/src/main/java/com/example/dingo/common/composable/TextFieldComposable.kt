@@ -24,7 +24,9 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.TextField
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.vectorResource
@@ -40,7 +42,37 @@ fun EmailField(value: String, onNewValue: (String) -> Unit) {
         value = value,
         onValueChange = { onNewValue(it) },
         placeholder = { Text(text="Email")  },
-        leadingIcon = { Icon(imageVector = Icons.Default.Email, contentDescription = "Email") }
+        leadingIcon = {
+            Icon(
+                imageVector = Icons.Default.Email,
+                contentDescription = "Email",
+                tint = Color.Gray,
+            )
+        }
+    )
+//    TextField(
+//        singleLine = true,
+//        value = uiState.email,
+//        onValueChange = {viewModel.onEmailChange(it)},
+//        placeholder = { Text(text="Email") },
+//    )
+}
+
+@Composable
+fun UsernameField(value: String, onNewValue: (String) -> Unit) {
+    OutlinedTextField(
+        modifier = Modifier.background(color = PurpleGrey80),
+        singleLine = true,
+        value = value,
+        onValueChange = { onNewValue(it) },
+        placeholder = { Text(text="Username")  },
+        leadingIcon = {
+            Icon(
+                imageVector = Icons.Default.Person,
+                contentDescription = "Username",
+                tint = Color.Gray,
+            )
+        }
     )
 //    TextField(
 //        singleLine = true,
@@ -87,13 +119,20 @@ private fun PasswordField(
         value = value,
         onValueChange = { onNewValue(it) },
         placeholder = { Text(text = placeholder) },
-        leadingIcon = { Icon(imageVector = Icons.Default.Lock, contentDescription = "Lock") },
+        leadingIcon = {
+            Icon(
+                imageVector = Icons.Default.Lock,
+                contentDescription = "Lock",
+                tint = Color.Gray,
+            )
+        },
         trailingIcon = {
             IconButton(onClick = { isVisible = !isVisible }) {
                 Icon(
                     modifier = Modifier.height(25.dp).width(25.dp),
                     painter = imageVector,
-                    contentDescription = "Visibility"
+                    contentDescription = "Visibility",
+                    tint = Color.Gray,
                 )
             }
         },

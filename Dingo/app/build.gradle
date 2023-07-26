@@ -102,13 +102,16 @@ dependencies {
     implementation "androidx.camera:camera-extensions:1.0.0-alpha28"
 
     // TensorFlow Lite dependencies
-    implementation 'org.tensorflow:tensorflow-lite:2.4.0'
+    implementation 'org.tensorflow:tensorflow-lite:0.0.0-nightly'
     implementation 'org.tensorflow:tensorflow-lite-gpu:2.4.0'
-    implementation 'org.tensorflow:tensorflow-lite-support:0.1.0'
-
+    implementation 'org.tensorflow:tensorflow-lite-support:0.4.0'
+    implementation 'org.tensorflow:tensorflow-lite-select-tf-ops:2.10.0'
+    implementation 'org.tensorflow:tensorflow-lite-task-vision:0.4.0'
     // Kotlin Coroutines
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.1'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.1'
+    // post request
+    implementation 'com.squareup.okhttp3:okhttp:4.9.1'
 
     implementation "com.google.accompanist:accompanist-permissions:0.31.2-alpha"
     implementation 'com.google.code.gson:gson:2.8.5'
