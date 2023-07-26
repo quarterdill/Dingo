@@ -42,8 +42,6 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.dingo.common.SessionInfo
 import com.example.dingo.dingodex.DingoDexScreen
-import com.example.dingo.model.AccountType
-import com.example.dingo.model.service.UserService
 import com.example.dingo.scanner.ScannerScreen
 import com.example.dingo.social.ClassroomScreen
 import com.example.dingo.social.SocialScreen
@@ -171,13 +169,9 @@ fun MainScreen(
 
 @Composable
 private fun navBar(navController: NavHostController) {
-    var navItems = listOf(NavBarItem.Trip, NavBarItem.Scanner, NavBarItem.Social, NavBarItem.Classroom)
+    val navItems = listOf(NavBarItem.Trip, NavBarItem.Scanner, NavBarItem.Social, NavBarItem.Classroom)
     NavigationBar() {
         val currentRoute = getCurrentRoute(navController = navController)
-        val currentAccountType = SessionInfo.currentUser!!.accountType
-        if (currentAccountType == AccountType.STANDARD) {
-            navItems = listOf(NavBarItem.Trip, NavBarItem.Scanner, NavBarItem.Social)
-        }
         navItems.forEach{
             val isSelected =  it.route == currentRoute
             NavigationBarItem(
@@ -186,7 +180,7 @@ private fun navBar(navController: NavHostController) {
                 },
                 onClick = {
                     if (!isSelected)
-                        navController.navigate(it.route)
+                            navController.navigate(it.route)
                 },
                 selected = isSelected
             )
