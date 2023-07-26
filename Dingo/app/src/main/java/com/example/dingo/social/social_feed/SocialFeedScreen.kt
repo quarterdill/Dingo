@@ -166,7 +166,7 @@ fun DropdownMenuExample(items: List<Trip>, onTripSelected: (Trip) -> Unit) {
     ) {
         items.forEachIndexed { index, item ->
             DropdownMenuItem(
-                text = {Text("${item.title}")},
+                text = {Text("${item.title} with id: ${item.id}")},
                 onClick = {
                     selectedIndex = index
                     onTripSelected(item)

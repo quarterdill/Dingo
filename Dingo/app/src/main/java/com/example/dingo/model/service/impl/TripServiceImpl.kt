@@ -76,6 +76,8 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
 
 
     private fun convertGeoTripToTrip(geoTrip: GeoTrip) : Trip {
+        Log.d("SocialFeedScreen","convertGeoTripToTrip = ${geoTrip}")
+
         return Trip(
             id = geoTrip.id,
             userId = geoTrip.userId,
