@@ -1,6 +1,7 @@
 package com.example.dingo.trips
 
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.util.Log
 import androidx.compose.runtime.Composable
 import com.google.android.gms.maps.model.LatLng
@@ -63,6 +64,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.dingo.UIConstants
 import com.example.dingo.common.SessionInfo
 import com.example.dingo.model.Trip
 import com.example.dingo.model.service.impl.getTimeDiffMessage
@@ -78,7 +80,9 @@ fun TripScreen(
     val context = LocalContext.current
     val lifeCycleOwner = LocalLifecycleOwner.current
 
+
     val currUser = SessionInfo.currentUser
+
     Log.d("TripScreen", "currUser $currUser")
     val dummyUserId = "Q0vMYa9VSh7tyFdLTPgX"
     val dummyUsername = "Eric Shang"
@@ -87,30 +91,36 @@ fun TripScreen(
         .getTripFeed(currUser?.id ?: dummyUserId)
         .observeAsState()
 
-    val navController = rememberNavController()
-    var isServiceRunning by remember { mutableStateOf(false) }
-    var trackedLocations : List<LatLng> by remember { mutableStateOf(emptyList()) }
-    var selectedTrip: Trip? by remember { mutableStateOf(null) }
-    var startTime: Timestamp by remember { mutableStateOf(Timestamp.now()) }
 
+    val navController = rememberNavController()
+
+    var selectedTrip: Trip? by remember { mutableStateOf(null) }
+    var trackedLocations : List<LatLng> by remember { mutableStateOf(emptyList()) }
+    LocationTrackingService().createNotificationChannel(context)
+    LocationTrackingService.locationList.observe(lifeCycleOwner, Observer {
+        trackedLocations = it
+        SessionInfo.trip!!.locations = it
+    })
 
     val permissionState = remember { mutableStateOf(false) }
+    permissionState.value = ContextCompat.checkSelfPermission(
+        context,
+        android.Manifest.permission.ACCESS_FINE_LOCATION
+    ) == PackageManager.PERMISSION_GRANTED
+
+    val isServiceRunning = remember { mutableStateOf(false) }
+    isServiceRunning.value = SessionInfo.trip != null
 
     val requestPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
-        permissionState.value = isGranted
-    }
-
-
-    LaunchedEffect(key1 = true) {
-        LocationTrackingService().createNotificationChannel(context)
-        LocationTrackingService.locationList.observe(lifeCycleOwner, Observer {
-            var locations:List<LatLng> = viewModel.locationTrackingStopped(it)
-            trackedLocations= locations
-            Log.d("tripViewScreen", "locations: $locations")
-//                        viewModel.makeDummyTrips(locations)
-        })
+        isServiceRunning.value = true
+        SessionInfo.trip = Trip()
+        SessionInfo.trip!!.startTime = Timestamp.now()
+        ContextCompat.startForegroundService(
+            context,
+            Intent(context, LocationTrackingService::class.java)
+        )
     }
 
     Column(
@@ -123,37 +133,18 @@ fun TripScreen(
         ) {
             composable(TripNavigationItem.TripPostFeed.route) {
                 Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Row(
-                        modifier = Modifier.padding(16.dp),
-                        horizontalArrangement = Arrangement.spacedBy(10.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Button(
-                            onClick = {
-                                if (!permissionState.value) {
-                                    requestPermissionLauncher.launch(android.Manifest.permission.ACCESS_FINE_LOCATION)
-                                }
-                                    isServiceRunning = !isServiceRunning
-                                    if (isServiceRunning) {
-                                        ContextCompat.startForegroundService(
-                                            context,
-                                            Intent(context, LocationTrackingService::class.java)
-                                        )
-                                        Log.d("tripScreen", "trackedLocations: $trackedLocations")
-                                        startTime = Timestamp.now()
-                                        navController.navigate(TripNavigationItem.TrackTrip.route)
-                                    } else {
-                                        context.stopService(Intent(context, LocationTrackingService::class.java))
-                                        navController.navigate(TripNavigationItem.TripPostFeed.route)
-                                    }
-                            },
-                        ) {
-                            Text(text = if (isServiceRunning) "Stop Tracking Permission Granted: ${permissionState.value}" else "Start Tracking Permission Granted: ${permissionState.value}")
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.padding(16.dp),
 
-                        }
-                    }
+                    ) {
+                    Text(
+                        text = "Trips",
+                        fontSize = UIConstants.TITLE_TEXT,
+                    )
+
+                    Text(text = if (isServiceRunning.value) "false" else "true")
+
+
                     LazyColumn(
                         modifier = Modifier.weight(1.0f, true)
                     ) {
@@ -166,45 +157,78 @@ fun TripScreen(
                             }
                         }
                     }
-                }
-            }
-            composable(TripNavigationItem.TrackTrip.route) {
-                val dummyTripId = "dummy"
-                LocationPermissionScreen()
-                tripMap(trackedLocations, true)
-                val context = LocalContext.current
-                Column {
-                    Button(
-                        onClick = {
-                            if (!permissionState.value) {
-                                requestPermissionLauncher.launch(android.Manifest.permission.ACCESS_FINE_LOCATION)
-                            }
-                            isServiceRunning = !isServiceRunning
-                            if (isServiceRunning) {
-                                ContextCompat.startForegroundService(
-                                    context,
-                                    Intent(context, LocationTrackingService::class.java)
-                                )
-                                Log.d("tripScreen", "trackedLocations: $trackedLocations")
 
-                                navController.navigate(TripNavigationItem.CreatePost.route)
-
-                            } else {
-                                context.stopService(Intent(context, LocationTrackingService::class.java))
-                                navController.navigate(TripNavigationItem.CreatePost.route)
-
-                            }
-                        },
-                        modifier = Modifier.padding(16.dp)
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(10.dp),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(text = if (isServiceRunning) "Stop Tracking Permission Granted: ${permissionState.value}" else "Start Tracking Permission Granted: ${permissionState.value}")
+
+                        Button(
+                            onClick = {
+                                if (!isServiceRunning.value) {
+                                    if (!permissionState.value) {
+                                        requestPermissionLauncher.launch(android.Manifest.permission.ACCESS_FINE_LOCATION)
+                                    } else {
+                                        isServiceRunning.value = true
+                                        SessionInfo.trip = Trip()
+                                        SessionInfo.trip!!.startTime = Timestamp.now()
+                                        ContextCompat.startForegroundService(
+                                            context,
+                                            Intent(context, LocationTrackingService::class.java)
+                                        )
+                                    }
+                                } else {
+                                    isServiceRunning.value = false
+                                    context.stopService(Intent(context, LocationTrackingService::class.java))
+                                    SessionInfo.trip!!.endTime = Timestamp.now()
+                                    Log.d("here", "stopped trip")
+                                    navController.navigate(TripNavigationItem.CreatePost.route)
+                                }
+                            },
+                        ) {
+                            Text(text = if (isServiceRunning.value) "Stop Tracking Permission Granted: ${permissionState.value}" else "Start Tracking Permission Granted: ${permissionState.value}")
+
+                        }
                     }
                 }
             }
+//            composable(TripNavigationItem.TrackTrip.route) {
+//                val dummyTripId = "dummy"
+//                LocationPermissionScreen()
+//                tripMap(trackedLocations, true)
+//                val context = LocalContext.current
+//                Column {
+//                    Button(
+//                        onClick = {
+//                            if (!permissionState.value) {
+//                                requestPermissionLauncher.launch(android.Manifest.permission.ACCESS_FINE_LOCATION)
+//                            }
+//                            isServiceRunning = !isServiceRunning
+//                            if (isServiceRunning) {
+//                                ContextCompat.startForegroundService(
+//                                    context,
+//                                    Intent(context, LocationTrackingService::class.java)
+//                                )
+//                                Log.d("tripScreen", "trackedLocations: $trackedLocations")
+//
+//                                navController.navigate(TripNavigationItem.CreatePost.route)
+//
+//                            } else {
+//                                context.stopService(Intent(context, LocationTrackingService::class.java))
+//                                navController.navigate(TripNavigationItem.CreatePost.route)
+//
+//                            }
+//                        },
+//                        modifier = Modifier.padding(16.dp)
+//                    ) {
+//                        Text(text = if (isServiceRunning) "Stop Tracking Permission Granted: ${permissionState.value}" else "Start Tracking Permission Granted: ${permissionState.value}")
+//                    }
+//                }
+//            }
             composable(TripNavigationItem.CreatePost.route) {
-                Log.d("tripScreen", "trackedLocations: $trackedLocations")
+                Log.d("here2", "creating post")
                 tripMap(trackedLocations, true)
-                PostTripModal(navController = navController,  locations = trackedLocations,  discoveredEntries = emptyList(), startTime=startTime )
+                PostTripModal(navController = navController,  trip = SessionInfo.trip )
             }
             composable(TripNavigationItem.TripDetails.route) {
                 Log.d("tripScreen", "Trip Details selectedTrip: $selectedTrip")
@@ -213,8 +237,10 @@ fun TripScreen(
                     Column(modifier = Modifier.fillMaxSize()) {
 
                         CenterAlignedTopAppBar(
-                            title = { Text(text = "Map Title",
-                            ) },
+                            title = { Text(
+                                    text = trip.title,
+                                    fontSize = UIConstants.TITLE_TEXT,
+                                ) },
 
                             navigationIcon = {
                                 IconButton(onClick = { navController.navigate(TripNavigationItem.TripPostFeed.route) }) {
@@ -407,9 +433,7 @@ private fun TripDetailsModal(
 private fun PostTripModal(
     viewModel: TripViewModel = hiltViewModel(),
     navController: NavHostController,
-    locations : List<LatLng>,
-    discoveredEntries: List<String>,
-    startTime:Timestamp=Timestamp.now()
+    trip: Trip?
 
     ) {
     var textContentState by remember { mutableStateOf("") }
@@ -426,7 +450,8 @@ private fun PostTripModal(
         )
         Button(
             onClick = {
-                Log.d("tripScreen", "Discard Current Trip Button, trackedLocations: $locations")
+                Log.d("tripScreen", "Discard Current Trip Button, trackedLocations: ${trip?.locations}")
+                viewModel.discardTrip()
                 navController.navigate(TripNavigationItem.TripPostFeed.route)
             }
         ) {
@@ -435,9 +460,13 @@ private fun PostTripModal(
         Button(
             onClick = {
 //                viewModel.makeDummyTrips(trackedLocations)
+                if (trip != null) {
+                    trip.title = textContentState
+                    trip.username = SessionInfo.currentUsername
+                    trip.userId = SessionInfo.currentUserID
 
-                    val tripId = viewModel.createTrip(userId= SessionInfo.currentUserID,username= SessionInfo.currentUsername,locations=locations, startTime = startTime, endTime = Timestamp.now(), title=textContentState)
-
+                    val tripId = viewModel.createTrip(trip = trip)
+                }
 
 //                TODO: post as trip and create a post of the given trip ID
                 navController.navigate(TripNavigationItem.TripPostFeed.route)

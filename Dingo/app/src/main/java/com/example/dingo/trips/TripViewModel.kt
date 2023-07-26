@@ -45,35 +45,31 @@ constructor(
     }
 
     fun createTrip(
-        userId: String,
-        username: String,
-        locations: List<LatLng>,
-        discoveredEntries : List<String> = emptyList<String>(),
-        startTime : Timestamp = Timestamp.now(),
-        endTime : Timestamp = Timestamp.now(),
-        timestamp : Timestamp = Timestamp.now(),
-        title : String = "Your Trip"
-
+        trip: Trip
     ) {
         viewModelScope.launch {
 
             val tripId = tripService.createTrip(
-                userId,
-                username,
-                locations,
-                discoveredEntries,
-                startTime,
-                endTime,
-                timestamp,
-                title
+                trip.userId,
+                trip.username,
+                trip.locations,
+                trip.discoveredEntries,
+                trip.startTime,
+                trip.endTime,
+                trip.timestamp,
+                trip.title
             )
-            Log.d("TripViewModel", "createTrip: username:$username userId:$userId tripId:$tripId")
 
-            userService.addTripForUser(userId, tripId)
+            userService.addTripForUser(trip.userId, tripId)
+
+            SessionInfo.trip = null
         }
 
     }
 
+    fun discardTrip() {
+        SessionInfo.trip = null
+    }
 
     fun getTripFeed(userId: String): LiveData<MutableList<Trip>?> {
         Log.d("TripViewModel", "getTripFeed($userId)")
