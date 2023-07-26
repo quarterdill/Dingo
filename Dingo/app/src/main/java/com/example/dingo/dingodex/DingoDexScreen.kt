@@ -17,7 +17,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
@@ -120,7 +122,7 @@ fun DingoDexScreen(
                             columns = GridCells.Fixed(3),
                         ) {
                             items(items.size) {
-//                                DingoDexItem(items[it], navController, selected)
+                                DingoDexItem(items[it], navController, selected)
                             }
                         }
                     } else {
@@ -174,8 +176,38 @@ fun DingoDexScreen(
                     }
                 }
                 Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.verticalScroll(rememberScrollState()),
                 ) {
+                    Row(
+                        modifier = Modifier.padding(16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(10.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            modifier = Modifier.padding(4.dp),
+                            fontSize = 16.sp,
+                            text = "${dingodexEntryContent.name} | ${dingodexEntryContent.scientific_name}"
+                        )
+                    }
+                    Row(
+                        modifier = Modifier.padding(16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(10.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Image(
+                            bitmap = bitmap.asImageBitmap(),
+                            contentDescription = if (dingodexEntryContent.is_fauna) "Fauna" else "Flora",
+                            contentScale = ContentScale.Inside,
+                            alignment = Alignment.CenterStart,
+                        )
+                    }
+                    Text(
+                        textAlign = TextAlign.Left,
+                        modifier = Modifier.width(300.dp),
+                        fontSize = 16.sp,
+                        text = dingodexEntryContent.description.trimIndent()
+                    )
                     Row(
                         modifier = Modifier.padding(16.dp),
                         horizontalArrangement = Arrangement.spacedBy(10.dp),
@@ -192,31 +224,6 @@ fun DingoDexScreen(
                                 text = "Back",
                             )
                         }
-                    }
-                    Row(
-                        modifier = Modifier.padding(16.dp),
-                        horizontalArrangement = Arrangement.spacedBy(10.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            modifier = Modifier.padding(4.dp),
-                            fontSize = 16.sp,
-                            text = "${dingodexEntryContent.name} | ${dingodexEntryContent.scientific_name}"
-                        )
-                    }
-                    Row() {
-                        Image(
-                            bitmap = bitmap.asImageBitmap(),
-                            contentDescription = if (dingodexEntryContent.is_fauna) "Fauna" else "Flora",
-                            contentScale = ContentScale.Inside,
-                            alignment = Alignment.CenterStart,
-                        )
-                        Text(
-                            textAlign = TextAlign.Left,
-                            modifier = Modifier.width(200.dp),
-                            fontSize = 16.sp,
-                            text = dingodexEntryContent.description.trimIndent()
-                        )
                     }
                 }
             }
