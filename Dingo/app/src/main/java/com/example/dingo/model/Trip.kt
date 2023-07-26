@@ -3,21 +3,20 @@ package com.example.dingo.model
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.DocumentId
-import com.google.firebase.firestore.Exclude
-import com.google.firebase.firestore.GeoPoint
 
 
-data class Trip (
+data class Trip(
     @DocumentId val id: String = "",
     var userId: String = "",
     var username: String = "",
-    var locations: List<LatLng> = emptyList<LatLng>(),
+    var locations: MutableList<LatLng> = mutableListOf(),
     var discoveredEntries: MutableList<String> = mutableListOf(),
     var startTime: Timestamp = Timestamp.now(),
     var endTime: Timestamp = Timestamp.now(),
-    var timestamp : Timestamp = Timestamp.now(),
-    var title : String = "Your Trip",
+    var timestamp: Timestamp = Timestamp.now(),
+    var title: String = "Your Trip",
     var picturePaths: MutableList<String> = mutableListOf(),
+    var pictureLocations: MutableList<LatLng> = mutableListOf()
 )
 
 
@@ -27,9 +26,11 @@ data class GeoTrip (
     var userId: String = "",
     var username: String = "",
     var locations: List<HashMap<String, Any>> =emptyList(),
-    var discoveredEntries: List<String> = emptyList(),
+    var discoveredEntries: MutableList<String> = mutableListOf(),
     var startTime: Timestamp = Timestamp.now(),
     var endTime: Timestamp = Timestamp.now(),
     var timestamp : Timestamp = Timestamp.now(),
-    var title : String = "Your Trip"
+    var title : String = "Your Trip",
+    var picturePaths: MutableList<String> = mutableListOf(),
+    var pictureLocations: List<HashMap<String, Any>> = emptyList()
 )

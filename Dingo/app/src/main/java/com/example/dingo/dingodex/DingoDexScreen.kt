@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.rememberScrollState
@@ -77,10 +76,13 @@ sealed class DingoDexNavItem(
 // TODO: Make heights and stuff into constants
 @Composable
 fun DingoDexScreen(
-    viewModel: DingoDexViewModel = hiltViewModel()
+    viewModel: DingoDexViewModel = hiltViewModel(),
+    userId: String
 ) {
     val navController = rememberNavController()
     val selected = remember { mutableStateOf("")}
+    println(userId)
+    viewModel.getEntries(userId)
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -99,13 +101,12 @@ fun DingoDexScreen(
                         fontSize = UIConstants.TITLE_TEXT,
                         text = "DingoDex",
                     )
+
+                    val collectedFaunaDingoDex = viewModel.collectedDingoDexFauna.observeAsState() //getDingoDexCollectedItems(true, userId).observeAsState()
+                    val uncollectedFaunaDingoDex = viewModel.uncollectedDingoDexFauna.observeAsState() //viewModel.getDingoDexUncollectedItems(true, userId).observeAsState()
+                    val collectedFloraDingoDex = viewModel.collectedDingoDexFlora.observeAsState()//viewModel.getDingoDexCollectedItems(false, userId).observeAsState()
+                    val uncollectedFloraDingoDex = viewModel.uncollectedDingoDexFlora.observeAsState()
                     var showFaunaDingoDex by remember { mutableStateOf(true) }
-                    val collectedFaunaDingoDex = viewModel.collectedDingoDexFauna.observeAsState()
-                    val uncollectedFaunaDingoDex =
-                        viewModel.uncollectedDingoDexFauna.observeAsState()
-                    val collectedFloraDingoDex = viewModel.collectedDingoDexFlora.observeAsState()
-                    val uncollectedFloraDingoDex =
-                        viewModel.uncollectedDingoDexFlora.observeAsState()
 
                     val isNull = if (showFaunaDingoDex) {
                         collectedFaunaDingoDex.value == null || uncollectedFaunaDingoDex.value == null
@@ -162,7 +163,7 @@ fun DingoDexScreen(
                     index = DingoDexScientificToIndex.dingoDexFloraScientificToIndex[selected.value]
                 }
                 if (index == null) {
-                    println("DingoDex entry image, ${selected.value} could not be found in json assets!")
+                    //println("DingoDex entry image, ${selected.value} could not be found in json assets!")
                 }
                 val dingodexEntryContent = DingoDexEntryListings.dingoDexEntryList[index!!]
                 var bitmap = BitmapFactory.decodeStream(assetManager.open(dingodexEntryContent.default_picture_name))
@@ -176,12 +177,9 @@ fun DingoDexScreen(
                         println("Error occurred when downloading user's DingoDex image from Firebase $it")
                     }
                 }
-                LazyColumn() {
-
-                }
                 Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.verticalScroll(rememberScrollState()),
-                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Row(
                         modifier = Modifier.padding(16.dp),
@@ -206,14 +204,12 @@ fun DingoDexScreen(
                             alignment = Alignment.CenterStart,
                         )
                     }
-                    Row() {
-                        Text(
-                            textAlign = TextAlign.Left,
-                            modifier = Modifier.width(300.dp),
-                            fontSize = 16.sp,
-                            text = dingodexEntryContent.description.trimIndent()
-                        )
-                    }
+                    Text(
+                        textAlign = TextAlign.Left,
+                        modifier = Modifier.width(300.dp),
+                        fontSize = 16.sp,
+                        text = dingodexEntryContent.description.trimIndent()
+                    )
                     Row(
                         modifier = Modifier.padding(16.dp),
                         horizontalArrangement = Arrangement.spacedBy(10.dp),
@@ -225,6 +221,7 @@ fun DingoDexScreen(
                             },
                         ) {
                             Text(
+                                modifier = Modifier.padding(4.dp),
                                 fontSize = 16.sp,
                                 text = "Back",
                             )
@@ -275,7 +272,7 @@ private fun DingoDexItem(
                 }
             }
             Text(
-                modifier = Modifier.width(90.dp),
+                modifier = Modifier.width(72.dp),
                 text = item.name,
                 textAlign = TextAlign.Center
             )

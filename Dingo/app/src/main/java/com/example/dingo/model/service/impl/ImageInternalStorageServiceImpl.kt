@@ -10,6 +10,7 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.text.SimpleDateFormat
+import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
 
@@ -20,7 +21,7 @@ constructor() :
     ImageInternalStorageService {
     override suspend fun saveImage(entryName: String, image: Bitmap, context: Context) {
         val dateFormat = SimpleDateFormat("yyyyMMddHHmmss", Locale.getDefault())
-        val fileName = "${entryName}_$dateFormat.png"
+        val fileName = "${entryName}_${dateFormat.format(Date())}.png"
 
         val directory = File(context.filesDir, "Users/temp/images/$entryName/")
         if (!directory.exists()) {

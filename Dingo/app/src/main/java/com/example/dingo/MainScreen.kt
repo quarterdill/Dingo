@@ -47,6 +47,7 @@ import com.example.dingo.social.ClassroomScreen
 import com.example.dingo.social.SocialScreen
 import com.example.dingo.social.profile.SendFriendReqDialog
 import com.example.dingo.trips.TripScreen
+import com.example.dingo.model.AccountType
 import kotlinx.coroutines.launch
 
 sealed class NavBarItem(
@@ -106,7 +107,7 @@ fun MainScreen(
     }
     BottomSheetScaffold(
         sheetContent = {
-            DingoDexScreen()
+            DingoDexScreen(userId = SessionInfo.currentUserID)
         },
         sheetPeekHeight = 0.dp,
         scaffoldState = scaffoldState,
@@ -169,18 +170,22 @@ fun MainScreen(
 
 @Composable
 private fun navBar(navController: NavHostController) {
-    val navItems = listOf(NavBarItem.Trip, NavBarItem.Scanner, NavBarItem.Social, NavBarItem.Classroom)
+    var navItems = listOf(NavBarItem.Trip, NavBarItem.Scanner, NavBarItem.Social, NavBarItem.Classroom)
     NavigationBar() {
         val currentRoute = getCurrentRoute(navController = navController)
         navItems.forEach{
             val isSelected =  it.route == currentRoute
+            val currentAccountType = SessionInfo.currentUser!!.accountType
+            if (currentAccountType == AccountType.STANDARD) {
+                navItems = listOf(NavBarItem.Trip, NavBarItem.Scanner, NavBarItem.Social)
+            }
             NavigationBarItem(
                 icon = {
                     Icon(imageVector = it.icon, contentDescription = "temp")
                 },
                 onClick = {
                     if (!isSelected)
-                            navController.navigate(it.route)
+                        navController.navigate(it.route)
                 },
                 selected = isSelected
             )
