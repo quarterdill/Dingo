@@ -45,6 +45,7 @@ import com.google.firebase.Timestamp
 fun SocialFeedScreen(
     viewModel: SocialFeedViewModel = hiltViewModel(),
 ) {
+    val currentUser = SessionInfo.currentUser
     var currentPostId = remember { mutableStateOf("") }
     val feedItems = viewModel
         .getFeedForUser(SessionInfo.currentUserID)

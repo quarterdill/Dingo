@@ -56,14 +56,14 @@ fun ProfileScreen(
     val numFloraFound = totalFlora - viewModel.getNumUncollectedFlora()
     val numFaunaFound = totalFauna - viewModel.getNumUncollectedFauna()
     val achievements = viewModel.getAchievements(LocalContext.current)
-
-
+    val currentUser = SessionInfo.currentUser
+    val currentUsername = currentUser?.username ?: "Eric Shang"
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            "My Profile",
+            "${currentUsername}'s Profile",
             fontSize = UIConstants.SUBTITLE1_TEXT,
         )
         Button(onClick = {
