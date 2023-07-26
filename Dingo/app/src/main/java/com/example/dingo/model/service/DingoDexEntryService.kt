@@ -11,6 +11,7 @@ interface DingoDexEntryService {
     suspend fun getDingoDexFaunaEntries(userId: String) : Flow<List<DingoDexEntry>>
     suspend fun getDingoDexFloraEntries(userId: String) : Flow<List<DingoDexEntry>>
     suspend fun getEntry(userId: String = SessionInfo.currentUserID, entryName: String) : List<DingoDexEntry>
+    suspend fun getEntryById(entryId: String): DingoDexEntry?
     suspend fun addNewEntry(newDingoDexEntry: DingoDexEntryContent) : Boolean
     suspend fun updateEntry(entry: DingoDexEntry) : Boolean
     suspend fun deleteEntry(entryId: String)

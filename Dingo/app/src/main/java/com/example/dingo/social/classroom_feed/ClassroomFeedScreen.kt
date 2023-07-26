@@ -34,6 +34,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -297,6 +298,22 @@ private fun CreatePostDialog(
                 text = "Post to Classroom",
                 fontSize = UIConstants.SUBTITLE2_TEXT
             )
+            if (selectedTrip != null) {
+                Text(fontSize = UIConstants.SUBTITLE2_TEXT,    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    text="Selected trip: ${selectedTrip?.title ?: "none"}",
+                )
+            } else if (selectedEntry != null) {
+                Text(fontSize = UIConstants.SUBTITLE2_TEXT,    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    text="Selected entry: ${selectedEntry?.name ?: "none"}",
+                )
+            } else {
+                Text(fontSize = UIConstants.SUBTITLE2_TEXT,    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    text="No selected entry or trip",
+                )
+            }
             TextField(
                 modifier = Modifier
                     .padding(vertical = UIConstants.MEDIUM_PADDING)

@@ -59,7 +59,7 @@ constructor(
 
             var user = userService.getUser(userId)
 
-            println("making post with post id $postId for user: $user with tripId $tripId")
+            println("making post with post id $postId for user: $user with tripId $tripId and entry $entry")
 
             if (user != null) {
                 val currPostHead = user.postHead
