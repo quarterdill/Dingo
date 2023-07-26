@@ -23,17 +23,19 @@ class DingoDexEntryServiceImpl
 constructor(private val firestore: FirebaseFirestore, private val auth: AccountService) :
     DingoDexEntryService {
 
-    override val dingoDexFaunaEntries: Flow<List<DingoDexEntry>>
-        get() = firestore.collection(DINGO_DEX_ENTRIES)
-            .whereEqualTo(USER_ID_FIELD, SessionInfo.currentUserID)
+    override suspend fun getDingoDexFaunaEntries(userId: String) : Flow<List<DingoDexEntry>> {
+        return firestore.collection(DINGO_DEX_ENTRIES)
+            .whereEqualTo(USER_ID_FIELD, userId)
             .whereEqualTo(IS_FAUNA_FIELD, true)
             .dataObjects()
+    }
 
-    override val dingoDexFloraEntries: Flow<List<DingoDexEntry>>
-        get() = firestore.collection(DINGO_DEX_ENTRIES)
-            .whereEqualTo(USER_ID_FIELD, SessionInfo.currentUserID)
+    override suspend fun getDingoDexFloraEntries(userId: String) : Flow<List<DingoDexEntry>> {
+        return firestore.collection(DINGO_DEX_ENTRIES)
+            .whereEqualTo(USER_ID_FIELD, userId)
             .whereEqualTo(IS_FAUNA_FIELD, false)
             .dataObjects()
+    }
 
     override suspend fun getEntry(userId: String, entryName: String) : List<DingoDexEntry> {
         return firestore.collection(DINGO_DEX_ENTRIES)
@@ -52,6 +54,7 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
             pictures = emptyList(),
             scientificName = newDingoDexEntry.scientific_name,
             displayPicture = "default",
+            scientificName = newDingoDexEntry.scientific_name
         )
         return try {
             firestore.collection(DINGO_DEX_ENTRIES).add(newEntry).await()

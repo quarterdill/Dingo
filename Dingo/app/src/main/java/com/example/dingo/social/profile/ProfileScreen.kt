@@ -38,6 +38,7 @@ import androidx.navigation.NavHostController
 import com.example.dingo.CustomDialog
 import com.example.dingo.UIConstants
 import com.example.dingo.common.SessionInfo
+import com.example.dingo.dingodex.DingoDexScreen
 import com.example.dingo.model.AccountType
 import com.example.dingo.model.DingoDexEntryListings
 import com.example.dingo.model.User
@@ -75,12 +76,12 @@ fun ProfileScreen(
         }) {
             Text("Sign out")
         }
+
         if (SessionInfo.currentUser!!.accountType == AccountType.STANDARD) {
             FriendSection()
         } else {
             Spacer(modifier = Modifier.height(30.dp))
         }
-
 
 //      Text(
         Text("Flora: $numFloraFound / $totalFlora")
@@ -185,6 +186,16 @@ private fun FriendList(
     friendItems: State<MutableList<User>?>,
     onDismissRequest: () -> Unit,
 ) {
+    val dingoDexDialogState = remember { mutableStateOf(false) }
+    val dingoDexDialogUserId = remember { mutableStateOf("") }
+    if (dingoDexDialogState.value) {
+        println(dingoDexDialogUserId.toString())
+        DingoDexDialog(
+            dingoDexDialogUserId.value
+        ) {
+            dingoDexDialogState.value = false
+        }
+    }
     CustomDialog(
         onDismissRequest = onDismissRequest
     ) {
@@ -200,24 +211,44 @@ private fun FriendList(
                 val friends = friendItems.value
                 if (friends != null) {
                     items(friends.size) {
-                        Row(
-                            modifier = Modifier.padding(vertical = UIConstants.SMALL_PADDING),
-                            horizontalArrangement = Arrangement.spacedBy(10.dp),
-                            verticalAlignment = Alignment.CenterVertically
+                        Button(
+                            onClick = {
+                                dingoDexDialogUserId.value = friends[it].id
+                                println(friends[it].id)
+                                println(dingoDexDialogUserId.value)
+                                dingoDexDialogState.value = true
+                            }
                         ) {
-                            Text(friends[it].username)
-                            Divider(
-                                modifier = Modifier
-                                    .height(30.dp)
-                                    .width(1.dp),
-                                color = Color.Gray,
-                            )
-                            Text(text = "oh yeah")
+                            Row(
+                                modifier = Modifier.padding(vertical = UIConstants.SMALL_PADDING),
+                                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(friends[it].username)
+                                Divider(
+                                    modifier = Modifier
+                                        .height(30.dp)
+                                        .width(1.dp),
+                                    color = Color.Gray,
+                                )
+                            }
                         }
                     }
                 }
             }
         }
+    }
+}
+
+@Composable
+fun DingoDexDialog(
+    userId: String,
+    onDismissRequest: () -> Unit
+){
+    CustomDialog(
+        onDismissRequest = onDismissRequest
+    ) {
+        DingoDexScreen(userId = userId)
     }
 }
 

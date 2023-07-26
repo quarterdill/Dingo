@@ -107,7 +107,7 @@ fun MainScreen(
     }
     BottomSheetScaffold(
         sheetContent = {
-            DingoDexScreen()
+            DingoDexScreen(userId = SessionInfo.currentUserID)
         },
         sheetPeekHeight = 0.dp,
         scaffoldState = scaffoldState,
