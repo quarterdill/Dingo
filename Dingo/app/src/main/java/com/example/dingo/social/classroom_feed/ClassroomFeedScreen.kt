@@ -80,7 +80,7 @@ fun ClassroomFeedScreen(
             classroomId.value,
             SessionInfo.currentUserID,
             SessionInfo.currentUsername,
-            tripFeedItems.value as List<Trip>,
+            tripFeedItems.value as List<Trip>?,
             myDingoDexFauna.value as MutableList<DingoDexEntry>,
             myDingoDexFlora.value as MutableList<DingoDexEntry>,
         ) {
@@ -281,7 +281,7 @@ private fun CreatePostDialog(
     classroomId: String,
     userId: String,
     username: String,
-    tripFeedItems:List<Trip>,
+    tripFeedItems:List<Trip>?,
     myDingoDexFauna: MutableList<DingoDexEntry>,
     myDingoDexFlora: MutableList<DingoDexEntry>,
     onDismissRequest : () -> Unit,
@@ -322,9 +322,11 @@ private fun CreatePostDialog(
                 onValueChange = { textContentState = it },
                 label = { Text("") }
             )
-            DropdownMenuExample(tripFeedItems, onTripSelected = { newValue ->
-                selectedTrip = newValue
-            })
+            if (tripFeedItems != null) {
+                DropdownMenuExample(tripFeedItems, onTripSelected = { newValue ->
+                    selectedTrip = newValue
+                })
+            }
             if (selectedTrip == null) {
                 var myDingoDexItems = myDingoDexFauna + myDingoDexFlora
                 myDingoDexItems = myDingoDexItems.sortedByDescending {it.timestamp}
