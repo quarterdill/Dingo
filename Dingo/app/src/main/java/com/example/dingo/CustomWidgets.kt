@@ -30,6 +30,8 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.ViewModel
 import com.example.dingo.ui.theme.Purple40
+import com.example.dingo.ui.theme.color_primary
+import com.example.dingo.ui.theme.color_secondary
 
 @Composable
 fun CustomDialog(
@@ -67,7 +69,7 @@ fun CustomSwitch(
     val toggleButtonWidth = 160.dp
     val toggleButtonHeight= 42.dp
     val toggleThumbWidth= 80.dp
-    val color = Purple40
+    val color = color_secondary
     Surface(
         modifier = modifier,
         shape = RoundedCornerShape(12.dp),

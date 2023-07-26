@@ -46,7 +46,7 @@ import com.example.dingo.common.composable.DisplayPasswordField
 import com.example.dingo.common.composable.EmailField
 import com.example.dingo.navigation.Screen
 import com.example.dingo.ui.theme.Purple40
-import com.example.dingo.ui.theme.Purple80
+import com.example.dingo.ui.theme.color_background
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -60,7 +60,7 @@ fun LoginScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = Purple80),
+            .background(color = color_background),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
 

@@ -41,7 +41,6 @@ import com.example.dingo.common.composable.EmailField
 import com.example.dingo.common.composable.RepeatPasswordField
 import com.example.dingo.common.composable.UsernameField
 import com.example.dingo.navigation.Screen
-import com.example.dingo.ui.theme.Purple80
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -58,8 +57,7 @@ fun SignUpScreen(
     val isLoading = viewModel.isLoading.observeAsState()
     Box(
         modifier = Modifier
-            .fillMaxSize()
-            .background(color = Purple80),
+            .fillMaxSize(),
         contentAlignment = Alignment.Center,
     ) {
         if (isLoading.value!!) {
@@ -67,8 +65,7 @@ fun SignUpScreen(
         } else {
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .background(color = Purple80),
+                    .fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center,
 

@@ -109,7 +109,6 @@ fun ProfileScreen(
 private fun FriendSection(
     viewModel: ProfileViewModel = hiltViewModel(),
     ) {
-    // todo: loading for friend items
     val friendItems = viewModel
         .getFriendsForUser(SessionInfo.currentUserID)
         .observeAsState()

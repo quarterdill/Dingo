@@ -1,6 +1,7 @@
 package com.example.dingo.authentication.signup
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -101,6 +102,7 @@ constructor(
                     } else {
                         isLoading.value = false
                         // TODO: add error toast
+
                     }
                 }
 
