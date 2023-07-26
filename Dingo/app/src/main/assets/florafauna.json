@@ -386,7 +386,7 @@
   {
     "id": 48,
     "is_fauna": true,
-    "name": "Eastern Red Squirrel ",
+    "name": "Eastern Red Squirrel",
     "scientific_name": "Tamiasciurus hudsonicus",
     "description": "The Eastern Red Squirrel (Tamiasciurus hudsonicus) is a small tree-dwelling mammal native to eastern North America. With a vibrant reddish-brown fur coat and a white belly, it's easily recognized. These active squirrels are highly agile and skilled climbers, foraging for nuts, seeds, and fruits in trees. They are known for their high-pitched chattering and are an essential part of forest ecosystems, helping to disperse seeds and maintain tree populations.",
     "default_picture_name": "images/skunk.jpg"
@@ -397,5 +397,6 @@
     "name": "American Mink",
     "scientific_name": "Neovison vison",
     "description": "\nThe American Mink (Neovison vison) is a small, semi-aquatic mammal native to North America. It has a sleek, dark brown fur coat and a white patch on its chin. Minks are proficient swimmers and can be found near rivers, streams, and coastal areas. They are skilled predators, feeding on fish, amphibians, birds, and small mammals. Minks play an important role in controlling aquatic and rodent populations in their habitats.",
+    "default_picture_name": "images/skunk.jpg"
   }
 ]

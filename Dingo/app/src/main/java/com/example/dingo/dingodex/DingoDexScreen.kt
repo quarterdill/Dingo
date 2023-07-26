@@ -114,6 +114,7 @@ fun DingoDexScreen(
                         } else {
                             collectedFloraDingoDex.value!! + uncollectedFloraDingoDex.value!!
                         }
+                        println("HIII")
                         LazyVerticalGrid(
                             modifier = Modifier.weight(1.0f),
                             columns = GridCells.Fixed(3),
@@ -216,7 +217,7 @@ fun DingoDexScreen(
                             textAlign = TextAlign.Left,
                             modifier = Modifier.width(200.dp),
                             fontSize = 16.sp,
-                            text = dingodexEntryContent.description.trimIndent()
+                            text = "hi!!!"//dingodexEntryContent.description.trimIndent()
                         )
                     }
                 }
@@ -237,6 +238,7 @@ private fun DingoDexItem(
     val bitmap = BitmapFactory.decodeStream(assetManager.open(DingoDexEntryListings.dingoDexEntryList[index!!].default_picture_name))
     //Bitmap bit = BitmapFactory.decodeFile( DingoDexEntryListings.getInstance(currentContext).dingoDexEntryList[0].default_picture_name)
     Button(onClick = {
+        println("hiiii")
         navController.navigate(DingoDexNavItem.Description.route)
         viewModel.selectEntry(item.name)
     }) {
