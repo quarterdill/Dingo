@@ -37,6 +37,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -57,6 +58,8 @@ import com.example.dingo.UIConstants
 import com.example.dingo.common.SessionInfo
 import com.example.dingo.model.Trip
 import com.example.dingo.model.service.impl.getTimeDiffMessage
+import com.example.dingo.ui.theme.color_on_secondary
+import com.example.dingo.ui.theme.color_secondary
 import com.google.firebase.Timestamp
 import com.google.maps.android.compose.Polyline
 
@@ -174,6 +177,8 @@ fun TripScreen(
                                     navController.navigate(TripNavigationItem.CreatePost.route)
                                 }
                             },
+                            colors =
+                            ButtonDefaults.buttonColors(containerColor = color_secondary, color_on_secondary)
                         ) {
                             Text(text = if (isServiceRunning.value) "Stop Tracking Permission Granted: ${permissionState.value}" else "Start Tracking Permission Granted: ${permissionState.value}")
 

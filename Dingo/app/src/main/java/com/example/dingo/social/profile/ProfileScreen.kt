@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -42,6 +43,8 @@ import com.example.dingo.dingodex.DingoDexScreen
 import com.example.dingo.model.AccountType
 import com.example.dingo.model.DingoDexEntryListings
 import com.example.dingo.model.User
+import com.example.dingo.ui.theme.color_on_secondary
+import com.example.dingo.ui.theme.color_secondary
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -73,7 +76,9 @@ fun ProfileScreen(
             coroutineScope.launch {
                 viewModel.onSignOutClick(navControllerSignOut)
             }
-        }) {
+        },
+            colors =
+            ButtonDefaults.buttonColors(containerColor = color_secondary, color_on_secondary)) {
             Text("Sign out")
         }
 
@@ -165,11 +170,15 @@ private fun FriendSection(
         ) {
             Button(
                 onClick = { sendFriendReqDialogState.value = true },
+                colors =
+                ButtonDefaults.buttonColors(containerColor = color_secondary, color_on_secondary)F
             ) {
                 Text("Send Friend Request")
             }
             Button(
                 onClick = { pendingFriendReqDialogState.value = true },
+                colors =
+                ButtonDefaults.buttonColors(containerColor = color_secondary, color_on_secondary)
             ) {
                 Text(
                     "Pending Friend Requests",
