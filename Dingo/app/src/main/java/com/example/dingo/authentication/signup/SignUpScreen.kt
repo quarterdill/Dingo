@@ -36,6 +36,7 @@ import com.example.dingo.common.composable.BasicButton
 import com.example.dingo.common.composable.DisplayPasswordField
 import com.example.dingo.common.composable.EmailField
 import com.example.dingo.common.composable.RepeatPasswordField
+import com.example.dingo.common.composable.UsernameField
 import com.example.dingo.navigation.Screen
 import com.example.dingo.ui.theme.Purple80
 import kotlinx.coroutines.CoroutineScope
@@ -90,6 +91,7 @@ private fun SignUpFields(
         verticalArrangement = Arrangement.spacedBy(UIConstants.MEDIUM_PADDING)
     ) {
         EmailField(uiState.email,  viewModel::onEmailChange)
+        UsernameField(uiState.username,  viewModel::onUsernameChange)
         DisplayPasswordField(uiState.password, viewModel::onPasswordChange)
         RepeatPasswordField(uiState.repeatPassword, viewModel::onRepeatPasswordChange)
         Button(

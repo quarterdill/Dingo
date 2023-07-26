@@ -13,7 +13,7 @@ enum class AccountType {
 
 data class User (
     @DocumentId val id: String = "",
-    val authId: String = "", // from firebase auth
+    var authId: String = "", // from firebase auth
     var username: String = "",
     var email: String = "",
     var accountType: AccountType = AccountType.STANDARD,
