@@ -1,6 +1,7 @@
 package com.example.dingo.scanner
 
 import android.Manifest
+import android.content.Context
 import androidx.compose.runtime.Composable
 import android.graphics.Bitmap
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
@@ -99,7 +100,7 @@ private fun CapturedImageBitmapDialog(
     val capturedImageBitmap: ImageBitmap = remember { capturedImage.asImageBitmap() }
     val isLoading = viewModel.isLoading.observeAsState()
     val context = LocalContext.current
-    viewModel.addEntry("Dummy Data")
+    //viewModel.addEntry("Dummy Data")
     Dialog(
         onDismissRequest = onDismissRequest,
     ) {
@@ -162,7 +163,7 @@ private fun CapturedImageBitmapDialog(
                         Button(
                             onClick = {
                                 println("Saving Image")
-                                viewModel.savePicture("Dummy_Data", capturedImage, setDefaultPicture, context)
+                               // viewModel.savePicture("Dummy_Data", capturedImage, setDefaultPicture, context)
                             },
                         ) {
                             Text(text = "Save Image")
@@ -212,7 +213,7 @@ fun Bitmap.rotateBitmap(rotationDegrees: Int): Bitmap {
 @Composable
 private fun ScannerPreview(
     viewModel: ScannerViewModel = hiltViewModel(),
-    onPhotoCaptured: (Bitmap) -> Unit
+    onPhotoCaptured: (Bitmap, Context) -> Unit
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -229,12 +230,12 @@ private fun ScannerPreview(
                         override fun onCaptureSuccess(image: ImageProxy) {
                             val correctedBitmap: Bitmap = image.convertImageToBitmap().rotateBitmap(image.imageInfo.rotationDegrees)
 
-                            onPhotoCaptured(correctedBitmap)
+                            onPhotoCaptured(correctedBitmap, context)
 
                             image.close()
                         }
                     })
-                    viewModel.addEntry("Dummy Fauna")
+//                    viewModel.addEntry("Dummy Fauna")
                 }
             ) {
                 Icon(

@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.dingo.AnimalDetectionModel
 import com.example.dingo.model.service.AccountService
 import com.example.dingo.model.service.DingoDexEntryService
 import com.example.dingo.model.service.DingoDexStorageService
@@ -32,9 +33,10 @@ constructor(
     val state = _state.asStateFlow()
     var isLoading = MutableLiveData<Boolean>(false)
 
-    fun onPhotoCaptured(bitmap: Bitmap) {
-        // TODO: Process your photo, for example store it in the MediaStore
-        // here we only do a dummy showcase implementation
+    fun onPhotoCaptured(bitmap: Bitmap, context: Context) {
+        val animalDetectionModel = AnimalDetectionModel(context)
+        val prediction = animalDetectionModel.run( bitmap )
+        println(prediction)
         updateCapturedPhotoState(bitmap)
     }
 
