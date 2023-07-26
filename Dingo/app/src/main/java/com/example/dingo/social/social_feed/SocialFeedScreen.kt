@@ -157,9 +157,7 @@ fun DropdownMenuExample(trips: List<Trip>) {
     val titles = trips.map { it.title }
     var selectedIndex by remember { mutableStateOf(0) }
 
-    Box(modifier = Modifier
-        .fillMaxSize()
-        .wrapContentSize(Alignment.TopStart)) {
+
         Text(
             text = titles[selectedIndex],
             modifier = Modifier
@@ -182,7 +180,7 @@ fun DropdownMenuExample(trips: List<Trip>) {
                 )
             }
         }
-    }
+
 }
 
 @Composable
