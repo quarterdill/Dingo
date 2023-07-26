@@ -32,6 +32,7 @@ import androidx.core.content.ContextCompat
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
@@ -43,6 +44,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Observer
@@ -153,7 +155,7 @@ fun TripScreen(
             composable(TripNavigationItem.TrackTrip.route) {
                 val dummyTripId = "dummy"
                 LocationPermissionScreen()
-                ComposeDemoApp(trackedLocations)
+                tripMap(trackedLocations, true)
                 val context = LocalContext.current
                 Column {
                     Button(
@@ -185,16 +187,22 @@ fun TripScreen(
             }
             composable(TripNavigationItem.CreatePost.route) {
                 Log.d("tripScreen", "trackedLocations: $trackedLocations")
-                ComposeDemoApp(trackedLocations)
+                tripMap(trackedLocations, true)
                 PostTripModal(navController = navController,  locations = trackedLocations, discoveredEntries = emptyList() )
             }
             composable(TripNavigationItem.TripDetails.route) {
                 Log.d("tripScreen", "Trip Details selectedTrip: $selectedTrip")
                 if (selectedTrip != null) {
                     val trip = selectedTrip as Trip
-                    ComposeDemoApp(trip.locations)
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text(text = "Trip", fontWeight = FontWeight.Bold, fontSize = 24.sp)
+                        Text(text = "day, time, km, animals discovered", fontSize = 16.sp)
+                        Box(modifier = Modifier.fillMaxSize()) {
+                            tripMap(trip.locations, true)
+                        }
+                    }
                 }
-                TripDetailsModal(navController = navController, tripId = "", userId = "" , username = "", locations = trackedLocations )
+//                TripDetailsModal(navController = navController, tripId = "", userId = "" , username = "", locations = trackedLocations )
             }
         }
     }
@@ -274,10 +282,10 @@ fun LocationTrackingScreen() {
 }
 
 @Composable
-fun ComposeDemoApp(points: List<LatLng>) {
+fun tripMap(points: List<LatLng>, fullSize: Boolean) {
 
     val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(points.lastOrNull() ?: LatLng(51.52061810406676, -0.12635325270312533), 10f)
+        position = CameraPosition.fromLatLngZoom(points.lastOrNull() ?: LatLng(51.52061810406676, -0.12635325270312533), 15f)
     }
 
     GoogleMap(
