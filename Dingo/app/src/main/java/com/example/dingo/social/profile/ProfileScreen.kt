@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -37,6 +38,7 @@ import androidx.navigation.NavHostController
 import com.example.dingo.CustomDialog
 import com.example.dingo.UIConstants
 import com.example.dingo.common.SessionInfo
+import com.example.dingo.model.AccountType
 import com.example.dingo.model.DingoDexEntryListings
 import com.example.dingo.model.User
 import kotlinx.coroutines.CoroutineScope
@@ -73,14 +75,17 @@ fun ProfileScreen(
         }) {
             Text("Sign out")
         }
-
-        FriendSection()
+        if (SessionInfo.currentUser!!.accountType == AccountType.STANDARD) {
+            FriendSection()
+        } else {
+            Spacer(modifier = Modifier.height(30.dp))
+        }
 
 
 //      Text(
         Text("Flora: $numFloraFound / $totalFlora")
         Text("Flora: $numFaunaFound / $totalFauna")
-
+        Spacer(modifier = Modifier.height(30.dp))
         Text("Achievements: ")
         LazyColumn(
             modifier = Modifier.weight(1.0f, true)
