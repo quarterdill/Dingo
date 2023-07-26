@@ -129,7 +129,9 @@ private fun SocialPost(
             modifier = Modifier.height(20.dp),
             fontSize = 12.sp,
             color = Color.Gray,
-            text="${post.username} posted $timeDiffMsg ago with tripId: ${post.tripId ?: "none"}"
+            overflow= TextOverflow.Ellipsis,
+            text="${post.username} posted ${trip?.title ?: ""} $timeDiffMsg ago with tripId: ${post.tripId ?: "none"}"
+
         )
         Text(
             modifier = Modifier.padding(all = 12.dp),

@@ -240,7 +240,7 @@ fun TripScreen(
 
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
-                                text = "Description",
+                                text = "You have collected ${trip.discoveredEntries.size} Dingo(s) ${getTimeDiffMessage(trip.timestamp)} ago",
                                 modifier = Modifier.padding(16.dp),
                                 fontSize = 16.sp
                             )
@@ -448,13 +448,12 @@ private fun PostTripModal(
         }
         Button(
             onClick = {
-//                viewModel.makeDummyTrips(trackedLocations)
                 if (trip != null) {
                     trip.title = textContentState
                     trip.username = SessionInfo.currentUsername
                     trip.userId = SessionInfo.currentUserID
-//                    val tripId = viewModel.createTrip(trip = trip)
-                    val tripId = viewModel.makeDummyTrip(trip = trip)
+                    val tripId = viewModel.createTrip(trip = trip)
+//                    val tripId = viewModel.makeDummyTrip(trip = trip)
 
                 }
 
