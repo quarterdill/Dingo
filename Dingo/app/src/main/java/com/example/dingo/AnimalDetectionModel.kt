@@ -106,7 +106,7 @@ class AnimalDetectionModel(context : Context) {
             .build()
 
         val request = Request.Builder()
-            .url("http://192.168.2.166:8000/api/process_image/")
+            .url("http://IP_ADDRESS_HERE/api/process_image/")
             .post(requestBody)
             .build()
 
