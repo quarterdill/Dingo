@@ -57,6 +57,10 @@ constructor(
         if (successfulLogin) {
             val user = userService.getUserByEmail(email)
             SessionInfo.currentUser = user
+            if (user != null) {
+                SessionInfo.currentUsername = user.username
+                SessionInfo.currentUserID = user.id
+            }
             initializeStats()
             incrementStat(StatName.LOGINS)
             navHostController.navigate(route = Screen.MainScreen.route)
