@@ -57,7 +57,6 @@ constructor(
 
     fun addEntry(entryName: String) {
         viewModelScope.launch {
-            var result = false
             isLoading.value = true
             val entries = dingoDexEntryService.getEntry(SessionInfo.currentUserID, entryName)
             addNewEntryToTrip(entryName)
@@ -65,17 +64,15 @@ constructor(
                 val dingoDex = dingoDexStorageService.findDingoDexItem(entryName)
                 if (dingoDex != null) {
                     userService.updateDingoDex(dingoDex.id, dingoDex.is_fauna)
-
-                    result = dingoDexEntryService.addNewEntry(dingoDex)
+                    dingoDexEntryService.addNewEntry(dingoDex)
                 }
             } else {
                 // Should only have 1 entry for each animal/plant
                 var entry = entries[0]
                 entry.numEncounters++
                 // TODO: update location
-                // TODO: change name so doesnt have spaces
-                entry.location = ""
-                result = dingoDexEntryService.updateEntry(entry)
+                entry.location = "Waterloo"
+                dingoDexEntryService.updateEntry(entry)
             }
             isLoading.value = false
         }
@@ -86,6 +83,7 @@ constructor(
             if (saveImage) {
                 imageInternalStorageService.saveImage(entryName, image, context)
                 val imagePath = dingoDexEntryService.addPicture(entryName, image)
+                println("savePicture path is $imagePath")
                 var entry: DingoDexEntry? = null
                 if (imagePath != "") {
                     val entries = dingoDexEntryService.getEntry(SessionInfo.currentUserID, entryName)
@@ -101,7 +99,7 @@ constructor(
                     addPictureToTrip(imagePath, location)
                     if (imagePath != "" && entry != null) {
                         entry.displayPicture = imagePath
-                        result = dingoDexEntryService.updateEntry(entry)
+                        dingoDexEntryService.updateEntry(entry)
                     }
                 } else if (SessionInfo.trip != null ) {
                     addPictureToTrip(imagePath, location)

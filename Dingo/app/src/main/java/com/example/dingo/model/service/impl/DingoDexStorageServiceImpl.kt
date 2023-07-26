@@ -32,6 +32,7 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
 
     }
 
+
     override suspend fun findDingoDexItem(entryName: String): DingoDexEntryContent? {
         // TODO Replace with this once we make everything local
         var index = DingoDexScientificToIndex.dingoDexFaunaScientificToIndex[entryName]

@@ -28,6 +28,7 @@ constructor(
     private val dingoDexEntryService: DingoDexEntryService,
     private val dingoDexStorageService: DingoDexStorageService,
 ) : ViewModel() {
+    val isLoading = MutableLiveData(false)
 
     var uncollectedDingoDexFauna = getDingoDexUncollectedItems(true, "")
     var uncollectedDingoDexFlora = getDingoDexUncollectedItems(false, "")
@@ -44,6 +45,10 @@ constructor(
         uncollectedDingoDexFlora = getDingoDexUncollectedItems(false, userId)
         collectedDingoDexFauna = getDingoDexCollectedItems(true, userId)
         collectedDingoDexFlora = getDingoDexCollectedItems(false, userId)
+    }
+
+    fun getImage(imagePath: String) {
+
     }
     fun getDingoDexUncollectedItems(
         isFauna: Boolean,
@@ -62,7 +67,7 @@ constructor(
                         }
                         for (item in uncollectedDingoDex) {
                             try {
-                                val dingoDexItem = dingoDexStorageService.getDingoDexItem(if (isFauna) item else item-50, isFauna)
+                                val dingoDexItem = dingoDexStorageService.getDingoDexItem(if (isFauna) item else item - 50, isFauna)
                                 if (dingoDexItem != null) {
                                     dingoDexItems.add(
                                         DingoDexCollectionItem(

@@ -22,6 +22,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
@@ -180,21 +181,23 @@ fun DingoDexScreen(
                     //println("DingoDex entry image, ${selected.value} could not be found in json assets!")
                 }
                 val dingodexEntryContent = DingoDexEntryListings.dingoDexEntryList[index!!]
-                var bitmap = BitmapFactory.decodeStream(assetManager.open(dingodexEntryContent.default_picture_name))
-
+                var bitmap = remember{ mutableStateOf(BitmapFactory.decodeStream(assetManager.open(dingodexEntryContent.default_picture_name))) }
                 val dingodexEntry: List<DingoDexEntry> = viewModel.getEntry(userId = SessionInfo.currentUserID, entryName = selected.value!!)
                 if (dingodexEntry.size == 1 && dingodexEntry[0].displayPicture != "default") {
-                    val storageRef = FirebaseStorage.getInstance().reference.child("temp/${selected.value}.jpg")
-                    storageRef.getBytes(1000000).addOnSuccessListener {
-                        bitmap = BitmapFactory.decodeByteArray(it, 0, it.size)
+                    val storageRef = FirebaseStorage.getInstance().reference.child(dingodexEntry[0].displayPicture)
+                    storageRef.getBytes(1500000000).addOnSuccessListener {
+                        bitmap.value = BitmapFactory.decodeByteArray(it, 0, it.size)
                     }.addOnFailureListener {
                         println("Error occurred when downloading user's DingoDex image from Firebase $it")
                     }
                 }
+
+
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.verticalScroll(rememberScrollState()),
                 ) {
+
                     Row(
                         modifier = Modifier.padding(16.dp),
                         horizontalArrangement = Arrangement.spacedBy(10.dp),
@@ -203,7 +206,8 @@ fun DingoDexScreen(
                         Text(
                             modifier = Modifier.padding(4.dp),
                             fontSize = 16.sp,
-                            text = "${dingodexEntryContent.name} | ${dingodexEntryContent.scientific_name}"
+                            text = "${dingodexEntryContent.name} | ${dingodexEntryContent.scientific_name}",
+                            color = Color.Black
                         )
                     }
                     Row(
@@ -211,18 +215,21 @@ fun DingoDexScreen(
                         horizontalArrangement = Arrangement.spacedBy(10.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
+
                         Image(
-                            bitmap = bitmap.asImageBitmap(),
+                            bitmap = bitmap.value.asImageBitmap(),
                             contentDescription = if (dingodexEntryContent.is_fauna) "Fauna" else "Flora",
                             contentScale = ContentScale.Inside,
                             alignment = Alignment.CenterStart,
                         )
+
                     }
                     Text(
                         textAlign = TextAlign.Left,
                         modifier = Modifier.width(300.dp),
                         fontSize = 16.sp,
-                        text = dingodexEntryContent.description.trimIndent()
+                        text = dingodexEntryContent.description.trimIndent(),
+                        color = Color.Black
                     )
                     Row(
                         modifier = Modifier.padding(16.dp),
@@ -239,7 +246,7 @@ fun DingoDexScreen(
                                 modifier = Modifier.padding(4.dp),
                                 fontSize = 16.sp,
                                 text = "Back",
-
+                                color = Color.Black
                             )
                         }
                     }
@@ -266,7 +273,7 @@ private fun DingoDexItem(
         },
         modifier = Modifier.padding(3.dp),
         colors = ButtonDefaults.buttonColors(containerColor = color_secondary, color_on_secondary),
-        enabled = item.numEncounters == 0
+        enabled = item.numEncounters != 0
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -281,7 +288,7 @@ private fun DingoDexItem(
                         .size(64.dp)
                         .clip(CircleShape)  // clip to the circle shape
                         .border(2.dp, Color.Gray, CircleShape),
-                    alpha = if(item.numEncounters == 0) 0.2F else 0.0F
+                    alpha = if(item.numEncounters == 0) 0.2F else 1.0F
                 )
                 Box(
                     contentAlignment = Alignment.Center
@@ -289,7 +296,7 @@ private fun DingoDexItem(
                     Canvas(modifier = Modifier.size(25.dp), onDraw = {
                         drawCircle(color = Color.LightGray)
                     })
-                    Text(text = "${item.numEncounters}", color = Color.White)
+                    Text(text = "${item.numEncounters}", color = Color.Black)
                 }
             }
             Text(
@@ -298,7 +305,8 @@ private fun DingoDexItem(
                 textAlign = TextAlign.Center,
                 fontSize = 12.sp,
                 maxLines = 2,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
+                color = Color.Black
             )
         }
     }
