@@ -119,6 +119,27 @@ constructor(
         }
     }
 
+    fun addStudent(classroomId: String, studentName: String): Boolean {
+        var studentUser: User? = null
+        var studentId = ""
+        var ok = true
+        runBlocking {
+            studentUser = userService.getUserByUsername(studentName)
+        }
+        if (studentUser == null) {
+            ok = false
+        } else {
+            studentId = studentUser!!.id
+        }
+        if (!ok) {
+            return false
+        }
+        runBlocking {
+            classroomService.addUser(classroomId, studentId, UserType.STUDENT)
+        }
+        return ok
+    }
+
     fun makePost(
         classroomId: String,
         userId: String,
@@ -152,6 +173,24 @@ constructor(
             postService.addComment(postId, SessionInfo.currentUsername, textContent)
         }
         incrementStat(StatName.NUM_COMMENTS)
+    }
+
+    fun removePost(
+        classroomId: String,
+        postId: String,
+    ) {
+        viewModelScope.launch {
+            classroomService.deletePost(classroomId, postId)
+        }
+    }
+
+    fun removeComment(
+        postId: String,
+        commentId: String,
+    ) {
+        viewModelScope.launch {
+            postService.deleteComment(postId, commentId)
+        }
     }
 
 
@@ -268,8 +307,13 @@ constructor(
         viewModelScope.launch {
             var newClassroom: Classroom = Classroom()
             newClassroom.name = classroomName
-            newClassroom.teachers.add(creatorUserId)
-            classroomService.addNewClassroom(newClassroom)
+            var classroomId = ""
+            var job = launch {
+                classroomId = classroomService.addNewClassroom(newClassroom)
+            }
+            job.join()
+            classroomService.addUser(classroomId, creatorUserId, UserType.TEACHER)
+
         }
     }
 

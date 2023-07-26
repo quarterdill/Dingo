@@ -90,7 +90,7 @@ fun ProfileScreen(
                     modifier = Modifier.height(20.dp),
                     fontSize = 12.sp,
                     color = Color.Gray,
-                    text ="${achievements[it].name})",
+                    text ="${achievements[it].name}",
                 )
                 Text(
                     modifier = Modifier.padding(all = 12.dp),

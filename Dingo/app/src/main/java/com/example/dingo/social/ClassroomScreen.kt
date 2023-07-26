@@ -1,6 +1,7 @@
 package com.example.dingo.social
 
 import android.se.omapi.Session
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,12 +16,14 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
@@ -37,6 +40,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
@@ -192,11 +196,17 @@ fun ClassroomScreen(
                             )
                         }
                     }
-                    Text("Choose a classroom")
+                    val classrooms = fetchClassrooms.value
+                    if (classrooms != null && classrooms.size > 0) {
+                        Text("Choose a classroom")
+                    } else {
+                        Text("No classrooms available...")
+                    }
+
                     LazyColumn(
                         modifier = Modifier.weight(1.0f, true)
                     ) {
-                        val classrooms = fetchClassrooms.value
+
                         if (classrooms != null) {
                             println("num classrooms: ${classrooms.size}")
                             items(classrooms.size) { i ->
@@ -270,7 +280,7 @@ fun ClassroomScreen(
                         var posts = feedItems.value
                         if (posts != null) {
                             items(posts.size) {
-                                ClassroomPost(posts[it], navController, viewModel, currentPostId)
+                                ClassroomPost(posts[it], navController, viewModel, currentPostId, classroomId.value)
                                 println("post content: ${posts[it].textContent}")
                             }
                         }
@@ -313,7 +323,7 @@ fun ClassroomScreen(
                 }
             }
             composable(ClassroomNavigationItem.AddMember.route) {
-                AddMemberModal(viewModel, navController)
+                AddMemberModal(viewModel, navController, classroomId.value)
             }
             composable(ClassroomNavigationItem.ViewComments.route) {
                 Column(
@@ -329,7 +339,7 @@ fun ClassroomScreen(
                         println("comments: $comments")
                         if (comments != null) {
                             items(comments.size) {
-                                CommentText(comments[it])
+                                CommentText(comments[it], currentPostId.value, viewModel)
                             }
                         }
                     }
@@ -370,9 +380,15 @@ private fun ClassroomPost(
     navController: NavHostController,
     viewModel: ClassroomViewModel,
     currentPostId: MutableState<String>,
+    classroomId: String,
 //    updateComments: (String) -> Unit,
 //    fetchComments: State<MutableList<Comment>?>,
 ) {
+    var currUserType = AccountType.STUDENT
+    val currUser = SessionInfo.currentUser
+    if (currUser != null) {
+        currUserType = currUser.accountType
+    }
     Row(
         modifier = Modifier.padding(16.dp),
         horizontalArrangement = Arrangement.spacedBy(10.dp),
@@ -403,6 +419,18 @@ private fun ClassroomPost(
                     navController.navigate(ClassroomNavigationItem.ViewComments.route)
                 }
             )
+            if (currUserType == AccountType.INSTRUCTOR) {
+                IconButton(
+                    onClick = {
+                        viewModel.removePost(classroomId, post.id)
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.Delete,
+                        contentDescription = "Delete Post",
+                    )
+                }
+            }
             Divider(
                 thickness = 1.dp,
                 color = Color.Gray,
@@ -523,21 +551,21 @@ private fun CreateClassroomModal(
         )
         Button(
             onClick = {
-                navController.navigate(ClassroomNavigationItem.ClassroomPostFeed.route)
-            }
-        ) {
-            Text(text = "Cancel")
-        }
-        Button(
-            onClick = {
                 viewModel.createClassroom(
                     creatorUserId,
                     textContentState,
                 )
-                navController.navigate(ClassroomNavigationItem.ClassroomPostFeed.route)
+                navController.navigate(ClassroomNavigationItem.SelectClassroom.route)
             }
         ) {
-            Text(text = "Create Post")
+            Text(text = "Create Classroom")
+        }
+        Button(
+            onClick = {
+                navController.navigate(ClassroomNavigationItem.SelectClassroom.route)
+            }
+        ) {
+            Text(text = "Cancel")
         }
     }
 }
@@ -546,8 +574,42 @@ private fun CreateClassroomModal(
 private fun AddMemberModal(
     viewModel: ClassroomViewModel = hiltViewModel(),
     navController: NavHostController,
+    classroomId: String
 ) {
-    Text("Cannot add new members as a student")
+    var textContentState by remember { mutableStateOf("") }
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+    ) {
+        val currentContext = LocalContext.current
+        Text(text = "Add Student")
+        TextField(
+            value = textContentState,
+            onValueChange = { textContentState = it },
+            label = { Text("")}
+        )
+        Button(
+            onClick = {
+                val ok = viewModel.addStudent(classroomId, textContentState)
+                if (ok) {
+                    Toast.makeText(
+                        currentContext,
+                        "Added student!",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                } else {
+                    Toast.makeText(
+                        currentContext,
+                        "Couldn't find student...",
+                        Toast.LENGTH_SHORT,
+                    ).show()
+                }
+            }
+        ) {
+            Text(text = "Add")
+        }
+    }
 }
 
 @Composable
@@ -560,7 +622,12 @@ private fun Comments(
 }
 
 @Composable
-private fun CommentText(comment: Comment){
+private fun CommentText(
+    comment: Comment,
+    postId: String,
+    viewModel: ClassroomViewModel,
+    currAccountType: AccountType = AccountType.INSTRUCTOR,
+){
     var timeDiffMsg = getTimeDiffMessage(comment.timestamp)
     Text(
         modifier = Modifier.height(20.dp),
@@ -572,8 +639,22 @@ private fun CommentText(comment: Comment){
         text = "${comment.textContent}"
     )
 
+    if (currAccountType == AccountType.INSTRUCTOR) {
+        IconButton(
+            onClick = {
+                viewModel.removeComment(postId, comment.id)
+            }
+        ) {
+            Icon(
+                imageVector = Icons.Rounded.Delete,
+                contentDescription = "Delete Post",
+            )
+        }
+    }
+
     Divider(
         thickness = 1.dp,
         color = Color.Gray,
     )
+
 }

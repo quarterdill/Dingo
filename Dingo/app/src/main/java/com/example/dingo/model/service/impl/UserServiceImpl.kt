@@ -1,8 +1,10 @@
 package com.example.dingo.model.service.impl
 
+import androidx.core.util.rangeTo
 import com.example.dingo.common.SessionInfo
 import com.example.dingo.model.AccountType
 import com.example.dingo.model.Classroom
+import com.example.dingo.model.DingoDexEntryListings
 import com.example.dingo.model.Post
 import com.example.dingo.model.PostType
 import com.example.dingo.model.User
@@ -38,6 +40,18 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
         user.email = email
         user.authId = authId
         user.accountType = accountType
+
+        var uncollectedFauna = mutableListOf<Int>()
+        for (i in DingoDexEntryListings.faunaEntryList) {
+            uncollectedFauna.add(i.id)
+        }
+        user.uncollectedFauna = uncollectedFauna
+
+        var uncollectedFlora = mutableListOf<Int>()
+        for (i in DingoDexEntryListings.floraEntryList) {
+            uncollectedFlora.add(i.id)
+        }
+        user.uncollectedFlora = uncollectedFlora
 
         var userId = ""
         firestore.collection(USER_COLLECTIONS)
