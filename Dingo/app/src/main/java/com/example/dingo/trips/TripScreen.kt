@@ -217,7 +217,7 @@ private fun TripPost(trip: Trip, navController: NavHostController, onTripSelecte
     ) {
 
         ClickableText(
-            text = AnnotatedString("${trip.username} posted ${trip.locations} with ${trip.discoveredEntries} entrie(s)"),
+            text = AnnotatedString("${trip.username} posted ${trip.locations} with ${trip.discoveredEntries.size} entrie(s) and ${trip.locations.size}"),
             onClick = {
                 onTripSelected(trip)
                 navController.navigate(TripNavigationItem.TripDetails.route)
