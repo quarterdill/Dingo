@@ -16,8 +16,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.dingo.CustomSwitch
 import com.example.dingo.UIConstants
-import com.example.dingo.common.SessionInfo
-import com.example.dingo.model.AccountType
 import com.example.dingo.social.profile.ProfileScreen
 import com.example.dingo.social.social_feed.SocialFeedScreen
 
@@ -59,33 +57,29 @@ fun SocialScreen(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            if (SessionInfo.currentUser!!.accountType != AccountType.STANDARD) {
-                ProfileScreen(navControllerSignOut = navControllerSignOut)
-            } else {
-                Text(
-                    text = "Socials",
-                    fontSize = UIConstants.TITLE_TEXT,
-                )
-                CustomSwitch(
-                    "Feed", "Profile",
-                    modifier = Modifier.padding(UIConstants.MEDIUM_PADDING),
-                ) {
-                    if (it) {
-                        navController.navigate(SocialNavigationItem.MyProfile.route)
-                    } else {
-                        navController.navigate(SocialNavigationItem.SocialFeed.route)
-                    }
+            Text(
+                text = "Socials",
+                fontSize = UIConstants.TITLE_TEXT,
+            )
+            CustomSwitch(
+                "Feed", "Profile",
+                modifier = Modifier.padding(UIConstants.MEDIUM_PADDING),
+            ) {
+                if (it) {
+                    navController.navigate(SocialNavigationItem.MyProfile.route)
+                } else {
+                    navController.navigate(SocialNavigationItem.SocialFeed.route)
                 }
-                NavHost(
-                    navController = navController,
-                    startDestination = SocialNavigationItem.SocialFeed.route
-                ) {
-                    composable(SocialNavigationItem.SocialFeed.route) {
-                        SocialFeedScreen()
-                    }
-                    composable(SocialNavigationItem.MyProfile.route) {
-                        ProfileScreen(navControllerSignOut = navControllerSignOut)
-                    }
+            }
+            NavHost(
+                navController = navController,
+                startDestination = SocialNavigationItem.SocialFeed.route
+            ) {
+                composable(SocialNavigationItem.SocialFeed.route) {
+                    SocialFeedScreen()
+                }
+                composable(SocialNavigationItem.MyProfile.route) {
+                    ProfileScreen(navControllerSignOut = navControllerSignOut)
                 }
             }
         }
