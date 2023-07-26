@@ -1,5 +1,6 @@
 package com.example.dingo.social.classroom_feed
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,10 +16,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -48,9 +51,18 @@ import com.example.dingo.model.DingoDexEntry
 import com.example.dingo.model.Post
 import com.example.dingo.model.Trip
 import com.example.dingo.model.service.impl.getTimeDiffMessage
+import com.example.dingo.ui.theme.color_background
+import com.example.dingo.ui.theme.color_light_transparent
+import com.example.dingo.ui.theme.color_on_primary
+import com.example.dingo.ui.theme.color_on_secondary
+import com.example.dingo.ui.theme.color_post_background
+import com.example.dingo.ui.theme.color_primary
+import com.example.dingo.ui.theme.color_secondary
+import com.example.dingo.ui.theme.color_text_field
 import com.example.dingo.social.social_feed.DropdownEntryMenu
 import com.example.dingo.social.social_feed.DropdownMenuExample
 import com.example.dingo.trips.TripViewModel
+
 
 
 @Composable
@@ -92,7 +104,10 @@ fun ClassroomFeedScreen(
         contentAlignment = Alignment.Center,
     ) {
         if (feedItems.value.isNullOrEmpty()) {
-            Text("No posts found... try adding some members")
+            Text(
+                "No posts found... try adding some members",
+                color = color_primary
+            )
         } else {
             LazyColumn(
                 modifier = Modifier.fillMaxHeight()
@@ -107,6 +122,8 @@ fun ClassroomFeedScreen(
             }
         }
         FloatingActionButton(
+            containerColor = color_on_primary,
+            contentColor = color_primary,
             modifier = Modifier
                 .padding(UIConstants.MEDIUM_PADDING)
                 .align(alignment = Alignment.BottomEnd),
@@ -139,7 +156,9 @@ private fun ClassroomPost(
         }
     }
     Row(
-        modifier = Modifier.padding(16.dp),
+        modifier = Modifier
+            .padding(16.dp)
+            .background(color_post_background),
         horizontalArrangement = Arrangement.spacedBy(10.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -149,16 +168,17 @@ private fun ClassroomPost(
             Text(
                 modifier = Modifier.height(20.dp),
                 fontSize = 12.sp,
-                color = Color.Gray,
+                color = color_secondary,
                 text="${post.username} posted $timeDiffMsg ago"
             )
             Text(
                 modifier = Modifier.padding(all = 12.dp),
-                text = post.textContent
+                text = post.textContent,
+                color = color_primary,
             )
             ClickableText(
                 style = TextStyle(
-                    color = Color.LightGray,
+                    color = color_secondary,
                 ),
                 text = AnnotatedString("${post.comments.size} comment(s)"),
                 onClick = {
@@ -170,7 +190,8 @@ private fun ClassroomPost(
                 IconButton(
                     onClick = {
                         viewModel.removePost(classroomId.value, post.id)
-                    }
+                    },
+                    colors = IconButtonDefaults.iconButtonColors(contentColor =  color_primary)
                 ) {
                     Icon(
                         imageVector = Icons.Rounded.Delete,
@@ -180,7 +201,7 @@ private fun ClassroomPost(
             }
             Divider(
                 thickness = 1.dp,
-                color = Color.Gray,
+                color = color_primary,
             )
 
         }
@@ -206,6 +227,7 @@ private fun CommentsDialog(
         ) {
             Text(
                 "Comments",
+                color = color_primary,
                 fontSize = UIConstants.SUBTITLE1_TEXT,
                 modifier = Modifier.padding(bottom = UIConstants.MEDIUM_PADDING),
             )
@@ -217,6 +239,7 @@ private fun CommentsDialog(
                 if (fetchComments.value.isNullOrEmpty()) {
                     Text(
                         "No comments yet. Be the first to comment!",
+                        color = color_primary,
                         textAlign = TextAlign.Center,
                     )
                 } else {
@@ -241,6 +264,7 @@ private fun CommentsDialog(
             TextField(
                 modifier = Modifier
                     .padding(vertical = UIConstants.MEDIUM_PADDING)
+                    .background(color = color_text_field)
                     .height(100.dp),
                 value = textContentState,
                 onValueChange = { textContentState = it },
@@ -260,12 +284,16 @@ private fun CommentsDialog(
                             )
                         }
                         textContentState = ""
-                    }
+                    },
+                    colors =
+                    ButtonDefaults.buttonColors(containerColor = color_secondary, color_on_secondary)
                 ) {
                     Text(text = "Comment")
                 }
                 Button(
-                    onClick = onDismissRequest
+                    onClick = onDismissRequest,
+                    colors =
+                    ButtonDefaults.buttonColors(containerColor = color_secondary, color_on_secondary)
                 ) {
                     Text(text = "Cancel")
                 }
@@ -317,6 +345,7 @@ private fun CreatePostDialog(
             TextField(
                 modifier = Modifier
                     .padding(vertical = UIConstants.MEDIUM_PADDING)
+                    .background(color = color_text_field)
                     .height(100.dp),
                 value = textContentState,
                 onValueChange = { textContentState = it },
@@ -349,12 +378,16 @@ private fun CreatePostDialog(
                             null,
                         )
                         onDismissRequest()
-                    }
+                    },
+                    colors =
+                    ButtonDefaults.buttonColors(containerColor = color_secondary, color_on_secondary)
                 ) {
                     Text(text = "Create Post")
                 }
                 Button(
-                    onClick = onDismissRequest
+                    onClick = onDismissRequest,
+                    colors =
+                    ButtonDefaults.buttonColors(containerColor = color_secondary, color_on_secondary)
                 ) {
                     Text(text = "Cancel")
                 }
@@ -373,18 +406,21 @@ private fun CommentText(
     Text(
         modifier = Modifier.height(20.dp),
         fontSize = 10.sp,
-        color = Color.Gray,
+        color = color_secondary,
         text="${comment.authorName} posted $timeDiffMsg ago")
     Text(
         modifier = Modifier.padding(all = 12.dp),
-        text = "${comment.textContent}"
+        color = color_primary,
+        text = comment.textContent
     )
 
     if (SessionInfo.currentUser!!.accountType == AccountType.INSTRUCTOR) {
         IconButton(
             onClick = {
                 viewModel.removeComment(postId, comment.id)
-            }
+            },
+            colors =
+            IconButtonDefaults.iconButtonColors(contentColor =  color_primary)
         ) {
             Icon(
                 imageVector = Icons.Rounded.Delete,

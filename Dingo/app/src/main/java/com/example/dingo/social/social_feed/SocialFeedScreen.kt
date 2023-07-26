@@ -60,6 +60,8 @@ import com.example.dingo.model.Post
 import com.example.dingo.model.Trip
 import com.example.dingo.trips.TripViewModel
 import com.example.dingo.trips.tripMap
+import com.example.dingo.ui.theme.color_on_primary
+import com.example.dingo.ui.theme.color_primary
 import com.google.firebase.Timestamp
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.runBlocking
@@ -134,6 +136,8 @@ fun SocialFeedScreen(
         }
 
         FloatingActionButton(
+            containerColor = color_on_primary,
+            contentColor = color_primary,
             modifier = Modifier
                 .padding(UIConstants.MEDIUM_PADDING)
                 .align(alignment = Alignment.BottomEnd),

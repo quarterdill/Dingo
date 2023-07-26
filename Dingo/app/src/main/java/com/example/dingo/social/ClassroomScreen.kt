@@ -53,6 +53,7 @@ import com.example.dingo.model.UserType
 import com.example.dingo.social.classroom_feed.ClassroomFeedScreen
 import com.example.dingo.social.classroom_feed.ClassroomFeedViewModel
 import com.example.dingo.social.classroom_member.ClassroomMembersScreen
+import com.example.dingo.ui.theme.color_text_field
 import com.example.dingo.ui.theme.color_background
 import com.example.dingo.ui.theme.color_light_transparent
 import com.example.dingo.ui.theme.color_on_secondary
@@ -92,7 +93,10 @@ fun ClassroomScreen(
     var classroomId = remember { mutableStateOf("") }
     val navController = rememberNavController()
     Column(
-        modifier = Modifier.fillMaxSize().background(color = color_background),
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color_text_field),
+
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         val fetchClassrooms = viewModel
