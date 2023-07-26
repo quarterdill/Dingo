@@ -74,7 +74,8 @@ sealed class DingoDexNavItem(
 // TODO: Make heights and stuff into constants
 @Composable
 fun DingoDexScreen(
-    viewModel: DingoDexViewModel = hiltViewModel()
+    viewModel: DingoDexViewModel = hiltViewModel(),
+    userId: String
 ) {
     val navController = rememberNavController()
     val selected = remember { mutableStateOf("")}
@@ -97,12 +98,16 @@ fun DingoDexScreen(
                         text = "DingoDex",
                     )
                     var showFaunaDingoDex by remember { mutableStateOf(true) }
-                    val collectedFaunaDingoDex = viewModel.collectedDingoDexFauna.observeAsState()
-                    val uncollectedFaunaDingoDex =
-                        viewModel.uncollectedDingoDexFauna.observeAsState()
-                    val collectedFloraDingoDex = viewModel.collectedDingoDexFlora.observeAsState()
-                    val uncollectedFloraDingoDex =
-                        viewModel.uncollectedDingoDexFlora.observeAsState()
+                    println(userId)
+                    val collectedFaunaDingoDex = viewModel.getDingoDexCollectedItems(true, userId).observeAsState()
+                    val uncollectedFaunaDingoDex = viewModel.getDingoDexUncollectedItems(true, userId).observeAsState()
+                    val collectedFloraDingoDex = viewModel.getDingoDexCollectedItems(false, userId).observeAsState()
+                    val uncollectedFloraDingoDex = viewModel.getDingoDexUncollectedItems(false, userId).observeAsState()
+                    print("collections are :")
+                    print(collectedFaunaDingoDex)
+                    print(uncollectedFaunaDingoDex)
+                    print(uncollectedFloraDingoDex)
+                    print(collectedFloraDingoDex)
 
                     val isNull = if (showFaunaDingoDex) {
                         collectedFaunaDingoDex.value == null || uncollectedFaunaDingoDex.value == null
