@@ -159,13 +159,15 @@ private fun SocialPost(
 fun DropdownMenuExample(items: List<Trip>, onTripSelected: (Trip) -> Unit) {
     var expanded by remember { mutableStateOf(false) }
     var selectedIndex by remember { mutableStateOf(0) }
-    Text(
-        text = items[selectedIndex].title,
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = { expanded = true })
-            .background(Color.Gray)
-    )
+    Button(
+        onClick = { expanded = true },
+
+    ) {
+        Text(
+            text = items[selectedIndex].title,
+        )
+    }
+
     DropdownMenu(
         expanded = expanded,
         onDismissRequest = { expanded = false },
@@ -197,16 +199,13 @@ private fun CreatePostModal(
 
     CustomDialog(onDismissRequest = onDismissRequest) {
         var textContentState by remember { mutableStateOf("") }
-        Text("selectedTrip id:${selectedTrip?.id ?: "none"} title: ${selectedTrip?.title ?: "none"}")
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
 //            SimpleDropdownMenu()
-            Text(
-                text = "Post",
-                fontSize = UIConstants.SUBTITLE2_TEXT
-            )
+            Text(fontSize = UIConstants.SUBTITLE2_TEXT,
+                text="selectedTrip id:${selectedTrip?.id ?: "none"} title: ${selectedTrip?.title ?: "none"}")
             TextField(
                 modifier = Modifier
                     .padding(vertical = UIConstants.MEDIUM_PADDING)
@@ -219,9 +218,6 @@ private fun CreatePostModal(
                 selectedTrip = newValue
             })
 
-            //   SELECT trip
-//            Get trip feed names
-//            clickable
             Row (
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
