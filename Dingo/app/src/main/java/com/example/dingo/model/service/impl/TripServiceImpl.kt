@@ -1,17 +1,12 @@
 package com.example.dingo.model.service.impl
 
 import android.util.Log
-import com.example.dingo.common.SessionInfo
 import com.example.dingo.model.GeoTrip
 import com.example.dingo.model.Trip
 import com.example.dingo.model.service.AccountService
 import com.example.dingo.model.service.TripService
 import com.google.android.gms.maps.model.LatLng
-import com.google.firebase.Timestamp
-import com.google.firebase.database.GenericTypeIndicator
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.GeoPoint
-import com.google.firebase.firestore.QueryDocumentSnapshot
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -26,24 +21,17 @@ class TripServiceImpl
 constructor(private val firestore: FirebaseFirestore, private val auth: AccountService) : TripService {
 
     override suspend fun createTrip(
-        userId: String,
-        username: String,
-        locations: List<LatLng>,
-        discoveredEntries: List<String>,
-        startTime : Timestamp,
-        endTime: Timestamp,
-        timestamp:Timestamp,
-        title:String
+        trip: Trip
 
     ): String {
-        var trip: Trip = Trip()
-        trip.userId = userId
-        trip.username = username
-        trip.locations = locations
-        trip.startTime = startTime
-        trip.endTime = Timestamp.now()
-        trip.timestamp = Timestamp.now()
-        trip.title = title
+//        var trip: Trip = Trip()
+//        trip.userId = userId
+//        trip.username = username
+//        trip.locations = locations
+//        trip.startTime = startTime
+//        trip.endTime = Timestamp.now()
+//        trip.timestamp = Timestamp.now()
+//        trip.title = title
 
 //        Default to empty lists for now
 //        TODO("Fetch locations using Android API and discoveredEntries from Scanner Service")
@@ -69,11 +57,17 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
     }
 
     override suspend fun getTrip(tripId: String): Trip? {
-        return firestore.collection(TRIP_COLLECTIONS)
+
+        var geoTrip = firestore.collection(TRIP_COLLECTIONS)
             .document(tripId)
             .get()
             .await()
-            .toObject(Trip::class.java)
+            .toObject(GeoTrip::class.java)
+        if (geoTrip != null) {
+            var trip : Trip = convertGeoTripToTrip(geoTrip)
+            return trip
+        }
+        return null
     }
 
     override suspend fun deleteTrip(tripId: String) {
@@ -81,26 +75,28 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
     }
 
 
+    private fun convertGeoTripToTrip(geoTrip: GeoTrip) : Trip {
+        Log.d("SocialFeedScreen","convertGeoTripToTrip = ${geoTrip}")
 
-    fun convertGeoTripsToTrips(geoTrips: List<GeoTrip>): List<Trip> {
-        val trips = mutableListOf<Trip>()
-        for (geoTrip in geoTrips) {
-            val trip = Trip(
-                id = geoTrip.id,
-                userId = geoTrip.userId,
-                username = geoTrip.username,
-                locations = geoTrip.locations.map { location ->
-                    LatLng(location["latitude"] as Double, location["longitude"] as Double)
-                },
-                discoveredEntries = geoTrip.discoveredEntries.toMutableList(),
-                startTime= geoTrip.startTime,
-                endTime = geoTrip.endTime,
-                timestamp= geoTrip.timestamp,
-                title = geoTrip.title
-            )
-            trips.add(trip)
-        }
-        return trips
+        return Trip(
+            id = geoTrip.id,
+            userId = geoTrip.userId,
+            username = geoTrip.username,
+            locations = (geoTrip.locations.map { location ->
+                LatLng(location["latitude"] as Double, location["longitude"] as Double)
+            }).toMutableList(),
+            discoveredEntries = geoTrip.discoveredEntries.toMutableList(),
+            startTime = geoTrip.startTime,
+            endTime = geoTrip.endTime,
+            timestamp = geoTrip.timestamp,
+            title = geoTrip.title,
+            picturePaths = geoTrip.picturePaths,
+            pictureLocations = (geoTrip.pictureLocations.map { location ->
+                LatLng(location["latitude"] as Double, location["longitude"] as Double)
+            }).toMutableList())
+    }
+    private fun convertGeoTripsToTrips(geoTrips: List<GeoTrip>): List<Trip> {
+        return geoTrips.map{it -> convertGeoTripToTrip(it)}
     }
 
 

@@ -41,7 +41,6 @@ fun addNewEntryToTrip(entryId: String) {
             trip.discoveredEntries.add(entryId)
         }
     }
-
 }
 
 fun addPictureToTrip(picturePath: String) {

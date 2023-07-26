@@ -1,9 +1,7 @@
 package com.example.dingo.model.service.impl
 
 import android.graphics.Bitmap
-import androidx.lifecycle.viewModelScope
 import com.example.dingo.common.SessionInfo
-import com.example.dingo.model.DingoDex
 import com.example.dingo.model.DingoDexEntry
 import com.example.dingo.model.DingoDexEntryContent
 import com.example.dingo.model.service.AccountService
@@ -11,16 +9,12 @@ import com.example.dingo.model.service.DingoDexEntryService
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.dataObjects
 import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.ktx.storage
-import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import java.io.ByteArrayOutputStream
-import java.lang.Exception
 import java.text.SimpleDateFormat
+import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
 
@@ -29,17 +23,19 @@ class DingoDexEntryServiceImpl
 constructor(private val firestore: FirebaseFirestore, private val auth: AccountService) :
     DingoDexEntryService {
 
-    override val dingoDexFaunaEntries: Flow<List<DingoDexEntry>>
-        get() = firestore.collection(DINGO_DEX_ENTRIES)
-            .whereEqualTo(USER_ID_FIELD, SessionInfo.currentUserID)
+    override suspend fun getDingoDexFaunaEntries(userId: String) : Flow<List<DingoDexEntry>> {
+        return firestore.collection(DINGO_DEX_ENTRIES)
+            .whereEqualTo(USER_ID_FIELD, userId)
             .whereEqualTo(IS_FAUNA_FIELD, true)
             .dataObjects()
+    }
 
-    override val dingoDexFloraEntries: Flow<List<DingoDexEntry>>
-        get() = firestore.collection(DINGO_DEX_ENTRIES)
-            .whereEqualTo(USER_ID_FIELD, SessionInfo.currentUserID)
+    override suspend fun getDingoDexFloraEntries(userId: String) : Flow<List<DingoDexEntry>> {
+        return firestore.collection(DINGO_DEX_ENTRIES)
+            .whereEqualTo(USER_ID_FIELD, userId)
             .whereEqualTo(IS_FAUNA_FIELD, false)
             .dataObjects()
+    }
 
     override suspend fun getEntry(userId: String, entryName: String) : List<DingoDexEntry> {
         return firestore.collection(DINGO_DEX_ENTRIES)
@@ -56,7 +52,9 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
             numEncounters = 1,
             location = "",
             pictures = emptyList(),
+            scientificName = newDingoDexEntry.scientific_name,
             displayPicture = "default",
+            scientificName = newDingoDexEntry.scientific_name
         )
         return try {
             firestore.collection(DINGO_DEX_ENTRIES).add(newEntry).await()
@@ -82,9 +80,8 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
     override suspend fun addPicture(entryName: String, image: Bitmap): String {
         // Create a storage reference from our app
         val storageRef = Firebase.storage.reference
-        // TODO: Change temp to user when auth is done, make imagepath have no spaces
         val dateFormat = SimpleDateFormat("yyyyMMddHHmmss", Locale.getDefault())
-        val imagePath = "${entryName}_$dateFormat.png"
+        val imagePath = "${SessionInfo.currentUserID}/${entryName}_${dateFormat.format(Date())}.png"
         // Create a reference to "mountains.jpg"
         val imageRef = storageRef.child(imagePath)
         val baos = ByteArrayOutputStream()
