@@ -15,8 +15,10 @@ import android.location.Location
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.example.dingo.common.SessionInfo
+import com.example.dingo.model.service.impl.TripServiceImpl
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.Timestamp
+import kotlinx.coroutines.tasks.await
 
 @HiltViewModel
 class TripViewModel
@@ -27,7 +29,8 @@ constructor(
 ) : ViewModel() {
 
     private val locationListLiveData = MutableLiveData<List<Location>>()
-
+    val discoveredEntries = mutableListOf<String>()
+    val picturePaths = mutableListOf<String>()
 
 
     fun locationTrackingStopped(locationList: MutableList<LatLng>) : List<LatLng> {

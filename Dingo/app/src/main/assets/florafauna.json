@@ -1,5 +1,13 @@
 [
   {
+    "id": 0,
+    "is_fauna": true,
+    "name": "Painted Lady Butterfly",
+    "scientific_name": "Vanessa cardui",
+    "description": "The Painted Lady Butterfly (Vanessa cardui) is a colorful and widespread butterfly species found across North America, Europe, and Asia. It has orange and black wings with distinct black and white markings. Painted ladies are migratory insects, traveling long distances during seasonal movements. They feed on nectar from a wide variety of flowers, making them valuable pollinators. These beautiful butterflies are a joy to observe in gardens and meadows during their annual migrations.",
+    "default_picture_name": "images/painted_lady_butterfly.jpg"
+  },
+  {
     "id": 1,
     "is_fauna": true,
     "name": "White-tailed Deer",
@@ -11,7 +19,7 @@
     "id": 2,
     "is_fauna": true,
     "name": "Black Bear",
-    "scientific_name": "Odocoileus virginianus",
+    "scientific_name": "Ursus americanus",
     "description": "The Black Bear (Ursus americanus) is a medium to large-sized bear species found across North America. Despite its name, its fur can range from black to brown, blonde, or even white. Omnivorous and adaptable, black bears thrive in various habitats, displaying intelligence and a gentle disposition when not threatened.",
     "default_picture_name": "images/black_bear.jpg"
   },
@@ -44,7 +52,7 @@
     "is_fauna": true,
     "name": "Eastern Chipmunk",
     "scientific_name": "Tamias striatus",
-    "description": "\nThe Eastern Chipmunk (Tamias striatus) is a small, striped rodent native to eastern North America. With its distinctive stripes along its back and cheeks, it's easily recognizable. These active creatures are burrow-dwellers and stash food in cheek pouches to store for winter. They consume nuts, seeds, fruits, and insects, contributing to ecosystem diversity.",
+    "description": "The Eastern Chipmunk (Tamias striatus) is a small, striped rodent native to eastern North America. With its distinctive stripes along its back and cheeks, it's easily recognizable. These active creatures are burrow-dwellers and stash food in cheek pouches to store for winter. They consume nuts, seeds, fruits, and insects, contributing to ecosystem diversity.",
     "default_picture_name": "images/eastern_chipmunk.jpg"
   },
   {
@@ -68,7 +76,7 @@
     "is_fauna": true,
     "name": "Mallard Duck",
     "scientific_name": "Anas platyrhynchos",
-    "description": "\nThe Mallard Duck (Anas platyrhynchos) is a medium-sized dabbling duck found throughout North America, Europe, and parts of Asia. The males (drakes) have vibrant green heads, white neck rings, and a rusty chest, while females (hens) are more subdued with mottled brown plumage. They are versatile birds, foraging in water for aquatic plants and insects, and on land for grains and seeds. Mallards are well-adapted to human-altered habitats, making them one of the most common and recognizable ducks worldwide.",
+    "description": "The Mallard Duck (Anas platyrhynchos) is a medium-sized dabbling duck found throughout North America, Europe, and parts of Asia. The males (drakes) have vibrant green heads, white neck rings, and a rusty chest, while females (hens) are more subdued with mottled brown plumage. They are versatile birds, foraging in water for aquatic plants and insects, and on land for grains and seeds. Mallards are well-adapted to human-altered habitats, making them one of the most common and recognizable ducks worldwide.",
     "default_picture_name": "images/mallard_duck.jpg"
   },
   {
@@ -85,7 +93,7 @@
     "name": "Eastern Bluebird",
     "scientific_name": "Sialia sialis",
     "description": "The Eastern Bluebird (Sialia sialis) is a small and colorful songbird native to eastern North America. The males exhibit vibrant blue plumage on their backs and wings, with a rusty-red breast, while females have more subdued colors. These cavity-nesters are often found perched on wires or branches, foraging for insects and berries. With the help of conservation efforts, their populations have rebounded, delighting many with their melodious songs and stunning appearances.",
-    "": "images/eastern_bluebird.jpg"
+    "default_picture_name": "images/eastern_bluebird.jpg"
   },
   {
     "id": 12,
@@ -100,7 +108,7 @@
     "is_fauna": true,
     "name": "Red-winged Blackbird",
     "scientific_name": "Agelaius phoeniceus",
-    "description": "\nThe Red-winged Blackbird (Agelaius phoeniceus) is a medium-sized songbird native to North and Central America. The males are easily recognized by their glossy black plumage with bright red and yellow shoulder patches, while females are more brown and streaked. These birds thrive in wetland habitats, where they nest and sing from cattails and other marsh vegetation. Red-winged blackbirds are highly social and form large flocks during migration.",
+    "description": "The Red-winged Blackbird (Agelaius phoeniceus) is a medium-sized songbird native to North and Central America. The males are easily recognized by their glossy black plumage with bright red and yellow shoulder patches, while females are more brown and streaked. These birds thrive in wetland habitats, where they nest and sing from cattails and other marsh vegetation. Red-winged blackbirds are highly social and form large flocks during migration.",
     "default_picture_name": "images/red_winged_blackbird.jpg"
   },
   {
@@ -108,7 +116,7 @@
     "is_fauna": true,
     "name": "Bald Eagle",
     "scientific_name": "Haliaeetus leucocephalus",
-    "description": "\nThe Bald Eagle (Haliaeetus leucocephalus) is a majestic bird of prey and the national symbol of the United States. With its distinctive white head and tail, and dark brown body, it's easily recognizable. These raptors have powerful talons and keen eyesight, enabling them to hunt fish and small mammals near bodies of water. Once endangered, conservation efforts have led to their population recovery, making them a symbol of strength and conservation success.",
+    "description": "The Bald Eagle (Haliaeetus leucocephalus) is a majestic bird of prey and the national symbol of the United States. With its distinctive white head and tail, and dark brown body, it's easily recognizable. These raptors have powerful talons and keen eyesight, enabling them to hunt fish and small mammals near bodies of water. Once endangered, conservation efforts have led to their population recovery, making them a symbol of strength and conservation success.",
     "default_picture_name": "images/bald_eagle.jpg"
   },
   {
@@ -123,8 +131,8 @@
     "id": 16,
     "is_fauna": true,
     "name": "Wild Turkey",
-    "scientific_name": "Turdus migratorius",
-    "description": "\nThe Wild Turkey (Meleagris gallopavo) is a large bird native to North America. Males, or toms, display distinctive plumage, including iridescent feathers and a fan-like tail. Known for their gobbling calls during mating season, they inhabit forests and grasslands, foraging for seeds, insects, and fruits. Once nearly extinct, conservation efforts have helped restore their populations.",
+    "scientific_name": "Meleagris gallopavo",
+    "description": "The Wild Turkey (Meleagris gallopavo) is a large bird native to North America. Males, or toms, display distinctive plumage, including iridescent feathers and a fan-like tail. Known for their gobbling calls during mating season, they inhabit forests and grasslands, foraging for seeds, insects, and fruits. Once nearly extinct, conservation efforts have helped restore their populations.",
     "default_picture_name": "images/wild_turkey.jpg"
   },
   {
@@ -132,7 +140,7 @@
     "is_fauna": true,
     "name": "American Beaver",
     "scientific_name": "Castor canadensis",
-    "description": "\nThe American Beaver (Castor canadensis) is a semi-aquatic rodent native to North America. Known for their impressive dam-building skills, they create lodges by constructing dams with sticks and mud. Beavers have webbed feet and a broad, flat tail that aids in swimming. They are herbivores, feasting on bark, leaves, and aquatic plants. Their presence in ecosystems provides benefits such as creating wetland habitats and regulating water flow.",
+    "description": "The American Beaver (Castor canadensis) is a semi-aquatic rodent native to North America. Known for their impressive dam-building skills, they create lodges by constructing dams with sticks and mud. Beavers have webbed feet and a broad, flat tail that aids in swimming. They are herbivores, feasting on bark, leaves, and aquatic plants. Their presence in ecosystems provides benefits such as creating wetland habitats and regulating water flow.",
     "default_picture_name": "images/american_beaver.jpg"
   },
   {
@@ -172,7 +180,7 @@
     "is_fauna": true,
     "name": "Snapping Turtle",
     "scientific_name": "Chelydra serpentina",
-    "description": "\nThe Snapping Turtle (Chelydra serpentina) is a large freshwater turtle found in North America. Known for its powerful jaws and aggressive behavior, it can deliver a painful bite when threatened. With a dark, ridged shell and a long tail, it is well-adapted to aquatic life. These omnivorous turtles feed on fish, insects, plants, and small animals, making them formidable predators in their wetland habitats.",
+    "description": "The Snapping Turtle (Chelydra serpentina) is a large freshwater turtle found in North America. Known for its powerful jaws and aggressive behavior, it can deliver a painful bite when threatened. With a dark, ridged shell and a long tail, it is well-adapted to aquatic life. These omnivorous turtles feed on fish, insects, plants, and small animals, making them formidable predators in their wetland habitats.",
     "default_picture_name": "images/snapping_turtle.jpg"
   },
   {
@@ -180,7 +188,7 @@
     "is_fauna": true,
     "name": "Northern Leopard Frog",
     "scientific_name": "Lithobates pipiens",
-    "description": "\nThe Northern Leopard Frog (Lithobates pipiens) is a medium-sized frog native to North America. Its name comes from the distinctive leopard-like spots on its green or brownish skin. These amphibians inhabit a variety of wetland habitats, including ponds, marshes, and slow-moving streams. Known for their distinctive call during breeding season, they play a vital role in controlling insect populations and are important indicators of wetland health.",
+    "description": "The Northern Leopard Frog (Lithobates pipiens) is a medium-sized frog native to North America. Its name comes from the distinctive leopard-like spots on its green or brownish skin. These amphibians inhabit a variety of wetland habitats, including ponds, marshes, and slow-moving streams. Known for their distinctive call during breeding season, they play a vital role in controlling insect populations and are important indicators of wetland health.",
     "default_picture_name": "images/northern_leopard_frog.jpg"
   },
   {
@@ -188,14 +196,14 @@
     "is_fauna": true,
     "name": "Common Garter Snake",
     "scientific_name": "Thamnophis sirtalis",
-    "description": "\nThe Common Garter Snake (Thamnophis sirtalis) is a non-venomous snake found throughout North America. With a long, slender body and distinct stripes running along its length, it is easily recognizable. These snakes are adaptable and can be found in a variety of habitats, including grasslands, forests, and wetlands. Garter snakes primarily feed on small prey such as insects, amphibians, and small rodents, making them valuable in controlling pest populations.",
+    "description": "The Common Garter Snake (Thamnophis sirtalis) is a non-venomous snake found throughout North America. With a long, slender body and distinct stripes running along its length, it is easily recognizable. These snakes are adaptable and can be found in a variety of habitats, including grasslands, forests, and wetlands. Garter snakes primarily feed on small prey such as insects, amphibians, and small rodents, making them valuable in controlling pest populations.",
     "default_picture_name": "images/common_garter_snake.jpg"
   },
   {
     "id": 25,
     "is_fauna": true,
     "name": "Eastern Milk Snake",
-    "scientific_name": "Turdus migratorius",
+    "scientific_name": "Lampropeltis triangulum",
     "description": "The Eastern Milk Snake (Lampropeltis triangulum) is a non-venomous snake native to eastern North America. It has a distinctive pattern of reddish-brown or grayish-brown bands bordered by black on a light-colored background, resembling the colors of milk spilled on the ground. These secretive and nocturnal snakes are excellent climbers and feed on small rodents, birds, and eggs. They play a crucial role in maintaining ecological balance by controlling rodent populations.",
     "default_picture_name": "images/eastern_milk_snake.jpg"
   },
@@ -204,7 +212,7 @@
     "is_fauna": true,
     "name": "Monarch Butterfly ",
     "scientific_name": "Danaus plexippus",
-    "description": "\nThe Monarch Butterfly (Danaus plexippus) is a well-known butterfly species found in North America. With its striking orange wings adorned with black veins and white spots, it is easily recognizable. These migratory insects undertake an incredible journey, traveling thousands of miles from Canada and the United States to Mexico during their annual migration. Monarch butterflies are known for their remarkable life cycle, which includes a unique multigenerational migration phenomenon, captivating observers worldwide.",
+    "description": "The Monarch Butterfly (Danaus plexippus) is a well-known butterfly species found in North America. With its striking orange wings adorned with black veins and white spots, it is easily recognizable. These migratory insects undertake an incredible journey, traveling thousands of miles from Canada and the United States to Mexico during their annual migration. Monarch butterflies are known for their remarkable life cycle, which includes a unique multigenerational migration phenomenon, captivating observers worldwide.",
     "default_picture_name": "images/monarch_butterfly.jpg"
   },
   {
@@ -227,7 +235,7 @@
     "id": 29,
     "is_fauna": true,
     "name": "Eastern Newt",
-    "scientific_name": "Turdus migratorius",
+    "scientific_name": "Notophthalmus viridescens",
     "description": "The Eastern Newt (Notophthalmus viridescens) is a small salamander native to eastern North America. It has a unique life cycle, starting as an aquatic larva (eft) with bright orange coloration, then transitioning into a terrestrial juvenile with greenish-brown skin, and finally becoming an aquatic adult with olive-brown or yellow markings. Eastern newts inhabit freshwater ponds, lakes, and streams and are essential components of the aquatic ecosystems, serving as both predator and prey.",
     "default_picture_name": "images/eastern_newt.jpg"
   },
@@ -292,7 +300,7 @@
     "is_fauna": true,
     "name": "Blue Jay",
     "scientific_name": "Cyanocitta cristata",
-    "description": "\nThe Blue Jay (Cyanocitta cristata) is a colorful and striking bird found in eastern North America. With its vibrant blue feathers, white chest, and distinctive crest, it stands out in any setting. Blue jays are intelligent and social birds, known for their vocal calls and mimicry skills. They are omnivorous, feeding on nuts, seeds, insects, and sometimes small vertebrates. Blue jays are also important seed dispersers, contributing to forest regeneration.",
+    "description": "The Blue Jay (Cyanocitta cristata) is a colorful and striking bird found in eastern North America. With its vibrant blue feathers, white chest, and distinctive crest, it stands out in any setting. Blue jays are intelligent and social birds, known for their vocal calls and mimicry skills. They are omnivorous, feeding on nuts, seeds, insects, and sometimes small vertebrates. Blue jays are also important seed dispersers, contributing to forest regeneration.",
     "default_picture_name": "images/blue_jay.jpg"
   },
   {
@@ -300,23 +308,23 @@
     "is_fauna": true,
     "name": "White-breasted Nuthatch",
     "scientific_name": "Sitta carolinensis",
-    "description": "\nThe White-breasted Nuthatch (Sitta carolinensis) is a small, energetic bird native to North America. With a blue-gray back, white face, and underparts, it has a distinct black cap and a short, stubby tail. Nuthatches are agile climbers, often seen walking headfirst down trees in search of insects and seeds. Their nasal \"yank-yank\" calls add a cheerful sound to woodlands and gardens.",
+    "description": "The White-breasted Nuthatch (Sitta carolinensis) is a small, energetic bird native to North America. With a blue-gray back, white face, and underparts, it has a distinct black cap and a short, stubby tail. Nuthatches are agile climbers, often seen walking headfirst down trees in search of insects and seeds. Their nasal \"yank-yank\" calls add a cheerful sound to woodlands and gardens.",
     "default_picture_name": "images/white_breasted_nuthatch.jpg"
   },
   {
     "id": 39,
     "is_fauna": true,
     "name": "Black-capped Chickadee",
-    "scientific_name": "Turdus migratorius",
-    "description": "\nThe Black-capped Chickadee (Poecile atricapillus) is a small, charismatic bird native to North America. Recognized by its black cap and bib, white cheeks, and grayish back, it's a familiar sight in woodlands and backyards. Chickadees are social, forming flocks during the colder months. They have a cheerful, distinctive \"chick-a-dee-dee-dee\" call and feed on seeds, insects, and berries. Known for their acrobatic skills, they are a delightful addition to any birdwatching experience.",
+    "scientific_name": "Poecile atricapillus",
+    "description": "The Black-capped Chickadee (Poecile atricapillus) is a small, charismatic bird native to North America. Recognized by its black cap and bib, white cheeks, and grayish back, it's a familiar sight in woodlands and backyards. Chickadees are social, forming flocks during the colder months. They have a cheerful, distinctive \"chick-a-dee-dee-dee\" call and feed on seeds, insects, and berries. Known for their acrobatic skills, they are a delightful addition to any birdwatching experience.",
     "default_picture_name": "images/black_capped_chickadee.jpg"
   },
   {
     "id": 40,
     "is_fauna": true,
     "name": "American Woodcock",
-    "scientific_name": "Turdus migratorius",
-    "description": "\nThe American Woodcock (Scolopax minor) is a unique and elusive bird found in eastern North America. With its plump body, long bill, and large eyes positioned high on its head, it has adapted to feeding on insects in soft soil. Woodcocks are known for their mesmerizing courtship display, performing aerial spirals and making unique \"peent\" calls. These birds are most active at dusk and dawn, adding a touch of magic to springtime wetlands and forests.",
+    "scientific_name": "Scolopax minor",
+    "description": "The American Woodcock (Scolopax minor) is a unique and elusive bird found in eastern North America. With its plump body, long bill, and large eyes positioned high on its head, it has adapted to feeding on insects in soft soil. Woodcocks are known for their mesmerizing courtship display, performing aerial spirals and making unique \"peent\" calls. These birds are most active at dusk and dawn, adding a touch of magic to springtime wetlands and forests.",
     "default_picture_name": "images/american_woodcock.jpg"
   },
   {
@@ -332,7 +340,7 @@
     "is_fauna": true,
     "name": "Song Sparrow",
     "scientific_name": "Melospiza melodia",
-    "description": "\nThe Song Sparrow (Melospiza melodia) is a small and common bird native to North America. With its streaked brown back and wings, white belly, and a central spot on its chest, it's recognizable in many habitats. Song sparrows are known for their delightful and varied songs, which vary by region. They forage on the ground for seeds, insects, and fruits, and their sweet melodies add charm to gardens and grasslands.",
+    "description": "The Song Sparrow (Melospiza melodia) is a small and common bird native to North America. With its streaked brown back and wings, white belly, and a central spot on its chest, it's recognizable in many habitats. Song sparrows are known for their delightful and varied songs, which vary by region. They forage on the ground for seeds, insects, and fruits, and their sweet melodies add charm to gardens and grasslands.",
     "default_picture_name": "images/song_sparrow.jpg"
   },
   {
@@ -340,22 +348,22 @@
     "is_fauna": true,
     "name": "Chipping Sparrow",
     "scientific_name": "Spizella passerina",
-    "description": "\nThe Chipping Sparrow (Spizella passerina) is a small, slender bird native to North America. With a crisp, brownish-gray cap, a rufous crown, and a white eyebrow stripe, it has a distinct appearance. Chipping sparrows are common in open woodlands, gardens, and parks. They feed on seeds, insects, and berries and are known for their cheerful, repetitive song that resembles a dry, rapid \"chip-chip-chip.\"",
+    "description": "The Chipping Sparrow (Spizella passerina) is a small, slender bird native to North America. With a crisp, brownish-gray cap, a rufous crown, and a white eyebrow stripe, it has a distinct appearance. Chipping sparrows are common in open woodlands, gardens, and parks. They feed on seeds, insects, and berries and are known for their cheerful, repetitive song that resembles a dry, rapid \"chip-chip-chip.\"",
     "default_picture_name": "images/chipping_sparrow.jpg"
   },
   {
     "id": 44,
     "is_fauna": true,
     "name": "White-throated Sparrow",
-    "scientific_name": "Turdus migratorius",
-    "description": "\nThe White-throated Sparrow (Zonotrichia albicollis) is a medium-sized bird native to North America. With its striking black and white head stripes, yellow patches above the eyes, and a white throat, it's easily identifiable. White-throated sparrows are commonly found in forests and shrubby areas. They forage for seeds, insects, and fruits on the ground, and their distinctive and melodious song adds a beautiful, whistling element to their woodland habitats.",
+    "scientific_name": "Zonotrichia albicollis",
+    "description": "The White-throated Sparrow (Zonotrichia albicollis) is a medium-sized bird native to North America. With its striking black and white head stripes, yellow patches above the eyes, and a white throat, it's easily identifiable. White-throated sparrows are commonly found in forests and shrubby areas. They forage for seeds, insects, and fruits on the ground, and their distinctive and melodious song adds a beautiful, whistling element to their woodland habitats.",
     "default_picture_name": "images/white_throated_sparrow.jpg"
   },
   {
     "id": 45,
     "is_fauna": true,
     "name": "American Toad",
-    "scientific_name": "Turdus migratorius",
+    "scientific_name": "Anaxyrus americanus",
     "description": "The American Toad (Anaxyrus americanus) is a medium-sized, terrestrial toad native to North America. It has dry, warty skin and can be various shades of brown, gray, or olive with lighter spots. These toads are commonly found in woodlands, gardens, and near water sources. They are nocturnal and feed on insects and other small invertebrates. During breeding season, their high-pitched trill can be heard in wetland areas, contributing to the chorus of springtime sounds.",
     "default_picture_name": "images/american_toad.jpg"
   },
@@ -388,15 +396,7 @@
     "is_fauna": true,
     "name": "American Mink",
     "scientific_name": "Neovison vison",
-    "description": "\nThe American Mink (Neovison vison) is a small, semi-aquatic mammal native to North America. It has a sleek, dark brown fur coat and a white patch on its chin. Minks are proficient swimmers and can be found near rivers, streams, and coastal areas. They are skilled predators, feeding on fish, amphibians, birds, and small mammals. Minks play an important role in controlling aquatic and rodent populations in their habitats.",
+    "description": "The American Mink (Neovison vison) is a small, semi-aquatic mammal native to North America. It has a sleek, dark brown fur coat and a white patch on its chin. Minks are proficient swimmers and can be found near rivers, streams, and coastal areas. They are skilled predators, feeding on fish, amphibians, birds, and small mammals. Minks play an important role in controlling aquatic and rodent populations in their habitats.",
     "default_picture_name": "images/american_mink.jpg"
-  },
-  {
-    "id": 50,
-    "is_fauna": true,
-    "name": "Painted Lady Butterfly",
-    "scientific_name": "Vanessa cardui",
-    "description": "The Painted Lady Butterfly (Vanessa cardui) is a colorful and widespread butterfly species found across North America, Europe, and Asia. It has orange and black wings with distinct black and white markings. Painted ladies are migratory insects, traveling long distances during seasonal movements. They feed on nectar from a wide variety of flowers, making them valuable pollinators. These beautiful butterflies are a joy to observe in gardens and meadows during their annual migrations.",
-    "default_picture_name": "images/painted_lady_butterfly.jpg"
   }
 ]
