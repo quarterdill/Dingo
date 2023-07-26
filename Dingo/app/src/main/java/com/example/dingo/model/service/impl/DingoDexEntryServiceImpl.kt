@@ -20,6 +20,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import java.io.ByteArrayOutputStream
 import java.lang.Exception
+import java.text.SimpleDateFormat
+import java.util.Locale
 import javax.inject.Inject
 
 class DingoDexEntryServiceImpl
@@ -81,16 +83,16 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
         // Create a storage reference from our app
         val storageRef = Firebase.storage.reference
         // TODO: Change temp to user when auth is done, make imagepath have no spaces
-        val userId = SessionInfo.currentUserID
-        val imagePath = "$userId/$entryName.jpg"
+        val dateFormat = SimpleDateFormat("yyyyMMddHHmmss", Locale.getDefault())
+        val imagePath = "${entryName}_$dateFormat.png"
         // Create a reference to "mountains.jpg"
-        val mountainsRef = storageRef.child(imagePath)
+        val imageRef = storageRef.child(imagePath)
         val baos = ByteArrayOutputStream()
         image.compress(Bitmap.CompressFormat.JPEG, 100, baos)
         val data = baos.toByteArray()
 
         return try {
-            mountainsRef.putBytes(data).await()
+            imageRef.putBytes(data).await()
             imagePath
         } catch (e: Exception) {
             ""

@@ -68,7 +68,8 @@ import com.google.accompanist.permissions.rememberPermissionState
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun ScannerScreen(
-    viewModel: ScannerViewModel = hiltViewModel()
+    viewModel: ScannerViewModel = hiltViewModel(),
+    animalCallback: (String) -> Unit
 ) {
     val cameraPermissionState: PermissionState = rememberPermissionState(Manifest.permission.CAMERA)
 
@@ -82,7 +83,8 @@ fun ScannerScreen(
         scannerState.capturedImage?.let { capturedImage:Bitmap->
             CapturedImageBitmapDialog(
                 capturedImage = capturedImage,
-                onDismissRequest = viewModel::onCapturedPhotoConsumed
+                onDismissRequest = viewModel::onCapturedPhotoConsumed,
+                animalCallback = animalCallback
             )
         }
     } else {
@@ -95,6 +97,7 @@ fun ScannerScreen(
 private fun CapturedImageBitmapDialog(
     capturedImage: Bitmap,
     onDismissRequest: () -> Unit,
+    animalCallback: (String) -> Unit,
     viewModel: ScannerViewModel = hiltViewModel()
 ) {
     val capturedImageBitmap: ImageBitmap = remember { capturedImage.asImageBitmap() }
@@ -114,6 +117,7 @@ private fun CapturedImageBitmapDialog(
             } else {
                 Box {
                     var setDefaultPicture by remember { mutableStateOf(true) }
+                    var savePicture by remember { mutableStateOf( true )}
                     Image(
                         bitmap = capturedImageBitmap,
                         contentDescription = "Captured Image"
@@ -132,20 +136,6 @@ private fun CapturedImageBitmapDialog(
                                 "close",
                             )
                         }
-                        Text(
-                            text = "Entry Name",
-                        )
-                        IconButton(
-                            modifier = Modifier.size(24.dp),
-                            onClick = {
-                                // TODO: Description POPup or smth
-                            }
-                        ) {
-                            Icon(
-                                Icons.Rounded.Info,
-                                "contentDescription",
-                            )
-                        }
                     }
                     Column(
                         modifier = Modifier
@@ -158,15 +148,25 @@ private fun CapturedImageBitmapDialog(
                             Checkbox(checked = setDefaultPicture, onCheckedChange = {
                                 setDefaultPicture = it
                             })
-                            Text("Set as Default Picture")
+                            Text("Set as Default")
                         }
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Checkbox(checked = savePicture, onCheckedChange = {
+                                savePicture = it
+                            })
+                            Text("Save Image")
+                        }
+
                         Button(
                             onClick = {
-                                println("Saving Image")
+                                viewModel.scanImage(capturedImage, context, setDefaultPicture, savePicture, animalCallback)
+                                onDismissRequest()
                                // viewModel.savePicture("Dummy_Data", capturedImage, setDefaultPicture, context)
                             },
                         ) {
-                            Text(text = "Save Image")
+                            Text(text = "Scan Image")
                         }
                     }
                 }
@@ -174,25 +174,6 @@ private fun CapturedImageBitmapDialog(
         }
     }
 }
-
-//fun Image.toBitmap(): Bitmap {
-//    val yBuffer = planes[0].buffer // Y
-//    val vuBuffer = planes[2].buffer // VU
-//
-//    val ySize = yBuffer.remaining()
-//    val vuSize = vuBuffer.remaining()
-//
-//    val nv21 = ByteArray(ySize + vuSize)
-//
-//    yBuffer.get(nv21, 0, ySize)
-//    vuBuffer.get(nv21, ySize, vuSize)
-//
-//    val yuvImage = YuvImage(nv21, ImageFormat.NV21, this.width, this.height, null)
-//    val out = ByteArrayOutputStream()
-//    yuvImage.compressToJpeg(Rect(0, 0, yuvImage.width, yuvImage.height), 50, out)
-//    val imageBytes = out.toByteArray()
-//    return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
-//}
 
 fun ImageProxy.convertImageToBitmap(): Bitmap {
     val buffer = planes[0].buffer
@@ -213,7 +194,7 @@ fun Bitmap.rotateBitmap(rotationDegrees: Int): Bitmap {
 @Composable
 private fun ScannerPreview(
     viewModel: ScannerViewModel = hiltViewModel(),
-    onPhotoCaptured: (Bitmap, Context) -> Unit
+    onPhotoCaptured: (Bitmap) -> Unit
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -230,7 +211,7 @@ private fun ScannerPreview(
                         override fun onCaptureSuccess(image: ImageProxy) {
                             val correctedBitmap: Bitmap = image.convertImageToBitmap().rotateBitmap(image.imageInfo.rotationDegrees)
 
-                            onPhotoCaptured(correctedBitmap, context)
+                            onPhotoCaptured(correctedBitmap)
 
                             image.close()
                         }
