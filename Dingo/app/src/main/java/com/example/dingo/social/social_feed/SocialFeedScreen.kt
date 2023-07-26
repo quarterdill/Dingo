@@ -37,6 +37,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -165,9 +166,10 @@ fun DropdownMenuExample(items: List<Trip>, onTripSelected: (Trip) -> Unit) {
     ) {
         Text(
             text = items[selectedIndex].title,
-        )
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            )
     }
-
     DropdownMenu(
         expanded = expanded,
         onDismissRequest = { expanded = false },
@@ -203,21 +205,17 @@ private fun CreatePostModal(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
-//            SimpleDropdownMenu()
-            Text(fontSize = UIConstants.SUBTITLE2_TEXT,
+            Text(fontSize = UIConstants.SUBTITLE2_TEXT,    maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
                 text="selectedTrip id:${selectedTrip?.id ?: "none"} title: ${selectedTrip?.title ?: "none"}")
             TextField(
                 modifier = Modifier
                     .padding(vertical = UIConstants.MEDIUM_PADDING)
-                    .height(100.dp),
+                    .height(70.dp),
                 value = textContentState,
                 onValueChange = { textContentState = it },
                 label = { Text("") }
             )
-            DropdownMenuExample(tripFeedItems, onTripSelected = { newValue ->
-                selectedTrip = newValue
-            })
-
             Row (
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
@@ -241,7 +239,17 @@ private fun CreatePostModal(
                 ) {
                     Text(text = "Cancel")
                 }
+
             }
+            Column(
+                modifier = Modifier.height(30.dp)
+            ) {
+                DropdownMenuExample(tripFeedItems, onTripSelected = { newValue ->
+                    selectedTrip = newValue
+                })
+            }
+
+
         }
     }
 }
