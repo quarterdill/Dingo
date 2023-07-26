@@ -86,7 +86,6 @@ fun TripScreen(
     }
 
 
-
     LaunchedEffect(key1 = true) {
         LocationTrackingService().createNotificationChannel(context)
         LocationTrackingService.locationList.observe(lifeCycleOwner, Observer {
