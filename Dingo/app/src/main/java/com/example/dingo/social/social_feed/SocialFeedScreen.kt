@@ -18,6 +18,7 @@ import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -64,6 +65,10 @@ fun SocialFeedScreen(
     var currentPostId = remember { mutableStateOf("") }
     val feedItems = viewModel.userFeed.observeAsState()
     var createNewPost = remember { mutableStateOf(false) }
+
+    val isLoading = viewModel.isLoading.observeAsState()
+
+
     if (createNewPost.value) {
         CreatePostModal(
             viewModel,
@@ -79,7 +84,12 @@ fun SocialFeedScreen(
         contentAlignment = Alignment.Center,
     ) {
         if (feedItems.value.isNullOrEmpty()) {
-            Text("No posts found... try adding some friends")
+
+            if (isLoading.value!!) {
+                CircularProgressIndicator()
+            } else {
+                Text("No posts found... try adding some friends")
+            }
         } else {
             LazyColumn(
                 modifier = Modifier.fillMaxHeight()
@@ -263,6 +273,8 @@ private fun CommentsDialog(
     val fetchComments = viewModel
         .getCommentsForPost(currentPostId.value)
         .observeAsState()
+
+    val isLoading = viewModel.isLoading.observeAsState()
     CustomDialog(
         onDismissRequest = onDismissRequest
     ) {
@@ -281,10 +293,14 @@ private fun CommentsDialog(
                 contentAlignment = Alignment.Center,
             ) {
                 if (fetchComments.value.isNullOrEmpty()) {
-                    Text(
-                        "No comments yet. Be the first to comment!",
-                        textAlign = TextAlign.Center,
-                    )
+                    if (isLoading.value!!) {
+                        CircularProgressIndicator()
+                    } else {
+                        Text(
+                            "No comments yet. Be the first to comment!",
+                            textAlign = TextAlign.Center,
+                        )
+                    }
                 } else {
                     LazyColumn(
                         modifier = Modifier.fillMaxHeight()

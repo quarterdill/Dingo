@@ -2,6 +2,7 @@ package com.example.dingo.social.social_feed
 
 import android.util.Log
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
@@ -37,7 +38,7 @@ constructor(
     private val tripService : TripService
 ) : ViewModel() {
     val userFeed = getFeedForUser(SessionInfo.currentUserID)
-
+    var isLoading = MutableLiveData<Boolean>(false)
     fun makePost(
         userId: String,
         username: String,
@@ -75,62 +76,70 @@ constructor(
 
     private fun getFeedForUser(userId: String, limit: Int = 10):  LiveData<MutableList<Pair<Post, Trip?>>> {
         return liveData(Dispatchers.IO) {
-
+                isLoading.postValue(true)
 
                 userService.getUserFlow(userId).collect {
                     val ret = mutableListOf<Pair<Post, Trip?>>()
-                    if (it != null) {
-                        val postQueueByTimestamp = PriorityQueue(PostComparator)
-                        var friendsAndMe = it.friends + listOf(userId)
-                        for (friendId in friendsAndMe) {
-                            val friend = withContext(Dispatchers.Default) {
-                                userService.getUser(friendId)
-                            }
-                            if (friend != null) {
-                                if (friend.postHead != "") {
-                                    val friendPost = withContext(Dispatchers.Default) {
-                                        postService.getPost(friend.postHead)
+
+                    try {
+                        if (it != null) {
+                            val postQueueByTimestamp = PriorityQueue(PostComparator)
+                            var friendsAndMe = it.friends + listOf(userId)
+                            for (friendId in friendsAndMe) {
+                                val friend = withContext(Dispatchers.Default) {
+                                    userService.getUser(friendId)
+                                }
+                                if (friend != null) {
+                                    if (friend.postHead != "") {
+                                        val friendPost = withContext(Dispatchers.Default) {
+                                            postService.getPost(friend.postHead)
+                                        }
+                                        if (friendPost != null) {
+                                            postQueueByTimestamp.add(friendPost)
+                                        }
                                     }
-                                    if (friendPost != null) {
-                                        postQueueByTimestamp.add(friendPost)
+                                }
+                            }
+
+
+                            var currFeedLength = 0
+                            while (postQueueByTimestamp.isNotEmpty() && currFeedLength < limit) {
+                                val toAdd = postQueueByTimestamp.remove()
+
+                                var trip: Trip? = null
+                                val tripId = toAdd.tripId
+                                if (tripId != null && tripId != "") {
+                                    withContext(Dispatchers.Default) {
+                                        trip = tripService.getTrip(tripId)
+                                    }
+                                }
+                                Log.d("SocialFeedScreen", "tripService.getTrip() = ${trip}")
+                                Log.d("SocialFeedScreen", "toAdd = ${toAdd}")
+
+
+                                ret.add(Pair(toAdd, trip))
+                                Log.d("SocialFeedScreen", "ret = ${ret}")
+
+                                currFeedLength++
+                                if (toAdd.prevPost != "") {
+                                    val prevFriendPost = withContext(Dispatchers.Default) {
+                                        postService.getPost(toAdd.prevPost)
+                                    }
+                                    if (prevFriendPost != null) {
+                                        postQueueByTimestamp.add(prevFriendPost)
                                     }
                                 }
                             }
                         }
+                        Log.d("SocialFeedScreen", "final ret = ${ret}")
+                        isLoading.postValue(false)
+                    } catch (e:Exception) {
+                        isLoading.postValue(false)
+                        Log.d("SocialFeedScreen", "final ret error = ${e}")
 
-
-                        var currFeedLength = 0
-                        while (postQueueByTimestamp.isNotEmpty() && currFeedLength < limit) {
-                            val toAdd = postQueueByTimestamp.remove()
-
-                            var trip: Trip? = null
-                            val tripId = toAdd.tripId
-                            if (tripId != null && tripId != "") {
-                                withContext(Dispatchers.Default) {
-                                    trip = tripService.getTrip(tripId)
-                                }
-                            }
-                            Log.d("SocialFeedScreen", "tripService.getTrip() = ${trip}")
-                            Log.d("SocialFeedScreen", "toAdd = ${toAdd}")
-
-
-                            ret.add(Pair(toAdd, trip))
-                            Log.d("SocialFeedScreen", "ret = ${ret}")
-
-                            currFeedLength++
-                            if (toAdd.prevPost != "") {
-                                val prevFriendPost = withContext(Dispatchers.Default) {
-                                    postService.getPost(toAdd.prevPost)
-                                }
-                                if (prevFriendPost != null) {
-                                    postQueueByTimestamp.add(prevFriendPost)
-                                }
-                            }
-                        }
                     }
-                    Log.d("SocialFeedScreen", "final ret = ${ret}")
-
                     emit(ret)
+
                 }
 
         }
