@@ -34,10 +34,12 @@ constructor(
     val state = _state.asStateFlow()
     var isLoading = MutableLiveData<Boolean>(false)
 
-    fun onPhotoCaptured(bitmap: Bitmap, context: Context) {
+    fun scanImage(bitmap: Bitmap, context: Context, saveAsDefault: Boolean, saveStorage: Boolean, callBack: (String) -> Unit) {
         val animalDetectionModel = AnimalDetectionModel(context)
-        val prediction = animalDetectionModel.run( bitmap )
-        println(prediction)
+        val prediction = animalDetectionModel.run( bitmap , callBack, saveAsDefault, saveStorage, this::savePicture, this::addEntry)
+        updateCapturedPhotoState(bitmap)
+    }
+    fun onPhotoCaptured(bitmap: Bitmap) {
         updateCapturedPhotoState(bitmap)
     }
 
@@ -70,10 +72,11 @@ constructor(
         }
     }
 
-    fun savePicture(entryName: String, image: Bitmap, saveAsDefault: Boolean, context: Context) {
+    fun savePicture(entryName: String, image: Bitmap, saveAsDefault: Boolean, saveImage: Boolean, context: Context) {
         viewModelScope.launch {
-
-            imageInternalStorageService.saveImage(entryName, image, context)
+            if (saveImage) {
+                imageInternalStorageService.saveImage(entryName, image, context)
+            }
             if (saveAsDefault) {
                     var result = false
                     val imagePath = dingoDexEntryService.addPicture(entryName, image)
