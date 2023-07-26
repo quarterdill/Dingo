@@ -42,9 +42,9 @@ constructor(
     val state = _state.asStateFlow()
     var isLoading = MutableLiveData<Boolean>(false)
 
-    fun scanImage(bitmap: Bitmap, context: Context, saveAsDefault: Boolean, saveStorage: Boolean, callBack: (String) -> Unit, location: LatLng) {
+    fun scanImage(bitmap: Bitmap, context: Context, saveAsDefault: Boolean, saveStorage: Boolean, callBack: (String) -> Unit) {
         val animalDetectionModel = AnimalDetectionModel(context)
-        val prediction = animalDetectionModel.run( bitmap , callBack, saveAsDefault, saveStorage, location, this::savePicture, this::addEntry)
+        val prediction = animalDetectionModel.run( bitmap , callBack, saveAsDefault, saveStorage, SessionInfo.lastLocation, this::savePicture, this::addEntry)
         updateCapturedPhotoState(bitmap)
     }
     fun onPhotoCaptured(bitmap: Bitmap) {
@@ -81,7 +81,7 @@ constructor(
         }
     }
 
-    fun savePicture(entryName: String, image: Bitmap, saveAsDefault: Boolean, saveImage: Boolean, location: LatLng, context: Context) {
+    fun savePicture(entryName: String, image: Bitmap, saveAsDefault: Boolean, saveImage: Boolean, location: LatLng?, context: Context) {
         viewModelScope.launch {
             if (saveImage) {
                 imageInternalStorageService.saveImage(entryName, image, context)

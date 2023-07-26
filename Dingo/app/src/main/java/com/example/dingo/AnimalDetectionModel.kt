@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.MainScope
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
@@ -32,13 +33,12 @@ class AnimalDetectionModel(context : Context) {
         return outputStream.toByteArray()
     }
 
-    public fun run (input : Bitmap, callback: (String) -> Unit, saveAsDefault: Boolean, saveStorage: Boolean, location: LatLng,
-                    savePicture: (entryName: String, image: Bitmap, saveAsDefault: Boolean, saveImage: Boolean, location: LatLng, context: Context) -> Unit,
+    public fun run (input : Bitmap, callback: (String) -> Unit, saveAsDefault: Boolean, saveStorage: Boolean, location: LatLng?,
+                    savePicture: (entryName: String, image: Bitmap, saveAsDefault: Boolean, saveImage: Boolean, location: LatLng?, context: Context) -> Unit,
                     addEntry: (entryName: String) -> Unit) : IntArray {
         val mutableCopy: Bitmap = input.copy(input.config, true)
         val refitImage = Bitmap.createScaledBitmap(input, modelInputImageDim, modelInputImageDim, false)
          val imageBytes = convertBitmapToByteArray(refitImage);
-
         GlobalScope.launch {
             try {
                 val response = sendPostRequest(imageBytes)

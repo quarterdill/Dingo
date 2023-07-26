@@ -86,7 +86,7 @@ fun TripScreen(
 
     var selectedTrip: Trip? by remember { mutableStateOf(null) }
     var trackedLocations : List<LatLng> by remember { mutableStateOf(emptyList()) }
-    LocationTrackingService().createNotificationChannel(context)
+    viewModel.createNotificationChannel(context)
     LocationTrackingService.locationList.observe(lifeCycleOwner, Observer {
         trackedLocations = it
         if (SessionInfo.trip != null) {
@@ -318,7 +318,7 @@ fun LocationPermissionScreen() {
 }
 
 @Composable
-fun tripMap(points: List<LatLng>, fullSize: Boolean) {
+fun tripMap(points: List<LatLng>,  fullSize: Boolean) {
 
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(points.lastOrNull() ?: LatLng(51.52061810406676, -0.12635325270312533), 15f)
@@ -332,7 +332,12 @@ fun tripMap(points: List<LatLng>, fullSize: Boolean) {
             Polyline(points = points)
             Marker(
                 state = MarkerState(position = points.last()),
-                title = "Current Location",
+                title = "Start",
+                snippet = "Trip Started at"
+            )
+            Marker(
+                state = MarkerState(position = points.first()),
+                title = "Finish",
                 snippet = "You are here"
             )
         }

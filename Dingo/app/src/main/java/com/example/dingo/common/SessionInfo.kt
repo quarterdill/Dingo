@@ -19,6 +19,7 @@ object SessionInfo {
     var currentUsername: String = ""
     var nameToStat: MutableMap<String, Stat> = mutableMapOf()
     var trip: Trip? = null
+    var lastLocation: LatLng? = null
 }
 
 // each stat is an observable and has a list of corresponding achievements
@@ -43,10 +44,12 @@ fun addNewEntryToTrip(entryId: String) {
     }
 }
 
-fun addPictureToTrip(picturePath: String, location: LatLng) {
+fun addPictureToTrip(picturePath: String, location: LatLng?) {
     if (SessionInfo.trip != null) {
         SessionInfo.trip!!.picturePaths.add(picturePath)
-        SessionInfo.trip!!.pictureLocations.add(location)
+        if (location != null) {
+            SessionInfo.trip!!.pictureLocations.add(location)
+        }
     }
 }
 

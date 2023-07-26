@@ -62,6 +62,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.dingo.R
+import com.example.dingo.common.SessionInfo
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.isGranted
@@ -169,15 +170,7 @@ private fun CapturedImageBitmapDialog(
 
                         Button(
                             onClick = {
-                                val location = fusedLocationClient.getCurrentLocation(1, null)
-//                                    .addOnSuccessListener { location : Location? ->
-                                        // Got last known location. In some rare situations this can be null.
-//                                    }
-                                val coords = com.google.android.gms.maps.model.LatLng(
-                                    location.result.latitude,
-                                    location.result.longitude
-                                )
-                                viewModel.scanImage(capturedImage, context, setDefaultPicture, savePicture, animalCallback, coords)
+                                viewModel.scanImage(capturedImage, context, setDefaultPicture, savePicture, animalCallback)
                                 onDismissRequest()
                                // viewModel.savePicture("Dummy_Data", capturedImage, setDefaultPicture, context)
                             },
