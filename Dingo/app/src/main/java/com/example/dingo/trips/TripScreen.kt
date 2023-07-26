@@ -51,6 +51,7 @@ import com.example.dingo.model.Trip
 import com.example.dingo.model.service.impl.getTimeDiffMessage
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
 import com.google.firebase.Timestamp
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
@@ -334,17 +335,15 @@ fun tripMap(trip : Trip,  fullSize: Boolean) {
         cameraPositionState = cameraPositionState
     ) {
         if (trip.locations.lastOrNull() != null) {
-
-
             // Convert the timestamp to a Java Date object
             val startDate: Date = trip.startTime.toDate()
             val endDate: Date = trip.endTime.toDate()
 
-// Convert the timestamp to a Java Date object
-// Create a SimpleDateFormat object with your desired date format
+            // Convert the timestamp to a Java Date object
+            // Create a SimpleDateFormat object with your desired date format
             val dateFormat = SimpleDateFormat("dd-MM-yyyy HH:mm:ss")
 
-// Format the date as desired
+            // Format the date as desired
 
             val formattedStartTime = dateFormat.format(startDate)
             val formattedEndTime = dateFormat.format(endDate)
@@ -361,8 +360,28 @@ fun tripMap(trip : Trip,  fullSize: Boolean) {
                 title = "Finish",
                 snippet = "Trip Ended at ${formattedEndTime}"
             )
+
+            // Assuming you have a list of picture paths and picture locations
+            val picturePaths: List<String> = trip.picturePaths
+            val pictureLocations: List<LatLng> = trip.pictureLocations
+
+            // Iterate through the picture paths and picture locations
+            picturePaths.forEachIndexed { index, picturePath ->
+                val pictureLocation = pictureLocations[index]
+
+                // You can customize the marker icon, if desired
+                // .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_icon))
+                Marker(
+                    state = MarkerState(position = pictureLocation),
+                    title = "Picture $index",
+                    snippet = "Location: ${pictureLocation.latitude}, ${pictureLocation.longitude}"
+                )
+
+                // Add the marker to the map
+            }
         }
     }
+
 }
 
 
