@@ -13,6 +13,8 @@ import com.example.dingo.common.isValidEmail
 import com.example.dingo.model.AccountType
 import com.example.dingo.model.Classroom
 import com.example.dingo.model.Comment
+import com.example.dingo.model.DingoDexEntry
+import com.example.dingo.model.DingoDexEntryContent
 import com.example.dingo.model.Post
 import com.example.dingo.model.User
 import com.example.dingo.model.PostComparator
@@ -43,14 +45,14 @@ constructor(
         userId: String,
         username: String,
         textContent: String,
-        entryIds: List<String>,
+        entry: DingoDexEntry?,
         tripId: String?
     ) {
         viewModelScope.launch {
             var postId = postService.createPost(
                 userId,
                 username,
-                entryIds,
+                entry,
                 tripId,
                 textContent,
             )

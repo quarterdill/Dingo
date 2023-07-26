@@ -45,8 +45,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.dingo.CustomDialog
 import com.example.dingo.UIConstants
 import com.example.dingo.common.SessionInfo
+import com.example.dingo.dingodex.DingoDexViewModel
 import com.example.dingo.model.Comment
 import com.example.dingo.model.DingoDexEntry
+import com.example.dingo.model.DingoDexEntryContent
 import com.example.dingo.model.Post
 import com.example.dingo.model.Trip
 import com.example.dingo.trips.TripViewModel
@@ -56,6 +58,7 @@ import com.google.firebase.Timestamp
 @Composable
 fun SocialFeedScreen(
     viewModel: SocialFeedViewModel = hiltViewModel(),
+    dingoDexViewModel: DingoDexViewModel = hiltViewModel(),
     tripViewModel: TripViewModel = hiltViewModel()
 ) {
     val currentUser = SessionInfo.currentUser
@@ -63,7 +66,12 @@ fun SocialFeedScreen(
     val tripFeedItems = tripViewModel
         .getTripFeed(currentUserId)
         .observeAsState()
-    val myDingoDexItems = mutableListOf<DingoDexEntry>()
+    val myDingoDexFauna = dingoDexViewModel
+        .getDingoDexCollectedEntries(true, SessionInfo.currentUserID)
+        .observeAsState()
+    val myDingoDexFlora = dingoDexViewModel
+        .getDingoDexCollectedEntries(false, SessionInfo.currentUserID)
+        .observeAsState()
     var currentPostId = remember { mutableStateOf("") }
     val feedItems = viewModel.userFeed.observeAsState()
     var createNewPost = remember { mutableStateOf(false) }
@@ -77,7 +85,8 @@ fun SocialFeedScreen(
             SessionInfo.currentUserID,
             SessionInfo.currentUsername,
             tripFeedItems = tripFeedItems.value as List<Trip>,
-            myDingoDexItems as List<DingoDexEntry>,
+            myDingoDexFauna as MutableList<DingoDexEntry>,
+            myDingoDexFlora as MutableList<DingoDexEntry>,
         ) {
             createNewPost.value = false
         }
@@ -121,6 +130,11 @@ fun SocialFeedScreen(
 }
 
 @Composable
+private fun entryShower(entryId: String) {
+
+}
+
+@Composable
 private fun SocialPost(
     post: Post,
     trip: Trip?,
@@ -137,6 +151,9 @@ private fun SocialPost(
 
         if (trip != null && trip.locations.isNotEmpty()) {
             tripMap(trip = trip, fullSize = false )
+        }
+        if (post.entryId != "") {
+            entryShower(post.entryId)
         }
         Text(
             modifier = Modifier.height(20.dp),
@@ -239,7 +256,8 @@ private fun CreatePostModal(
     userId: String,
     username: String,
     tripFeedItems:List<Trip>,
-    myDingoDexItems: List<DingoDexEntry>,
+    myDingoDexFauna: MutableList<DingoDexEntry>,
+    myDingoDexFlora: MutableList<DingoDexEntry>,
     onDismissRequest : () -> Unit,
 ) {
     var selectedTrip : Trip? by remember { mutableStateOf(null) } // Initialize with -1 to indicate no trip is selected
@@ -267,6 +285,8 @@ private fun CreatePostModal(
                 selectedTrip = newValue
             })
             if (selectedTrip == null) {
+                var myDingoDexItems = myDingoDexFauna + myDingoDexFlora
+                myDingoDexItems = myDingoDexItems.sortedByDescending {it.timestamp}
                 DropdownEntryMenu(myDingoDexItems, onEntrySelected  = { newValue ->
                     selectedEntry = newValue
                 })
@@ -285,7 +305,7 @@ private fun CreatePostModal(
                             userId,
                             username,
                             textContentState,
-                            mutableListOf<String>(),
+                            selectedEntry,
                             selectedTrip?.id ?: null,
                         )
                         onDismissRequest()

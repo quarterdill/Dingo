@@ -7,4 +7,5 @@ class DingoDexCollectionItem (
     val pictureURL: String = "",
     val numEncounters: Int = 0,
     val isFauna: Boolean = true,
+    val pictures: MutableList<String> = mutableListOf()
 )

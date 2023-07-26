@@ -114,7 +114,8 @@ constructor(
                             scientificName = item.scientificName,
                             pictureURL = item.displayPicture,
                             isFauna = isFauna,
-                            numEncounters = item.numEncounters
+                            numEncounters = item.numEncounters,
+                            pictures = item.pictures,
                         )
                         )
                     }
@@ -123,6 +124,29 @@ constructor(
 
             } catch (e: Exception) {
                 emit(dingoDexItems)
+            }
+        }
+    }
+
+    //important: this gives DingoDexEntry, not DingoDexEntryContent
+    fun getDingoDexCollectedEntries(
+        isFauna: Boolean,
+        userId: String,
+    ): LiveData<MutableList<DingoDexEntry>> {
+        return liveData(Dispatchers.IO) {
+            val ret = mutableListOf<DingoDexEntry>()
+            try {
+                    val collectedDingoDex = if (isFauna) {
+                        dingoDexEntryService.getDingoDexFaunaEntries(userId)
+                    } else {
+                        dingoDexEntryService.getDingoDexFloraEntries(userId)
+                    }
+
+                    collectedDingoDex.collect {
+                        emit(ret)
+                    }
+            } catch (e: Exception) {
+                emit(ret)
             }
         }
     }

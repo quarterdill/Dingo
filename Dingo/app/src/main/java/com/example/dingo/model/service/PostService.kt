@@ -1,6 +1,7 @@
 package com.example.dingo.model.service
 
 import com.example.dingo.model.Comment
+import com.example.dingo.model.DingoDexEntry
 import com.example.dingo.model.Post
 import kotlinx.coroutines.flow.Flow
 
@@ -9,7 +10,7 @@ interface PostService {
     suspend fun createPost(
         userId: String,
         username: String,
-        entryIds: List<String>,
+        entry: DingoDexEntry?,
         tripId: String?,
         textContent: String,
         classroomId: String? = null,
