@@ -18,6 +18,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.SheetValue
@@ -48,6 +49,9 @@ import com.example.dingo.social.SocialScreen
 import com.example.dingo.social.profile.SendFriendReqDialog
 import com.example.dingo.trips.TripScreen
 import com.example.dingo.model.AccountType
+import com.example.dingo.ui.theme.color_on_primary
+import com.example.dingo.ui.theme.color_primary
+import com.example.dingo.ui.theme.color_secondary
 import kotlinx.coroutines.launch
 
 sealed class NavBarItem(
@@ -171,7 +175,10 @@ fun MainScreen(
 @Composable
 private fun navBar(navController: NavHostController) {
     var navItems = listOf(NavBarItem.Trip, NavBarItem.Scanner, NavBarItem.Social, NavBarItem.Classroom)
-    NavigationBar() {
+    NavigationBar(
+        containerColor = color_on_primary,
+        contentColor = color_primary,
+    ) {
         val currentRoute = getCurrentRoute(navController = navController)
         navItems.forEach{
             val isSelected =  it.route == currentRoute
@@ -180,6 +187,7 @@ private fun navBar(navController: NavHostController) {
                 navItems = listOf(NavBarItem.Trip, NavBarItem.Scanner, NavBarItem.Social)
             }
             NavigationBarItem(
+                colors = NavigationBarItemDefaults.colors(selectedIconColor = color_on_primary,indicatorColor = color_secondary),
                 icon = {
                     Icon(imageVector = it.icon, contentDescription = "temp")
                 },

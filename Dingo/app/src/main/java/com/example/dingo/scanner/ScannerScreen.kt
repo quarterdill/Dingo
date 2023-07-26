@@ -200,6 +200,7 @@ private fun CapturedImageBitmapDialog(
                             )
                         }
                         Row (
+                            horizontalArrangement = Arrangement.spacedBy(UIConstants.MEDIUM_PADDING),
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
                             Button(
@@ -288,7 +289,9 @@ private fun ScannerPreview(
                         }
                     })
 //                    viewModel.addEntry("Dummy Fauna")
-                }
+                },
+                containerColor = color_on_primary,
+                contentColor = color_primary,
             ) {
                 Icon(
                     ImageVector.vectorResource(R.drawable.baseline_camera_alt_24),
