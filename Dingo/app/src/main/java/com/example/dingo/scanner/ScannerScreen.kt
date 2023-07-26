@@ -223,8 +223,6 @@ private fun ScannerPreview(
         floatingActionButtonPosition =  FabPosition.Center,
         floatingActionButton = {
             FloatingActionButton (
-                modifier = Modifier
-                    .padding(bottom = 96.dp),
                 onClick = {
                     val mainExecutor = ContextCompat.getMainExecutor(context)
                     cameraController.takePicture(mainExecutor, object : ImageCapture.OnImageCapturedCallback() {
