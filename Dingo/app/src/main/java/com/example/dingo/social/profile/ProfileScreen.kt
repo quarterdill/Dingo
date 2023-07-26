@@ -184,7 +184,7 @@ private fun FriendList(
     if (dingoDexDialogState.value) {
         println(dingoDexDialogUserId.toString())
         DingoDexDialog(
-            dingoDexDialogUserId.toString()
+            dingoDexDialogUserId.value
         ) {
             dingoDexDialogState.value = false
         }

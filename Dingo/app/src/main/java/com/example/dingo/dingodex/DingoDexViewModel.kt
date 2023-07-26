@@ -94,14 +94,13 @@ constructor(
         isFauna: Boolean,
         userId: String = ""
     ): LiveData<MutableList<DingoDexCollectionItem>> {
-        var dingoDexIdToCollectedItems = mutableMapOf<Int, DingoDexCollectionItem>()
         return liveData(Dispatchers.IO) {
             val dingoDexItems = mutableListOf<DingoDexCollectionItem>()
             try {
                 val collectedDingoDex = if (isFauna) {
-                    dingoDexEntryService.dingoDexFaunaEntries
+                    dingoDexEntryService.getDingoDexFaunaEntries(userId)
                 } else {
-                    dingoDexEntryService.dingoDexFloraEntries
+                    dingoDexEntryService.getDingoDexFloraEntries(userId)
                 }
                 collectedDingoDex.collect {
                     for (item in it) {
@@ -118,29 +117,6 @@ constructor(
                     emit(dingoDexItems)
                 }
 
-//                userService.getUserFlow(userId).collect {
-//                    if (it != null) {
-//                        val uncollectedDingoDex = if (isFauna) {
-//                            it.uncollectedFauna
-//                        } else {
-//                            it.uncollectedFlora
-//                        }
-//                        for (item in uncollectedDingoDex) {
-//                            try {
-//                                dingoDexStorageService.getDingoDexItem(item, isFauna)
-//                                val dingoDexItem = dingoDexStorageService.getDingoDexItem(item, isFauna)
-//                                if (dingoDexItem != null && dingoDexIdToCollectedItems.containsKey(dingoDexItem.id)) {
-//                                    dingoDexIdToCollectedItems.remove(dingoDexItem.id)
-//                                }
-//                            } catch (e: java.lang.Exception) {
-//                                println("ottttttttt ")
-//                                emit(dingoDexItems)
-//                            }
-//                        }
-//                    }
-//                }
-//                println("oajfoajsdfoi ${dingoDexIdToCollectedItems.values.toMutableList()}")
-//                emit(dingoDexIdToCollectedItems.values.toMutableList())
             } catch (e: Exception) {
                 emit(dingoDexItems)
             }

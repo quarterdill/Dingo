@@ -90,8 +90,6 @@ fun DingoDexScreen(
             startDestination = DingoDexNavItem.DingoDex.route
         ) {
             composable(DingoDexNavItem.DingoDex.route) {
-
-
                 Column(
                     modifier = Modifier.fillMaxSize(),
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -107,9 +105,7 @@ fun DingoDexScreen(
                     val collectedFloraDingoDex = viewModel.collectedDingoDexFlora.observeAsState()//viewModel.getDingoDexCollectedItems(false, userId).observeAsState()
                     val uncollectedFloraDingoDex = viewModel.uncollectedDingoDexFlora.observeAsState()
                     var showFaunaDingoDex by remember { mutableStateOf(true) }
-//
 
-                    println(uncollectedFaunaDingoDex)
 
                     val isNull = if (showFaunaDingoDex) {
                         collectedFaunaDingoDex.value == null || uncollectedFaunaDingoDex.value == null
