@@ -68,11 +68,20 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
     }
 
     override suspend fun getTrip(tripId: String): Trip? {
-        return firestore.collection(TRIP_COLLECTIONS)
+        Log.d("SocialFeedScreen","getTrip($tripId)")
+
+        var geotrip =  listOf(firestore.collection(TRIP_COLLECTIONS)
             .document(tripId)
             .get()
             .await()
-            .toObject(Trip::class.java)
+            .toObject(GeoTrip::class.java))
+
+        var trip = convertGeoTripsToTrips(geotrip as List<GeoTrip>)
+        var ret = trip.firstOrNull()
+        Log.d("SocialFeedScreen","getTrip($tripId) = ${ret}")
+
+        return ret
+
     }
 
     override suspend fun deleteTrip(tripId: String) {
@@ -84,6 +93,9 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
     fun convertGeoTripsToTrips(geoTrips: List<GeoTrip>): List<Trip> {
         val trips = mutableListOf<Trip>()
         for (geoTrip in geoTrips) {
+
+            Log.d("SocialFeedScreen","final ret geotrip = ${geoTrip}")
+
             val trip = Trip(
                 id = geoTrip.id,
                 userId = geoTrip.userId,

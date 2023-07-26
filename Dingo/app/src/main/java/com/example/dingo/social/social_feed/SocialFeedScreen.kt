@@ -1,4 +1,5 @@
 package com.example.dingo.social.social_feed
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.material3.DropdownMenu
@@ -60,7 +61,9 @@ fun SocialFeedScreen(
         .getTripFeed(currentUserId)
         .observeAsState()
     var currentPostId = remember { mutableStateOf("") }
-    val feedItems = viewModel.userFeed.observeAsState()
+    val feedItems = viewModel.getFeedForUser(SessionInfo.currentUserID).observeAsState()
+    Log.d("SocialFeedScreen","feedItems.value: ${feedItems.value}")
+
     var createNewPost = remember { mutableStateOf(false) }
     if (createNewPost.value) {
         CreatePostModal(
@@ -84,9 +87,12 @@ fun SocialFeedScreen(
             ) {
                 var posts = feedItems.value
                 if (posts != null) {
-                    println("test rebuild ${posts.size}")
+                    Log.d("SocialFeedScreen"," ${posts.size} ${posts[0].first}")
+
                     items(posts.size) {
-                        SocialPost(posts[it], currentPostId)
+                        println("test rebuild ${posts[it].first} ${posts[it].second}")
+
+                        SocialPost(posts[it].first, currentPostId)
                     }
                 }
             }
@@ -107,6 +113,8 @@ fun SocialFeedScreen(
 private fun SocialPost(
     post: Post,
     currentPostId: MutableState<String>,
+    tripViewModel: TripViewModel = hiltViewModel()
+
 ) {
     var commentDialogState = remember { mutableStateOf(false) }
     if (commentDialogState.value) {
@@ -118,7 +126,9 @@ private fun SocialPost(
 
     ) {
         var timeDiffMsg = getTimeDiffMessage(post.timestamp)
-
+//        if (post.tripId != null && post.tripId != "") {
+//            tripViewModel.getTrip
+//        }
         Text(
             modifier = Modifier.height(20.dp),
             fontSize = 12.sp,

@@ -30,7 +30,6 @@ constructor(
 
 
 
-
     fun locationTrackingStopped(locationList: MutableList<LatLng>) : List<LatLng> {
 
         Log.d("view Model locationList", locationList.toString())

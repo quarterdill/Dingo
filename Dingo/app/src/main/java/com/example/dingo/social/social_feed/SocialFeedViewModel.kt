@@ -1,5 +1,6 @@
 package com.example.dingo.social.social_feed
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
@@ -15,7 +16,9 @@ import com.example.dingo.model.Post
 import com.example.dingo.model.User
 import com.example.dingo.model.PostComparator
 import com.example.dingo.model.PostType
+import com.example.dingo.model.Trip
 import com.example.dingo.model.service.PostService
+import com.example.dingo.model.service.TripService
 import com.example.dingo.model.service.UserService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -31,8 +34,9 @@ class SocialFeedViewModel
 constructor(
     private val userService: UserService,
     private val postService: PostService,
-) : ViewModel() {
-    val userFeed = getFeedForUser(SessionInfo.currentUserID)
+    private val tripService: TripService,
+
+    ) : ViewModel() {
 
     fun makePost(
         userId: String,
@@ -68,12 +72,11 @@ constructor(
         }
         incrementStat(StatName.NUM_SOCIAL_POSTS)
     }
-
-    private fun getFeedForUser(userId: String, limit: Int = 10):  LiveData<MutableList<Post>> {
+    fun getFeedForUser(userId: String, limit: Int = 10): LiveData<MutableList<Pair<Post, Trip?>>> {
         return liveData(Dispatchers.IO) {
             try {
                 userService.getUserFlow(userId).collect {
-                    val ret = mutableListOf<Post>()
+                    val ret = mutableListOf<Pair<Post,Trip?>>()
                     if (it != null) {
                         val postQueueByTimestamp = PriorityQueue(PostComparator)
                         var friendsAndMe = it.friends + listOf(userId)
@@ -89,7 +92,6 @@ constructor(
                                     if (friendPost != null) {
                                         postQueueByTimestamp.add(friendPost)
                                     }
-
                                 }
                             }
                         }
@@ -97,7 +99,17 @@ constructor(
                         var currFeedLength = 0
                         while (postQueueByTimestamp.isNotEmpty() && currFeedLength < limit) {
                             val toAdd = postQueueByTimestamp.remove()
-                            ret.add(toAdd)
+
+                            var trip: Trip? = withContext(Dispatchers.Default){
+                                tripService.getTrip(toAdd.tripId ?: "")
+                            }
+                            Log.d("SocialFeedScreen","tripService.getTrip() = ${trip}")
+                            Log.d("SocialFeedScreen","toAdd = ${toAdd}")
+
+
+                            ret.add(Pair(toAdd,trip))
+                            Log.d("SocialFeedScreen","ret = ${ret}")
+
                             currFeedLength++
                             if (toAdd.prevPost != "") {
                                 val prevFriendPost = withContext(Dispatchers.Default) {
@@ -109,9 +121,12 @@ constructor(
                             }
                         }
                     }
+                    Log.d("SocialFeedScreen","final ret = ${ret}")
+
                     emit(ret)
                 }
-            }  catch (e: Exception) {
+            } catch (e: Exception) {
+                Log.d("SocialFeedScreen","final ret error= ${e}")
                 emit(mutableListOf())
             }
         }
