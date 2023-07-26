@@ -50,14 +50,7 @@ constructor(
         viewModelScope.launch {
 
             val tripId = tripService.createTrip(
-                trip.userId,
-                trip.username,
-                trip.locations,
-                trip.discoveredEntries,
-                trip.startTime,
-                trip.endTime,
-                trip.timestamp,
-                trip.title
+                trip
             )
 
             userService.addTripForUser(trip.userId, tripId)
@@ -100,15 +93,15 @@ constructor(
         )
     }
 
-    fun makeDummyTrips() {
-        viewModelScope.launch {
-                val tripId = tripService.createTrip(
-                    userId=SessionInfo.currentUserID,
-                    username=SessionInfo.currentUsername,
-                    locations = dummyTrip1,
-                    discoveredEntries = emptyList())
-
-                Log.d("TripViewModel", " making a trip with tripId: $tripId")
-        }
-    }
+//    fun makeDummyTrips() {
+//        viewModelScope.launch {
+//                val tripId = tripService.createTrip(
+//                    userId=SessionInfo.currentUserID,
+//                    username=SessionInfo.currentUsername,
+//                    locations = dummyTrip1,
+//                    discoveredEntries = emptyList())
+//
+//                Log.d("TripViewModel", " making a trip with tripId: $tripId")
+//        }
+//    }
 }

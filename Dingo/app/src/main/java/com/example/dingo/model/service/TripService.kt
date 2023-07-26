@@ -7,14 +7,15 @@ import kotlinx.coroutines.flow.Flow
 interface TripService {
     // returns post id
     suspend fun createTrip(
-        userId: String,
-        username: String,
-        locations: List<LatLng>,
-        discoveredEntries: List<String>,
-        startTime: Timestamp = Timestamp.now(),
-        endTime: Timestamp = Timestamp.now(),
-        timestamp : Timestamp = Timestamp.now(),
-        title : String = "Your Trip"
+        trip: Trip
+//        userId: String,
+//        username: String,
+//        locations: List<LatLng>,
+//        discoveredEntries: List<String>,
+//        startTime: Timestamp = Timestamp.now(),
+//        endTime: Timestamp = Timestamp.now(),
+//        timestamp : Timestamp = Timestamp.now(),
+//        title : String = "Your Trip"
     ): String
 
     suspend fun getTrip(tripId: String): Trip?
