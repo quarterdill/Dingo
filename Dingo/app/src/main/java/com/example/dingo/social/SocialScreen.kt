@@ -1,50 +1,23 @@
 package com.example.dingo.social
 
-import android.app.PendingIntent.getActivity
-import android.widget.Toast
-import androidx.camera.core.impl.utils.ContextUtil.getApplicationContext
-import androidx.camera.core.impl.utils.ContextUtil.getBaseContext
-import androidx.compose.foundation.layout.Arrangement
+
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material3.Button
-import androidx.compose.material3.Divider
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.dingo.model.Post
-import com.example.dingo.model.User
-import com.example.dingo.model.UserType
-import com.google.firebase.Timestamp
-import java.time.Duration
-import java.time.LocalDateTime
+import com.example.dingo.CustomSwitch
+import com.example.dingo.UIConstants
+import com.example.dingo.social.profile.ProfileScreen
+import com.example.dingo.social.social_feed.SocialFeedScreen
 
 
 sealed class SocialNavigationItem(
@@ -55,432 +28,60 @@ sealed class SocialNavigationItem(
         name = "SocialFeed",
         route = "socialfeed",
     )
-    object MyPosts : SocialNavigationItem(
-        name = "MyPosts",
-        route = "myposts",
-    )
-    object CreatePost : SocialNavigationItem(
-        name = "CreatePost",
-        route = "createpost",
-    )
-    object FriendList : SocialNavigationItem(
-        name = "FriendList",
-        route = "friendlist",
-    )
-    object SendFriendReqs : SocialNavigationItem(
-        name = "SendFriendReqs",
-        route = "sendfriendreqs",
-    )
-    object AcceptFriendReqs : SocialNavigationItem(
-        name = "AcceptFriendReqs",
-        route = "acceptfriendreqs",
+    object MyProfile : SocialNavigationItem(
+        name = "MyProfile",
+        route = "myprofile",
     )
 }
 
 @Composable
 fun SocialScreen(
-    viewModel: SocialViewModel = hiltViewModel()
+    navControllerSignOut: NavHostController
 ) {
 //    val dummyUserId = "Q0vMYa9VSh7tyFdLTPgX" // eric shang
 //    val dummyUsername = "Eric Shang"
-    val dummyUserId = "U47K9DYLoJLJlXHZrU7l"
-    val dummyUsername = "Dylan Xiao"
+//    val dummyUserId = "U47K9DYLoJLJlXHZrU7l"
+//    val dummyUsername = "Dylan Xiao"
 //    val dummyUserId = "XQIfyBwIwQKyAfiIDKggy"
 //    val dummyUsername = "Simhon Chourasia"
 
-    val feedItems = viewModel
-        .getFeedForUser(dummyUserId)
-    val myPostItems = viewModel
-        .getUsersPosts(dummyUserId)
-    val pendingFriendReqItems = viewModel
-        .getPendingFriendReqs(dummyUserId)
-        .observeAsState()
-    val friendItems = viewModel
-        .getFriendsForUser(dummyUserId)
-        .observeAsState()
-
+//    var currUserId = dummyUserId
+//    var currUsername = dummyUsername
+//    var currUser = SessionInfo.currentUser
+//    if (currUser != null) {
+//        currUserId = currUser.id
+//    }
     val navController = rememberNavController()
-
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        NavHost(
-            navController = navController,
-            startDestination = SocialNavigationItem.SocialFeed.route
+    Box {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            composable(SocialNavigationItem.SocialFeed.route) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Row(
-                        modifier = Modifier.padding(16.dp),
-                        horizontalArrangement = Arrangement.spacedBy(10.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Button(
-                            onClick = {
-                                navController.navigate(SocialNavigationItem.CreatePost.route)
-                            },
-                        ) {
-                            Text("Create Post")
-                        }
-                        Button(
-                            onClick = {
-                                navController.navigate(SocialNavigationItem.FriendList.route)
-                            },
-                        ) {
-                            Text("My Friends")
-                        }
-                    }
-                    LazyColumn(
-                        modifier = Modifier.weight(1.0f, true)
-                    ) {
-                        var posts =  feedItems
-                        if (posts != null) {
-                            items(posts.size) {
-                                SocialPost(posts[it])
-                            }
-                        }
-                    }
-                    if (feedItems == null || feedItems.size == 0) {
-                        Text("No posts found... try adding some friends")
-                    }
-                }
-            }
-            composable(SocialNavigationItem.MyPosts.route) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Row(
-                        modifier = Modifier.padding(16.dp),
-                        horizontalArrangement = Arrangement.spacedBy(10.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Button(
-                            onClick = {
-                                navController.navigate(SocialNavigationItem.CreatePost.route)
-                            },
-                        ) {
-                            Text("Create Post")
-                        }
-                        Button(
-                            onClick = {
-                                navController.navigate(SocialNavigationItem.FriendList.route)
-                            },
-                        ) {
-                            Text("My Friends")
-                        }
-                    }
-                    LazyColumn(
-                        modifier = Modifier.weight(1.0f, true)
-                    ) {
-                        var myPosts = myPostItems.value
-                        if (myPosts != null) {
-                            items(myPosts.size) {
-                                SocialPost(myPosts[it])
-                            }
-                        }
-                    }
-                }
-            }
-            composable(SocialNavigationItem.CreatePost.route) {
-                CreatePostModal(
-                    viewModel,
-                    navController,
-                    dummyUserId,
-                    dummyUsername,
-                )
-            }
-            composable(SocialNavigationItem.FriendList.route) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Row(
-                        modifier = Modifier.padding(16.dp),
-                        horizontalArrangement = Arrangement.spacedBy(10.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Button(
-                            onClick = {
-                                navController.navigate(SocialNavigationItem.SendFriendReqs.route)
-                            },
-                        ) {
-                            Text("Send Friend Request")
-                        }
-                        Button(
-                            onClick = {
-                                navController.navigate(SocialNavigationItem.AcceptFriendReqs.route)
-                            },
-                        ) {
-                            Text("Pending Friend Requests")
-                        }
-                    }
-
-                    Text("My Friends")
-                    LazyColumn(
-                        modifier = Modifier.weight(1.0f, true)
-                    ) {
-                        val friends = friendItems.value
-                        if (friends != null) {
-                            items(friends.size) {
-                                FriendListItem(friends[it])
-                            }
-                        }
-                    }
-                }
-            }
-            composable(SocialNavigationItem.SendFriendReqs.route) {
-                SendFriendReqModal(dummyUserId, viewModel, navController)
-            }
-            composable(SocialNavigationItem.AcceptFriendReqs.route) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text("Pending Friend Requests")
-                    LazyColumn(
-                        modifier = Modifier.weight(1.0f, true)
-                    ) {
-                        var pending = pendingFriendReqItems.value
-                        if (pending != null) {
-                            items(pending.size) {
-                                PendingFriendReqItem(viewModel, dummyUserId, pending[it])
-                            }
-                        }
-                    }
-                    if (
-                        pendingFriendReqItems.value == null ||
-                        pendingFriendReqItems.value!!.size == 0
-                    ) {
-                        Text("No pending friend requests. You're all caught up!")
-                    }
-                }
-            }
-        }
-    }
-}
-
-
-@Composable
-private fun Feed(
-    posts: MutableList<Post>?,
-) {
-    LazyColumn(
-
-    ) {
-        if (posts != null) {
-            items(posts.size) {
-                SocialPost(posts[it])
-            }
-        }
-    }
-}
-
-private fun getTimeDiffMessage(timestamp: Timestamp): String {
-    val timeDiff = (Timestamp.now().seconds - timestamp.seconds) / 60
-    if (timeDiff < 1) {
-        return "a minute"
-    } else if (timeDiff < 60) {
-        return "$timeDiff minutes"
-    } else if (timeDiff < 60 * 2) {
-        return "an hour"
-    } else if (timeDiff < 60 * 24) {
-        return "${timeDiff / 60} hours"
-    } else if (timeDiff < 60 * 24 * 2) {
-        return "a day"
-    } else if (timeDiff < 60 * 24 * 7) {
-        return "${timeDiff / (60 * 24)} days"
-    } else if (timeDiff < 60 * 24 * 7 * 2) {
-        return "a week"
-    } else if (timeDiff < 60 * 24 * 7 * 4) {
-        return "${timeDiff / (60 * 24 * 7)} weeks"
-    } else if (timeDiff < 60 * 24 * 7 * 4 * 2) {
-        return "a month"
-    } else if (timeDiff < 60 * 24 * 7 * 4 * 12) {
-        return "${timeDiff / (60 * 24 * 7 * 4)} months"
-    } else {
-        return "${timeDiff / (60 * 24 * 4 * 12)} years"
-    }
-}
-
-@Composable
-private fun SocialPost(post: Post) {
-    Row(
-        modifier = Modifier.padding(16.dp),
-        horizontalArrangement = Arrangement.spacedBy(10.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        var timeDiffMsg = getTimeDiffMessage(post.timestamp)
-
-        Text("${post.username} posted $timeDiffMsg ago")
-        Text("${post.textContent}")
-    }
-}
-
-
-@Composable
-private fun FriendListItem(
-    friend: User,
-) {
-    Row(
-        modifier = Modifier.padding(16.dp),
-        horizontalArrangement  = Arrangement.spacedBy(10.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(friend.username)
-        Divider(
-            modifier = Modifier
-                .height(30.dp)
-                .width(1.dp),
-            color = Color.Gray,
-        )
-        Text(text = "oh yeah")
-    }
-}
-
-@Composable
-private fun PendingFriendReqItem(
-    viewModel: SocialViewModel,
-    userId: String,
-    pendingUser: User,
-) {
-    val currentContext = LocalContext.current
-    Row(
-        modifier = Modifier.padding(16.dp),
-        horizontalArrangement  = Arrangement.spacedBy(10.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(pendingUser.username)
-        Divider(
-            modifier = Modifier
-                .height(30.dp)
-                .width(1.dp),
-            color = Color.Gray,
-        )
-        Button(
-            onClick = {
-                println("tryna accept friend req")
-                val msg = viewModel.acceptFriendReq(pendingUser.id, userId)
-                Toast.makeText(
-                    currentContext,
-                    msg,
-                    Toast.LENGTH_SHORT,
-                ).show()
-
-            }
-        ) {
-            Text("Accept")
-        }
-        Button(
-            onClick = {
-                println("tryna decline friend req")
-                val msg = viewModel.declineFriendReq(pendingUser.id, userId)
-                Toast.makeText(
-                    currentContext,
-                    msg,
-                    Toast.LENGTH_SHORT,
-                ).show()
-            }
-        ) {
-            Text("Decline")
-        }
-    }
-}
-
-
-@Composable
-private fun CreatePostModal(
-    viewModel: SocialViewModel = hiltViewModel(),
-    navController: NavHostController,
-    userId: String,
-    username: String,
-) {
-    var textContentState by remember { mutableStateOf("") }
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-    ) {
-        Text(text = "Post")
-        TextField(
-            value = textContentState,
-            onValueChange = { textContentState = it },
-            label = { Text("")}
-        )
-
-        Button(
-            onClick = {
-                viewModel.makePost(
-                    userId,
-                    username,
-                    textContentState,
-                    mutableListOf<String>(),
-                    null,
-                )
-                navController.navigate(SocialNavigationItem.SocialFeed.route)
-            }
-        ) {
-            Text(text = "Create Post")
-        }
-
-        Button(
-            onClick = {
-                navController.navigate(SocialNavigationItem.SocialFeed.route)
-            }
-        ) {
-            Text(text = "Cancel")
-        }
-    }
-}
-
-@Composable
-fun SendFriendReqModal(
-    userId: String,
-    viewModel: SocialViewModel,
-    navController: NavHostController,
-) {
-    val currentContext = LocalContext.current
-    var usernameState by remember { mutableStateOf("") }
-    Column(
-
-    ) {
-        Text("Send Friend Request")
-        TextField(
-            value = usernameState,
-            onValueChange = { usernameState = it },
-            placeholder = { Text("Friend's username") }
-        )
-        Button(
-            onClick = {
-                val friendReqOk = viewModel.sendFriendReq(
-                    userId,
-                    usernameState,
-                )
-                println("friend req ok?!: $friendReqOk")
-                if (friendReqOk) {
-                    Toast.makeText(
-                        currentContext,
-                        "Sent friend request!",
-                        Toast.LENGTH_SHORT
-                    ).show()
+            Text(
+                text = "Socials",
+                fontSize = UIConstants.TITLE_TEXT,
+            )
+            CustomSwitch(
+                "Feed", "Profile",
+                modifier = Modifier.padding(UIConstants.MEDIUM_PADDING),
+            ) {
+                if (it) {
+                    navController.navigate(SocialNavigationItem.MyProfile.route)
                 } else {
-                    Toast.makeText(
-                        currentContext,
-                        "Invalid username",
-                        Toast.LENGTH_SHORT,
-                    ).show()
+                    navController.navigate(SocialNavigationItem.SocialFeed.route)
                 }
             }
-        ) {
-            Text(text = "Send request")
-        }
-        Button(
-            onClick = {
-                navController.navigate(SocialNavigationItem.FriendList.route)
+            NavHost(
+                navController = navController,
+                startDestination = SocialNavigationItem.SocialFeed.route
+            ) {
+                composable(SocialNavigationItem.SocialFeed.route) {
+                    SocialFeedScreen()
+                }
+                composable(SocialNavigationItem.MyProfile.route) {
+                    ProfileScreen(navControllerSignOut = navControllerSignOut)
+                }
             }
-        ) {
-            Text(text = "Back to Friends")
         }
-
     }
 }

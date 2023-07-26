@@ -1,5 +1,6 @@
 package com.example.dingo.model.service.module
 
+import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -9,6 +10,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
 
 // taken from https://github.com/FirebaseExtended/make-it-so-android/blob/main/start/app/src/main/java/com/example/makeitso/model/service/module/FirebaseModule.kt
 
@@ -17,5 +19,6 @@ import dagger.hilt.components.SingletonComponent
 object FirebaseModule {
     @Provides fun auth(): FirebaseAuth = Firebase.auth
 
-    @Provides fun firestore(): FirebaseFirestore = Firebase.firestore
+    @Provides fun firestore (): FirebaseFirestore = Firebase.firestore
+
 }

@@ -1,10 +1,10 @@
 package com.example.dingo.model
 
 import com.google.firebase.firestore.GeoPoint
-import java.time.LocalDateTime
+import com.google.firebase.Timestamp
 
 
-data class Location (
+data class LocationTime (
     var geoPoint: GeoPoint,
-    var time: LocalDateTime,
+    var time: Timestamp = Timestamp.now(),
 )

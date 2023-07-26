@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
+import com.example.dingo.model.DingoDex
 import com.example.dingo.model.DingoDexEntry
 import com.example.dingo.model.service.DingoDexEntryService
 import com.example.dingo.model.service.DingoDexStorageService
@@ -47,7 +48,6 @@ constructor(
                         } else {
                             it.uncollectedFlora
                         }
-
                         for (item in uncollectedDingoDex) {
                             try {
                                 dingoDexStorageService.getDingoDexItem(item, isFauna)
@@ -57,7 +57,7 @@ constructor(
                                         DingoDexCollectionItem(
                                             id = dingoDexItem.id,
                                             name = dingoDexItem.name,
-                                            pictureURL = dingoDexItem.defaultPicture,
+                                            pictureURL = dingoDexItem.default_picture_name,
                                             isFauna = isFauna,
                                             numEncounters = 0
                                         )
@@ -92,7 +92,7 @@ constructor(
                     for (item in it) {
                         dingoDexItems.add(
                             DingoDexCollectionItem(
-                                id = item.id,
+                                id = item.dingoDexId,
                                 name = item.name,
                                 pictureURL = item.displayPicture,
                                 isFauna = isFauna,
@@ -125,18 +125,16 @@ constructor(
             for (i in dingoDexes.indices) {
                 for (j in 0 until dingoDexes[i].size) {
                     if (j % 2 == 0) {
-                        val temp = DingoDexEntry(
+                        val temp = DingoDex(
                             name = "Dummy Data",
-                            numEncounters = Random.nextInt(0, 100),
-                            userId = "temp",
                             isFauna = i == 0
                         )
-                        dingoDexEntryService.addNewEntry(temp)
+                        //dingoDexEntryService.addNewEntry(temp)
                     } else {
                         uncollectedDingoDex[i].add(dingoDexes[i][j].id)
                     }
                 }
-                userService.updateDingoDex("temp", uncollectedDingoDex[i], i == 0)
+//                userService.updateDingoDex("temp", uncollectedDingoDex[i], i == 0)
             }
 
 

@@ -1,7 +1,7 @@
 package com.example.dingo.dingodex
 
 class DingoDexCollectionItem (
-    val id: String = "",
+    val id: Int = -1,
     val name: String = "",
     val pictureURL: String = "",
     val numEncounters: Int = 0,

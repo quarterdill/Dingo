@@ -1,13 +1,19 @@
 package com.example.dingo.model
 
+import android.content.Context
 import com.google.firebase.firestore.DocumentId
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import java.io.File
+import java.io.IOException
 
 enum class AccountType {
-    STANDARD, EDUCATION
+    STANDARD, EDUCATION, STUDENT, INSTRUCTOR
 }
 
 data class User (
     @DocumentId val id: String = "",
+    val authId: String = "", // from firebase auth
     var username: String = "",
     var email: String = "",
     var accountType: AccountType = AccountType.STANDARD,
@@ -19,6 +25,9 @@ data class User (
     var classroomPosts: List<String> = emptyList(),
     var postHead: String = "",
     var trips: List<String> = emptyList(),
-    var uncollectedFauna : List<String> = emptyList(),
-    var uncollectedFlora : List<String> = emptyList(),
+    var uncollectedFauna : List<Int> = emptyList(),
+    var uncollectedFlora : List<Int> = emptyList(),
+    var stats: MutableMap<String, Int> = mutableMapOf(),
+    var achievements: MutableList<Int> = mutableListOf() // list of achievement ids
 )
+

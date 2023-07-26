@@ -1,10 +1,17 @@
 package com.example.dingo.social
 
+import android.se.omapi.Session
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
+import com.example.dingo.common.SessionInfo
+import com.example.dingo.common.StatName
+import com.example.dingo.common.incrementStat
 import com.example.dingo.model.AccountType
+import com.example.dingo.model.Classroom
+import com.example.dingo.model.Comment
 import com.example.dingo.model.Post
 import com.example.dingo.model.User
 import com.example.dingo.model.UserType
@@ -26,16 +33,43 @@ constructor(
     private val userService: UserService,
     private val postService: PostService,
 ) : ViewModel() {
+    val classroomId: MutableLiveData<String> by lazy {
+        MutableLiveData<String>()
+    }
+
+    fun getClassrooms(): LiveData<MutableList<Classroom>?> {
+        println("getting classrooms for user: ${SessionInfo.currentUserID}")
+        println("this user: ${SessionInfo.currentUser}")
+        return liveData(Dispatchers.IO) {
+            try {
+                userService.getClassrooms(SessionInfo.currentUserID, 50).collect {
+                    if (it != null) {
+                        val classrooms = it
+                        emit(classrooms)
+                    } else {
+                        emit(null)
+                    }
+                }
+            } catch (e: java.lang.Exception) {
+                // Do nothing
+                println("$e")
+            }
+        }
+    }
 
      fun getClassroomFeed(classroomId: String): LiveData<MutableList<Post>?> {
         return liveData(Dispatchers.IO) {
             try {
-                classroomService.getPostFeed(classroomId, 50).collect {
-                    if (it != null) {
-                        val posts = it
-                        emit(posts)
-                    } else {
-                        emit(null)
+                if (classroomId == "") {
+                    emit(mutableListOf())
+                } else {
+                    classroomService.getPostFeed(classroomId, 50).collect {
+                        if (it != null) {
+                            val posts = it
+                            emit(posts)
+                        } else {
+                            emit(null)
+                        }
                     }
                 }
             } catch (e: java.lang.Exception) {
@@ -62,7 +96,7 @@ constructor(
 
         for (userPair in userList) {
             viewModelScope.launch {
-                userService.createUser(userPair.first, userPair.second, AccountType.EDUCATION)
+                userService.createUser(userPair.first, userPair.second, AccountType.STUDENT)
             }
         }
     }
@@ -106,7 +140,18 @@ constructor(
             classroomService.addPost(classroomId, postId)
             userService.addClassroomPost(userId, postId)
         }
+        incrementStat(StatName.NUM_CLASSROOM_POSTS)
+    }
 
+    fun makeComment(
+        classroomId: String,
+        postId: String,
+        textContent: String,
+    ) {
+        viewModelScope.launch {
+            postService.addComment(postId, SessionInfo.currentUsername, textContent)
+        }
+        incrementStat(StatName.NUM_COMMENTS)
     }
 
 
@@ -162,26 +207,30 @@ constructor(
     fun getUsersOfType(classroomId: String, userType: UserType): LiveData<MutableList<User>?> {
         return liveData(Dispatchers.IO) {
             try {
-                classroomService.getClassroom(classroomId).collect {
-                    if (it != null) {
-                        val ret = mutableListOf<User>()
-                        var userIds = if (userType == UserType.TEACHER) {
-                            it.teachers
-                        } else {
-                            // intentionally default to students
-                            it.students
-                        }
-                        for (userId in userIds) {
-                            val user = userService.getUser(userId)
-                            if (user != null) {
-                                println("got user ${user.email}")
-                                ret.add(user)
+                if (classroomId == "") {
+                    emit(mutableListOf())
+                } else {
+                    classroomService.getClassroom(classroomId).collect {
+                        if (it != null) {
+                            val ret = mutableListOf<User>()
+                            var userIds = if (userType == UserType.TEACHER) {
+                                it.teachers
+                            } else {
+                                // intentionally default to students
+                                it.students
                             }
-                        }
+                            for (userId in userIds) {
+                                val user = userService.getUser(userId)
+                                if (user != null) {
+                                    println("got user ${user.email}")
+                                    ret.add(user)
+                                }
+                            }
 
-                        emit(ret)
-                    } else {
-                        emit(null)
+                            emit(ret)
+                        } else {
+                            emit(null)
+                        }
                     }
                 }
             } catch (e: java.lang.Exception) {
@@ -190,4 +239,27 @@ constructor(
             }
         }
     }
+
+    fun getCommentsForPost(postId: String): LiveData<MutableList<Comment>?> {
+        return liveData(Dispatchers.IO) {
+            try {
+                if (postId == "") {
+                    emit(mutableListOf<Comment>())
+                } else {
+                    postService.getComments(postId, 50).collect {
+                        if (it != null) {
+                            emit(it)
+                        } else {
+                            emit(null)
+                        }
+                    }
+                }
+            } catch (e: java.lang.Exception) {
+                // Do nothing
+                println("$e")
+            }
+        }
+    }
+
+
 }

@@ -1,5 +1,6 @@
 package com.example.dingo.model.service.impl
 
+import com.example.dingo.common.SessionInfo
 import com.example.dingo.model.AccountType
 import com.example.dingo.model.Classroom
 import com.example.dingo.model.Post
@@ -9,8 +10,10 @@ import com.example.dingo.model.UserType
 import com.example.dingo.model.service.AccountService
 import com.example.dingo.model.service.ClassroomService
 import com.example.dingo.model.service.UserService
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.toObject
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -51,8 +54,9 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
     }
 
     override suspend fun getUser(userId: String): User? {
+        var user = if (userId == "") "temp" else userId
         return firestore.collection(USER_COLLECTIONS)
-            .document(userId)
+            .document(user)
             .get()
             .await()
             .toObject(User::class.java)
@@ -80,6 +84,7 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
                         if (snapshot == null) {
                             trySend(null)
                         } else if (snapshot.exists()) {
+                            println("SNAPSHOT: $snapshot")
                             trySend(snapshot.toObject(User::class.java))
                         }
                     }
@@ -97,6 +102,27 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
             }
             awaitClose { subscription.remove() }
         }
+    }
+
+    override suspend fun getCurrentUser() {
+        if (auth.currentUserId.isNotEmpty()) {
+            val querySnapshot = firestore.collection(USER_COLLECTIONS)
+                .whereEqualTo("authId", auth.currentUserId)
+                .get()
+                .await()
+
+            if (!querySnapshot.isEmpty) {
+                val documentSnapshot = querySnapshot.documents[0]
+                val currUser = documentSnapshot.toObject(User::class.java)
+                SessionInfo.currentUser = currUser
+                if (currUser != null) {
+                    SessionInfo.currentUserID = currUser.id
+                    SessionInfo.currentUsername = currUser.username
+                }
+
+            }
+        }
+
     }
 
     override suspend fun getUserByEmail(email: String): User? {
@@ -245,9 +271,9 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
         return msg
     }
 
+
     override suspend fun updateDingoDex(
-        userId: String,
-        uncollected: List<String>,
+        newEntryId: Int,
         isFauna: Boolean
     ) {
         val field = if (isFauna) {
@@ -255,8 +281,20 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
         } else {
             UNCOLLECTED_FLORA
         }
+        val user = firestore.collection(USER_COLLECTIONS)
+            .document("temp").get().await().toObject(User::class.java)
+        if (user != null) {
+            val collection = if (isFauna) {
+                user.uncollectedFauna.toMutableList()
+            } else {
+                user.uncollectedFlora.toMutableList()
+            }
+            collection.remove(newEntryId)
 
-        firestore.collection(USER_COLLECTIONS).document(userId).update(field, uncollected)
+            // TODO: change temp once auth is done
+            firestore.collection(USER_COLLECTIONS).document("temp").update(field, collection)
+        }
+
     }
 
     // This is for social posts
@@ -391,10 +429,67 @@ constructor(private val firestore: FirebaseFirestore, private val auth: AccountS
         }
     }
 
+    override suspend fun addAchievementForUser(user: User, achievementId: Int) {
+        firestore.collection(USER_COLLECTIONS)
+            .document(user.id)
+            .update("achievements", FieldValue.arrayUnion(achievementId))
+            .await()
+    }
+
+    override suspend fun getClassrooms(userId: String, limit: Int): Flow<MutableList<Classroom>?>{
+        return callbackFlow {
+            val userCollection = firestore.collection(USER_COLLECTIONS).document(userId)
+
+            val subscription = userCollection.addSnapshotListener { snapshot, e ->
+                if (snapshot == null) {
+                    println("failed to get user snapshot when fetching classrooms...")
+                    trySend(null)
+                } else if (snapshot!!.exists()) {
+                    var currUser = snapshot.toObject(User::class.java)
+                    var ret: MutableList<Classroom> = mutableListOf()
+                    println("getting classrooms for user: $currUser")
+                    if (currUser != null) {
+                        for (i in 0 until currUser.classroomIds.size) {
+                            runBlocking {
+                                val incoming = firestore.collection(CLASSROOM_COLLECTIONS)
+                                    .document(currUser.classroomIds[i])
+                                    .get()
+                                    .await()
+                                    .toObject(Classroom::class.java)
+                                if (incoming != null) {
+                                    ret.add(incoming)
+                                }
+                            }
+                        }
+                    }
+                    trySend(ret)
+                }
+            }
+            awaitClose { subscription.remove() }
+        }
+    }
+
+    override suspend fun updateStats() {
+        val currUser = SessionInfo.currentUser
+        if (currUser != null) {
+            firestore.collection(USER_COLLECTIONS)
+                .document(currUser.id)
+                .update("stats", currUser.stats)
+                .await()
+        }
+    }
+
+    override suspend fun addTripForUser(userId : String, tripId: String) {
+        firestore.collection(USER_COLLECTIONS)
+            .document(userId)
+            .update("trips", FieldValue.arrayUnion(tripId))
+            .await()
+    }
 
     companion object {
         private const val USER_COLLECTIONS = "userCollections"
         private const val POST_COLLECTIONS = "postCollections"
+        private const val CLASSROOM_COLLECTIONS = "classroomCollections"
         private const val UNCOLLECTED_FAUNA = "uncollectedFauna"
         private const val UNCOLLECTED_FLORA = "uncollectedFlora"
     }
