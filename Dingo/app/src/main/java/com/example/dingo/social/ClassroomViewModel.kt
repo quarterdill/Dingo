@@ -52,7 +52,7 @@ constructor(
                 }
             } catch (e: java.lang.Exception) {
                 // Do nothing
-                println("$e")
+                println("error getting classrooms: $e")
             }
         }
     }
@@ -74,7 +74,7 @@ constructor(
                 }
             } catch (e: java.lang.Exception) {
                 // Do nothing
-                println("$e")
+                println("error getting classroom feed: $e")
             }
         }
     }
@@ -91,15 +91,15 @@ constructor(
             Triple("Philip Chen", "p242chen@uwaterloo.ca", UserType.TEACHER)
         )
     }
-    fun addDummyUsers() {
-        val userList = getDummyUsers()
-
-        for (userPair in userList) {
-            viewModelScope.launch {
-                userService.createUser(userPair.first, userPair.second, AccountType.STUDENT)
-            }
-        }
-    }
+//    fun addDummyUsers() {
+//        val userList = getDummyUsers()
+//
+//        for (userPair in userList) {
+//            viewModelScope.launch {
+//                userService.createUser(userPair.first, userPair.second, AccountType.STUDENT)
+//            }
+//        }
+//    }
 
     fun addDummyUsersToClassroom() {
         val dummyClassroomId = "cE1sLWEWj31aFO1CxwZB"
@@ -235,7 +235,7 @@ constructor(
                 }
             } catch (e: java.lang.Exception) {
                 // Do nothing
-                println("$e")
+                println("error getting users for classroom: $e")
             }
         }
     }
@@ -256,8 +256,20 @@ constructor(
                 }
             } catch (e: java.lang.Exception) {
                 // Do nothing
-                println("$e")
+                println("error getting comments in classroom post: $e")
             }
+        }
+    }
+
+    fun createClassroom(
+        creatorUserId: String,
+        classroomName: String,
+    ) {
+        viewModelScope.launch {
+            var newClassroom: Classroom = Classroom()
+            newClassroom.name = classroomName
+            newClassroom.teachers.add(creatorUserId)
+            classroomService.addNewClassroom(newClassroom)
         }
     }
 

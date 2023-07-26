@@ -9,7 +9,7 @@ enum class UserType {
 data class Classroom (
     @DocumentId val id: String = "",
     var name: String = "",
-    var teachers: List<String> = emptyList(),
-    var students: List<String> = emptyList(),
+    var teachers: MutableList<String> = mutableListOf(),
+    var students: MutableList<String> = mutableListOf(),
     var posts: List<String> = emptyList(),
 )

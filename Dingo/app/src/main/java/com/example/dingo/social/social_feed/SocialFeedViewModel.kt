@@ -12,6 +12,7 @@ import com.example.dingo.model.AccountType
 import com.example.dingo.model.Classroom
 import com.example.dingo.model.Comment
 import com.example.dingo.model.Post
+import com.example.dingo.model.User
 import com.example.dingo.model.PostComparator
 import com.example.dingo.model.PostType
 import com.example.dingo.model.service.PostService
@@ -132,7 +133,7 @@ constructor(
                 }
             } catch (e: java.lang.Exception) {
                 // Do nothing
-                println("$e")
+                println("error getting comments for post: $e")
             }
         }
     }
@@ -166,6 +167,4 @@ constructor(
             }
         }
     }
-
-
 }

@@ -17,7 +17,7 @@ interface UserService {
     suspend fun sendFriendReq(senderId: String, receiverId: String): Boolean
     suspend fun acceptFriendReq(senderId: String, receiverId: String): String
     suspend fun declineFriendReq(senderId: String, receiverId: String): String
-    suspend fun createUser(username: String, email: String, accountType: AccountType): String
+    suspend fun createUser(username: String, email: String, authId: String, accountType: AccountType): String
     suspend fun updateDingoDex(newEntryId: Int, isFauna: Boolean)
     suspend fun setPostHeadForUser(userId: String, postId: String, postType: PostType)
     suspend fun addClassroomPost(userId: String, postId: String)
