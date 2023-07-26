@@ -1,13 +1,18 @@
 package com.example.dingo.social.social_feed
-
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
@@ -20,6 +25,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -39,13 +45,20 @@ import com.example.dingo.UIConstants
 import com.example.dingo.common.SessionInfo
 import com.example.dingo.model.Comment
 import com.example.dingo.model.Post
+import com.example.dingo.model.Trip
+import com.example.dingo.trips.TripViewModel
 import com.google.firebase.Timestamp
 
 @Composable
 fun SocialFeedScreen(
     viewModel: SocialFeedViewModel = hiltViewModel(),
+    tripViewModel: TripViewModel = hiltViewModel()
 ) {
     val currentUser = SessionInfo.currentUser
+    val currentUserId = SessionInfo.currentUserID
+    val tripFeedItems = tripViewModel
+        .getTripFeed(currentUserId)
+        .observeAsState()
     var currentPostId = remember { mutableStateOf("") }
     val feedItems = viewModel.userFeed.observeAsState()
     println("teststes ${feedItems.value}")
@@ -55,6 +68,7 @@ fun SocialFeedScreen(
             viewModel,
             SessionInfo.currentUserID,
             SessionInfo.currentUsername,
+            tripFeedItems = tripFeedItems.value as List<Trip>
         ) {
             createNewPost.value = false
         }
@@ -133,12 +147,85 @@ private fun SocialPost(
     }
 }
 
+
+
+
+
+@Composable
+fun DropdownMenuExample(trips: List<Trip>) {
+    var expanded by remember { mutableStateOf(false) }
+    val titles = trips.map { it.title }
+    var selectedIndex by remember { mutableStateOf(0) }
+
+    Box(modifier = Modifier
+        .fillMaxSize()
+        .wrapContentSize(Alignment.TopStart)) {
+        Text(
+            text = titles[selectedIndex],
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable(onClick = { expanded = true })
+                .background(Color.Gray)
+        )
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            titles.forEachIndexed { index, item ->
+                DropdownMenuItem(
+                    text = {Text("$item")},
+                    onClick = {
+                        selectedIndex = index
+                        expanded = false
+                    }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun SimpleDropdownMenu() {
+    val items = listOf("Option 1", "Option 2", "Option 3")
+    var selectedIndex by remember { mutableStateOf(0) }
+    var expanded by remember { mutableStateOf(false) }
+
+    Box(modifier = Modifier
+        .fillMaxSize()
+        .wrapContentSize(Alignment.TopStart)) {
+        Text(
+            text = items[selectedIndex],
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable(onClick = { expanded = true })
+                .background(Color.Gray)
+        )
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            items.forEachIndexed { index, item ->
+                DropdownMenuItem(
+                    text = { Text("$item")},
+                    onClick = {
+                        selectedIndex = index
+                        expanded = false
+                    }
+                )
+            }
+        }
+    }
+}
+
 @Composable
 private fun CreatePostModal(
     viewModel: SocialFeedViewModel = hiltViewModel(),
     userId: String,
     username: String,
-    onDismissRequest: () -> Unit,
+    tripFeedItems:List<Trip>,
+    onDismissRequest : () -> Unit,
 ) {
     CustomDialog(onDismissRequest = onDismissRequest) {
         var textContentState by remember { mutableStateOf("") }
@@ -147,16 +234,24 @@ private fun CreatePostModal(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
+//            SimpleDropdownMenu()
             Text(
                 text = "Post",
                 fontSize = UIConstants.SUBTITLE2_TEXT
             )
             TextField(
-                modifier = Modifier.padding(vertical = UIConstants.MEDIUM_PADDING).height(100.dp),
+                modifier = Modifier
+                    .padding(vertical = UIConstants.MEDIUM_PADDING)
+                    .height(100.dp),
                 value = textContentState,
                 onValueChange = { textContentState = it },
                 label = { Text("") }
             )
+            DropdownMenuExample(tripFeedItems)
+
+            //   SELECT trip
+//            Get trip feed names
+//            clickable
             Row (
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
@@ -167,8 +262,7 @@ private fun CreatePostModal(
                             userId,
                             username,
                             textContentState,
-                            mutableListOf<String>(),
-                            null,
+                            mutableListOf<String>(), null,
                         )
                         onDismissRequest()
                     }
@@ -233,7 +327,9 @@ private fun CommentsDialog(
             }
 
             TextField(
-                modifier = Modifier.padding(vertical = UIConstants.MEDIUM_PADDING).height(100.dp),
+                modifier = Modifier
+                    .padding(vertical = UIConstants.MEDIUM_PADDING)
+                    .height(100.dp),
                 value = textContentState,
                 onValueChange = { textContentState = it },
                 label = { Text("") }
