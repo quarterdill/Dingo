@@ -17,20 +17,23 @@ import android.os.Build
 import android.os.Looper
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
+import com.example.dingo.R
+import com.example.dingo.common.SessionInfo
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.Priority.PRIORITY_HIGH_ACCURACY
 import com.google.android.gms.maps.model.LatLng
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.cancel
 import java.sql.Time
 import javax.inject.Inject
 
 
-private const val CHANNEL_ID = "my_channel_id"
-private const val CHANNEL_NAME = "My Channel"
-private const val CHANNEL_DESCRIPTION = "This is my notification channel"
+const val CHANNEL_ID = "my_channel_id"
+const val CHANNEL_NAME = "My Channel"
+const val CHANNEL_DESCRIPTION = "This is my notification channel"
 
 class LocationTrackingService @Inject constructor(): LifecycleService() {
 
@@ -58,13 +61,13 @@ class LocationTrackingService @Inject constructor(): LifecycleService() {
         stopLocationTracking()
     }
     private fun stopLocationTracking() {
-        lifecycleScope.cancel()
+//        lifecycleScope.cancel()
         locationClient.removeLocationUpdates(locationCallback)
         locationList.postValue(locationList.value)
     }
 
     private fun startLocationTracking() {
-       lifecycleScope.launch {
+        GlobalScope.launch {
            getLocationUpdates()
        }
     }
@@ -91,6 +94,7 @@ class LocationTrackingService @Inject constructor(): LifecycleService() {
                     val time = location.time
                     Log.d("locationCallBack", "pos: $pos; time: $time")
                     locationList.value?.add(pos)
+                    SessionInfo.lastLocation = pos
                 }
             }
         }
@@ -99,9 +103,9 @@ class LocationTrackingService @Inject constructor(): LifecycleService() {
     private fun createNotification(): Notification {
         // Create a notification for the foreground service
         val notification = NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("Location Tracking")
+            .setContentTitle("Trip in Progess...")
             .setContentText("Tracking your location")
-//            .setSmallIcon(R.drawable.ic_notification)
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
             .build()
 
         return notification

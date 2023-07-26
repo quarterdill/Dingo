@@ -26,6 +26,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -34,6 +35,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.dingo.CustomSwitch
+import com.example.dingo.R
 import com.example.dingo.UIConstants
 import com.example.dingo.common.composable.BasicButton
 import com.example.dingo.common.composable.DisplayPasswordField
@@ -41,7 +43,10 @@ import com.example.dingo.common.composable.EmailField
 import com.example.dingo.common.composable.RepeatPasswordField
 import com.example.dingo.common.composable.UsernameField
 import com.example.dingo.navigation.Screen
-import com.example.dingo.ui.theme.Purple80
+import com.example.dingo.ui.theme.color_background
+import com.example.dingo.ui.theme.color_on_secondary
+import com.example.dingo.ui.theme.color_primary
+import com.example.dingo.ui.theme.color_secondary
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -58,8 +63,7 @@ fun SignUpScreen(
     val isLoading = viewModel.isLoading.observeAsState()
     Box(
         modifier = Modifier
-            .fillMaxSize()
-            .background(color = Purple80),
+            .fillMaxSize(),
         contentAlignment = Alignment.Center,
     ) {
         if (isLoading.value!!) {
@@ -68,15 +72,25 @@ fun SignUpScreen(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(color = Purple80),
+                    .background(color = color_background),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center,
 
                 ) {
+                Text(
+                    "Dingo",
+                    fontSize = UIConstants.TITLE_TEXT,
+                    color = color_primary
+                )
+                Image(
+                    painterResource(R.drawable.dingo_logo),
+                    contentDescription = "",
+                    modifier = Modifier.width(300.dp).height(300.dp).padding(UIConstants.MEDIUM_PADDING)
+                )
                 CustomSwitch(
                     "Standard",
                     "Education",
-                    Modifier.padding(vertical = UIConstants.MEDIUM_PADDING),
+                    Modifier.padding(vertical = UIConstants.SMALL_PADDING),
                     onChanged = viewModel::onButtonToggle
                 )
                 Log.d("STATE", uiState.accountType.toString())
@@ -84,7 +98,7 @@ fun SignUpScreen(
                     CustomSwitch(
                         "Student",
                         "Instructor",
-                        Modifier.padding(vertical = UIConstants.MEDIUM_PADDING),
+                        Modifier.padding(vertical = UIConstants.SMALL_PADDING),
                         onChanged = viewModel::onButtonToggleEducation
                     )
                 }
@@ -103,7 +117,7 @@ private fun SignUpFields(
     val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.Main)
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(UIConstants.MEDIUM_PADDING)
+        verticalArrangement = Arrangement.spacedBy(UIConstants.SMALL_PADDING)
     ) {
         EmailField(uiState.email,  viewModel::onEmailChange)
         UsernameField(uiState.username,  viewModel::onUsernameChange)
@@ -115,9 +129,7 @@ private fun SignUpFields(
                 viewModel.onSignUpClick(navController)
             }},
             colors =
-            ButtonDefaults.buttonColors(
-                contentColor = MaterialTheme.colorScheme.onPrimary
-            )
+            ButtonDefaults.buttonColors(containerColor = color_secondary, color_on_secondary)
         ) {
             Text(text = "Sign Up", fontSize = 16.sp)
         }
@@ -127,7 +139,8 @@ private fun SignUpFields(
                     navController.navigate(route = Screen.LoginScreen.route)
                 },
                 text = "Already have an account? Login",
-                fontSize = 15.sp
+                fontSize = UIConstants.NORMAL_TEXT,
+                color = color_primary
             )
         }
 
