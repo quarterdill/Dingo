@@ -10,10 +10,12 @@ Prototype demo coding | 10 | 10 | 10 | 10 | 10 | 10 | 10
 Making prototype doc | 2 | 2 | 2 | 2 | 2 | 2 | 2
 Architectural style examples | 0 | 0 | 2 | 0 | 0 | 2 | 2
 Authentication coding | 0 | 0 | 0 | 0 | 10 | 0 | 0 |
-DingoDex coding | 0 | 8 | 0 | 0 | 0 | 0 | 30
+DingoDex coding | 0 | 20 | 0 | 0 | 0 | 0 | 32
+Image Storing | 0 | 10 | 0 | 0 | 0 | 0 | 0 
 Social coding | 0 | 0 | 16 | 0 | 0 | 0 | 0
 Classroom coding | 0 | 0 | 8 | 0 | 0 | 0 | 0
 Profile coding | 0 | 0 | 3 | 0 | 0 | 0 | 0
+Scanner Coding | 0 | 0 | 0 | 0 | 0 | 37 | 0
 JSON assets coding | 0 | 0 | 0 | 0 | 0 | 0 | 2
 Design pattern examples | 0 | 0 | 2 | 0 | 0 | 0 | 3
 Trips coding | 15 | 0 | 0 | 15 | 0 | 0 | 0
@@ -22,4 +24,7 @@ Classroom instructor support | 0 | 0 | 5 | 0 | 0 | 0 | 0
 Global user data support | 0 | 0 | 5 | 0 | 0 | 0 | 0
 Profile coding | 0 | 0 | 5 | 0 | 0 | 0 | 0
 Comments and Post Entry support | 0 | 0 | 4 | 0 | 0 | 0 | 0
-Total | 30 | 31 | 86 | 23 | 41 | 25 | 64
+Social/ Classroom UI Improvement | 0 | 8 | 0 | 0 | 0 | 0 | 0 
+Color Scheming | 0 | 4 | 0 | 0 | 0 | 0 | 0 
+Project Architecture and Design doc | 5 | 5 | 5 | 5 | 5 | 5 | 5
+Total | 35 | 70 | 91 | 28 | 46 | 30 | 71
