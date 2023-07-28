@@ -26,5 +26,7 @@ Profile coding | 0 | 0 | 5 | 0 | 0 | 0 | 0
 Comments and Post Entry support | 0 | 0 | 4 | 0 | 0 | 0 | 0
 Social/ Classroom UI Improvement | 0 | 8 | 0 | 0 | 0 | 0 | 0 
 Color Scheming | 0 | 4 | 0 | 0 | 0 | 0 | 0 
+Bug fixing across entire app | 8 | 8 | 8 | 8 | 8 | 8 | 8 | 8
 Project Architecture and Design doc | 5 | 5 | 5 | 5 | 5 | 5 | 5
-Total | 35 | 70 | 91 | 28 | 46 | 30 | 71
+Logo Creation | 0 | 1 | 0 | 0 | 0 | 1 | 0
+Total | 43 | 79 | 99 | 53 | 49 | 76 | 79
