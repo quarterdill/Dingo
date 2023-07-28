@@ -17,4 +17,9 @@ Profile coding | 0 | 0 | 3 | 0 | 0 | 0 | 0
 JSON assets coding | 0 | 0 | 0 | 0 | 0 | 0 | 2
 Design pattern examples | 0 | 0 | 2 | 0 | 0 | 0 | 3
 Trips coding | 15 | 0 | 0 | 15 | 0 | 0 | 0
-Total | 30 | 31 | 55 | 23 | 41 | 25 | 64
+Achievements and stats coding | 0 | 0 | 12 | 0 | 0 | 0 | 0
+Classroom instructor support | 0 | 0 | 5 | 0 | 0 | 0 | 0
+Global user data support | 0 | 0 | 5 | 0 | 0 | 0 | 0
+Profile coding | 0 | 0 | 5 | 0 | 0 | 0 | 0
+Comments and Post Entry support | 0 | 0 | 4 | 0 | 0 | 0 | 0
+Total | 30 | 31 | 86 | 23 | 41 | 25 | 64
