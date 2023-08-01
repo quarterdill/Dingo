@@ -29,4 +29,5 @@ Color Scheming | 0 | 4 | 0 | 0 | 0 | 0 | 0
 Bug fixing across entire app | 8 | 8 | 8 | 8 | 8 | 8 | 8 | 8
 Project Architecture and Design doc | 5 | 5 | 5 | 5 | 5 | 5 | 5
 Logo Creation | 0 | 1 | 0 | 0 | 0 | 1 | 0
-Total | 43 | 79 | 99 | 53 | 49 | 76 | 79
+Connecting trips with scanner 0 | 0 | 0 | 15 | 0 | 0 | 0
+Total | 43 | 79 | 99 | 68 | 49 | 76 | 79
