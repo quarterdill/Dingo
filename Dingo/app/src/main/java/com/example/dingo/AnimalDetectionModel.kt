@@ -2,6 +2,7 @@ package com.example.dingo
 
 import android.content.Context
 import android.graphics.Bitmap
+import com.example.dingo.common.SessionInfo
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.GlobalScope
@@ -77,13 +78,13 @@ class AnimalDetectionModel(context : Context) {
             .build()
 
         var request = Request.Builder()
-            .url("http://192.168.2.166:8000/api/process_plant/")
+            .url("http://" + SessionInfo.ipaddress + "/api/process_plant/")
             .post(requestBody)
             .build()
 
         if(animal) {
              request = Request.Builder()
-                .url("http://192.168.2.166:8000/api/process_image/")
+                .url("http://" + SessionInfo.ipaddress + "/api/process_image/")
                 .post(requestBody)
                 .build()
         }

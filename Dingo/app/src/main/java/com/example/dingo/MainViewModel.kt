@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.dingo.common.SessionInfo
 import com.example.dingo.model.Achievement
 import com.example.dingo.model.AchievementListings
 import com.example.dingo.model.DingoDexEntryContent
@@ -18,6 +19,10 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import java.io.IOException
 import javax.inject.Inject
+
+data class SetupInfo (
+    var serverIP: String = ""
+)
 
 @HiltViewModel
 class MainViewModel
@@ -48,6 +53,25 @@ constructor(
         viewModelScope.launch {
             userService.updateStats()
         }
+    }
+
+    fun setUpIPAddress(context: Context) {
+        val jsonString: String
+        try {
+            jsonString = context.assets.open("setup.json").bufferedReader().use {
+                it.readText()
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+            return
+        }
+
+        val gson = Gson()
+        val setupInfoType = object : TypeToken<SetupInfo>() {}.type
+        println("JSON STRING: ${jsonString}")
+        val setupInfo: SetupInfo = gson.fromJson(jsonString, setupInfoType)
+        SessionInfo.ipaddress = setupInfo.serverIP
+        println("session info: ${SessionInfo}")
     }
 
     fun setUpAchievements(context: Context) {

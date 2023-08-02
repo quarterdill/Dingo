@@ -20,6 +20,7 @@ object SessionInfo {
     var nameToStat: MutableMap<String, Stat> = mutableMapOf()
     var trip: Trip? = null
     var lastLocation: LatLng? = null
+    var ipaddress: String = ""
 }
 
 // each stat is an observable and has a list of corresponding achievements

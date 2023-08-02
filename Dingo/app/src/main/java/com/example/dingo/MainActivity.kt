@@ -51,6 +51,7 @@ class MainActivity : ComponentActivity() {
             viewModel.getUser()
             viewModel.setUpDingoDex(LocalContext.current)
             viewModel.setUpAchievements(LocalContext.current)
+            viewModel.setUpIPAddress(LocalContext.current)
             println("ACHIEVEMENTS: : set up with user ${SessionInfo.currentUser}")
             initializeStats()
             navController = rememberNavController()
